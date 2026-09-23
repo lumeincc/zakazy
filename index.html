@@ -66,15 +66,8 @@
   .app { max-width: 1280px; margin-inline: auto; padding-inline: 24px; padding-block: 24px 72px; }
 
   /* ---------- шапка ---------- */
-  .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin-bottom: 20px; }
-  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .logo {
-    display: grid; place-items: center; flex: none;
-    width: 42px; height: 42px; border-radius: 13px;
-    background: var(--accent); color: var(--accent-ink);
-    box-shadow: 0 2px 0 rgba(160, 110, 0, .18);
-  }
-  .top h1 { margin: 0; font-weight: 800; font-size: clamp(24px, 3.4vw, 30px); line-height: 1.15; letter-spacing: -.01em; text-wrap: balance; }
+  .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 14px 24px; margin-bottom: 20px; }
+  .vh { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
   .btn {
@@ -278,7 +271,7 @@
   .gate-text { margin: 0; color: var(--muted); }
   .gate-card .btn { width: 100%; height: 46px; font-size: 16px; }
   .app.locked .route, .app.locked .bar, .app.locked .sheet, .app.locked .foot,
-  .app.locked .actions, .app.locked .notice { display: none !important; }
+  .app.locked .top, .app.locked .notice { display: none !important; }
 
   /* ---------- карточка заказа ---------- */
   .dlg {
@@ -367,7 +360,6 @@
     .dlg-head, .dlg-body, .dlg-foot { padding-inline: 16px; }
     .actions { width: 100%; }
     .actions .btn-primary { flex: 1; }
-    .logo { width: 38px; height: 38px; border-radius: 12px; }
   }
   @media (max-width: 400px) {
     .route { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -383,12 +375,7 @@
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand">
-      <span class="logo" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4.5h6M8.5 10h7M8.5 14h7M8.5 18h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </span>
-      <h1>Журнал заказов</h1>
-    </div>
+    <h1 class="vh">Журнал заказов</h1>
     <div class="actions">
       <button type="button" class="btn" id="btnExport" hidden title="Скачать весь журнал файлом Excel">
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.5m0 0L5 7m3 3 3-3M3 13h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
