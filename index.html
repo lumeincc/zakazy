@@ -1,0 +1,1505 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ECEFF2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+<title>Журнал заказов производства</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231E3A66'/%3E%3Cpath d='M9 11h14M9 16h14M9 21h9' stroke='white' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500&display=swap">
+<style>
+  :root {
+    --ground: #ECEFF2;
+    --surface: #FFFFFF;
+    --surface-2: #F5F7F9;
+    --ink: #19202A;
+    --ink-2: #384350;
+    --muted: #5A6572;
+    --faint: #8C96A1;
+    --line: #D3D9DF;
+    --line-2: #E4E8EC;
+    --accent: #1E3A66;
+    --accent-ink: #FFFFFF;
+    --focus: #3A6BD6;
+    --danger: #B3352A;
+    --warn: #93600F;
+    --ok: #2B7354;
+    --st-new: #7E8995;
+    --st-design: #C39A38;
+    --st-supply: #A5652E;
+    --st-production: #7A4A96;
+    --st-finish: #3D6BC6;
+    --st-ready: #2C8A67;
+    --st-shipped: #66717D;
+    --st-cancelled: #A3ACB5;
+    --tint: 14%;
+    --shadow-dlg: 0 24px 64px rgba(14, 20, 28, .28);
+    --f-display: "Oswald", "Roboto Condensed", "Arial Narrow", sans-serif;
+    --f-ui: "Golos Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #101317;
+      --surface: #171B20;
+      --surface-2: #1D2228;
+      --ink: #E4E8EC;
+      --ink-2: #C2C9D0;
+      --muted: #98A3AE;
+      --faint: #6F7984;
+      --line: #2C333B;
+      --line-2: #232930;
+      --accent: #CFDBF0;
+      --accent-ink: #0E1520;
+      --focus: #86A8F2;
+      --danger: #F07A6D;
+      --warn: #E3A94F;
+      --ok: #5DC497;
+      --st-new: #9AA5B0;
+      --st-design: #DDB659;
+      --st-supply: #D08F54;
+      --st-production: #B383D3;
+      --st-finish: #81A7EF;
+      --st-ready: #55C49C;
+      --st-shipped: #98A3AE;
+      --st-cancelled: #6F7984;
+      --tint: 22%;
+      --shadow-dlg: 0 24px 64px rgba(0, 0, 0, .55);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #101317;
+    --surface: #171B20;
+    --surface-2: #1D2228;
+    --ink: #E4E8EC;
+    --ink-2: #C2C9D0;
+    --muted: #98A3AE;
+    --faint: #6F7984;
+    --line: #2C333B;
+    --line-2: #232930;
+    --accent: #CFDBF0;
+    --accent-ink: #0E1520;
+    --focus: #86A8F2;
+    --danger: #F07A6D;
+    --warn: #E3A94F;
+    --ok: #5DC497;
+    --st-new: #9AA5B0;
+    --st-design: #DDB659;
+    --st-supply: #D08F54;
+    --st-production: #B383D3;
+    --st-finish: #81A7EF;
+    --st-ready: #55C49C;
+    --st-shipped: #98A3AE;
+    --st-cancelled: #6F7984;
+    --tint: 22%;
+    --shadow-dlg: 0 24px 64px rgba(0, 0, 0, .55);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-ui);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .app { max-width: 1280px; margin-inline: auto; padding-inline: 24px; padding-block: 28px 72px; }
+
+  /* ---------- шапка ---------- */
+  .top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 22px; }
+  .eyebrow { margin: 0; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+  .top h1 {
+    margin: 4px 0 0;
+    font-family: var(--f-display);
+    font-weight: 500;
+    font-size: clamp(28px, 4vw, 36px);
+    line-height: 1.05;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 38px; padding: 0 14px;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--surface); color: var(--ink);
+    font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap;
+    cursor: pointer; transition: border-color .15s, background-color .15s, opacity .15s;
+  }
+  .btn:hover { border-color: var(--faint); }
+  .btn svg { flex: none; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { border-color: var(--accent); opacity: .9; }
+  .btn-danger { border-color: transparent; background: transparent; color: var(--danger); }
+  .btn-danger:hover { border-color: var(--danger); }
+  .btn-danger.armed { background: var(--danger); border-color: var(--danger); color: var(--surface); }
+
+  /* ---------- пояснение ---------- */
+  .notice {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    margin-bottom: 18px; padding: 12px 16px;
+    border: 1px dashed var(--faint); border-radius: 10px;
+    background: var(--surface); color: var(--ink-2);
+  }
+  .notice p { margin: 0; flex: 1 1 320px; }
+
+  /* ---------- маршрут: заказы по этапам ---------- */
+  .route {
+    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+    margin-bottom: 22px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+  }
+  .rc {
+    position: relative;
+    display: grid; gap: 1px; align-content: start; justify-items: start;
+    padding: 15px 16px 12px;
+    border: 0; border-left: 1px solid var(--line-2);
+    background: transparent; text-align: left; cursor: pointer;
+    transition: background-color .15s;
+  }
+  .rc:first-child { border-left: 0; }
+  .rc::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--st); transition: height .15s; }
+  .rc:hover { background: var(--surface-2); }
+  .rc[aria-pressed="true"] { background: var(--surface-2); background: color-mix(in srgb, var(--st) 10%, var(--surface)); }
+  .rc[aria-pressed="true"]::before { height: 5px; }
+  .rc-op { font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; color: var(--faint); }
+  .rc-count { font-family: var(--f-display); font-weight: 500; font-size: 30px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .rc-count.zero { color: var(--faint); }
+  .rc-label { font-size: 13px; font-weight: 500; color: var(--ink-2); hyphens: auto; overflow-wrap: break-word; max-width: 100%; }
+  .rc-late { min-height: 18px; font-size: 12px; font-weight: 500; color: var(--danger); }
+
+  /* ---------- вкладки и фильтры ---------- */
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .tabs {
+    display: flex; gap: 2px; padding: 3px; max-width: 100%;
+    background: var(--line-2); border-radius: 10px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 32px; padding: 0 12px; border: 0; border-radius: 7px;
+    background: transparent; color: var(--muted);
+    font-size: 13.5px; font-weight: 500; white-space: nowrap; cursor: pointer;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(15, 25, 35, .1); }
+  .tab .n { font-family: var(--f-mono); font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; }
+  .tab.late .n { color: var(--danger); font-weight: 500; }
+
+  .filters { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; flex: 1 1 440px; min-width: 0; }
+  .search { position: relative; flex: 0 1 290px; min-width: 0; }
+  .search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
+  .search input {
+    width: 100%; height: 36px; padding: 0 12px 0 34px;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 14px;
+  }
+  .search input::placeholder { color: var(--faint); }
+  .select { height: 36px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 14px; cursor: pointer; max-width: 100%; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    height: 30px; padding: 0 3px 0 11px; border-radius: 999px;
+    background: var(--surface); background: color-mix(in srgb, var(--st) var(--tint), var(--surface));
+    border: 1px solid var(--line); border-color: color-mix(in srgb, var(--st) 40%, transparent);
+    font-size: 13px; font-weight: 500;
+  }
+  .chip button { display: grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+  .chip button:hover { color: var(--ink); background: var(--line-2); }
+
+  /* ---------- список заказов ---------- */
+  .sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .thead, .row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) minmax(0, 2.1fr) 196px 150px;
+    column-gap: 18px; padding-inline: 18px;
+  }
+  .thead { padding-block: 9px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+  .th {
+    display: inline-flex; align-items: center; gap: 4px; justify-self: start;
+    padding: 0; border: 0; background: none; text-align: left;
+    font-family: var(--f-mono); font-size: 11px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+  }
+  button.th { cursor: pointer; }
+  button.th:hover { color: var(--ink); }
+  .th .arr { color: var(--ink); }
+
+  .row {
+    position: relative;
+    padding-block: 14px; border-top: 1px solid var(--line-2);
+    align-items: start; cursor: pointer; transition: background-color .12s;
+  }
+  .tbody > .row:first-child { border-top: 0; }
+  .row:hover { background: var(--surface-2); }
+  .row > * { min-width: 0; }
+  .row.is-late::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--danger); }
+  .row.flash { animation: flash 1.8s ease-out; }
+  @keyframes flash { from { background-color: color-mix(in srgb, var(--focus) 20%, var(--surface)); } to { background-color: transparent; } }
+
+  .c-num { display: grid; gap: 2px; justify-items: start; align-content: start; }
+  .num { font-family: var(--f-mono); font-weight: 500; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .num::before { content: "№\00a0"; color: var(--faint); font-weight: 400; }
+  .recv { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .c-cust { display: grid; gap: 2px; align-content: start; }
+  .cust { font-weight: 500; overflow-wrap: anywhere; }
+  .contact { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+  .c-item { display: grid; gap: 3px; align-content: start; }
+  .kind { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .title { font-weight: 600; font-size: 14.5px; line-height: 1.35; overflow-wrap: anywhere; }
+  .desc {
+    font-size: 13px; color: var(--ink-2); white-space: pre-line; overflow-wrap: anywhere; hyphens: auto;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  }
+  .is-cancelled .title { text-decoration: line-through; text-decoration-color: var(--faint); color: var(--muted); }
+
+  .c-stage { display: grid; gap: 7px; justify-items: start; align-content: start; }
+  .stage-pick { position: relative; display: inline-flex; align-items: center; max-width: 100%; }
+  .stage-pick .dot { position: absolute; left: 11px; width: 8px; height: 8px; border-radius: 50%; background: var(--st); pointer-events: none; }
+  .stage-pick .chev { position: absolute; right: 10px; color: var(--muted); pointer-events: none; }
+  .stage-select {
+    appearance: none; -webkit-appearance: none;
+    max-width: 100%; height: 30px; padding: 0 28px 0 26px;
+    border: 1px solid var(--line); border-color: color-mix(in srgb, var(--st) 40%, transparent); border-radius: 999px;
+    background: var(--surface-2); background: color-mix(in srgb, var(--st) var(--tint), var(--surface));
+    color: var(--ink); font-size: 13px; font-weight: 500; text-overflow: ellipsis; cursor: pointer;
+  }
+  .stage-select:disabled { opacity: 1; color: var(--ink); cursor: inherit; padding-right: 12px; }
+  .stage-select:disabled + .chev { display: none; }
+  .rmini { display: flex; gap: 3px; }
+  .rmini i { width: 20px; height: 4px; border-radius: 2px; background: var(--line); }
+  .rmini i.on { background: var(--c); }
+  .since { font-size: 12px; color: var(--muted); }
+
+  .c-due { display: grid; gap: 2px; align-content: start; }
+  .due-date { font-family: var(--f-mono); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .due-sub { font-size: 12.5px; color: var(--muted); }
+  .due--danger .due-date { color: var(--danger); font-weight: 500; }
+  .due--danger .due-sub { color: var(--danger); font-weight: 600; }
+  .due--warn .due-sub { color: var(--warn); font-weight: 600; }
+  .due--ok .due-sub { color: var(--ok); }
+  .due--late .due-sub { color: var(--warn); }
+  .due--none .due-date, .due--muted .due-date { color: var(--faint); }
+
+  .skel { display: grid; gap: 9px; padding: 18px; border-top: 1px solid var(--line-2); }
+  .skel:first-child { border-top: 0; }
+  .skel i { display: block; height: 10px; border-radius: 4px; background: var(--line-2); }
+  .skel i:nth-child(1) { width: 30%; }
+  .skel i:nth-child(2) { width: 70%; }
+  .skel i:nth-child(3) { width: 48%; }
+  @media (prefers-reduced-motion: no-preference) {
+    .skel i { animation: pulse 1.1s ease-in-out infinite alternate; }
+  }
+  @keyframes pulse { to { opacity: .45; } }
+
+  .empty { display: grid; gap: 14px; justify-items: center; padding: 56px 18px; text-align: center; color: var(--muted); }
+  .empty p { margin: 0; }
+  .foot { margin: 10px 2px 0; font-size: 12.5px; color: var(--muted); }
+
+  /* ---------- карточка заказа ---------- */
+  .dlg {
+    width: min(760px, calc(100vw - 32px)); max-height: min(92vh, 980px);
+    padding: 0; border: 1px solid var(--line); border-radius: 14px;
+    background: var(--surface); color: var(--ink); box-shadow: var(--shadow-dlg);
+  }
+  .dlg[open] { display: flex; flex-direction: column; }
+  .dlg::backdrop { background: rgba(12, 17, 24, .52); }
+  .dlg form { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0; }
+  .dlg-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 22px 14px; border-bottom: 1px solid var(--line-2); }
+  .dlg-head h2 { margin: 3px 0 0; font-family: var(--f-display); font-weight: 500; font-size: 24px; line-height: 1.1; letter-spacing: .02em; text-transform: uppercase; }
+  .icon-btn { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+  .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
+  .dlg-body { flex: 1; min-height: 0; overflow-y: auto; display: grid; gap: 14px; align-content: start; padding: 18px 22px; }
+  .dlg-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 22px; border-top: 1px solid var(--line-2); background: var(--surface-2); }
+  .dlg-foot .spacer { flex: 1; }
+  .form-msg { flex: 1 1 100%; margin: 0; font-size: 13px; color: var(--muted); }
+  .form-msg:empty { display: none; }
+  .form-msg.err { color: var(--danger); font-weight: 500; }
+
+  .g { display: grid; gap: 12px; }
+  .g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .field > span { font-size: 12.5px; font-weight: 500; color: var(--muted); }
+  .field input, .field select, .field textarea {
+    width: 100%; min-height: 40px; padding: 8px 11px;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--surface); color: var(--ink); font-size: 14px; line-height: 1.4;
+  }
+  .field textarea { min-height: 124px; resize: vertical; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--faint); }
+  .field input:disabled, .field select:disabled, .field textarea:disabled {
+    background: var(--surface-2); color: var(--ink-2); -webkit-text-fill-color: var(--ink-2); opacity: 1;
+  }
+  .field.invalid input, .field.invalid textarea { border-color: var(--danger); }
+  .field .hint { font-size: 12px; color: var(--muted); }
+  .req::after { content: " *"; color: var(--danger); }
+
+  .hist-wrap h3 { margin: 4px 0 8px; font-family: var(--f-mono); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .hist { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+  .hist li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: baseline; gap: 10px; font-size: 13px; }
+  .hist .d { width: 8px; height: 8px; border-radius: 50%; background: var(--st); }
+  .hist b { font-weight: 600; }
+  .hist .who { color: var(--muted); }
+  .hist time { font-family: var(--f-mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 60;
+    max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 8px;
+    background: var(--ink); color: var(--surface); font-size: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+    opacity: 0; transform: translate(-50%, 12px); transition: opacity .2s, transform .2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.error { background: var(--danger); color: var(--surface); }
+
+  /* ---------- узкие экраны ---------- */
+  @media (max-width: 900px) {
+    .thead { display: none; }
+    .row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "num due" "item item" "cust cust" "stage stage";
+      row-gap: 8px; column-gap: 12px; padding: 14px 16px;
+    }
+    .c-num { grid-area: num; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+    .c-due { grid-area: due; justify-items: end; text-align: right; }
+    .c-item { grid-area: item; }
+    .c-cust { grid-area: cust; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+    .c-stage { grid-area: stage; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+    .filters { flex-basis: 100%; justify-content: flex-start; }
+    .search { flex: 1 1 220px; }
+    .tab { padding: 0 10px; }
+  }
+  @media (max-width: 760px) {
+    .route { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .rc { padding: 13px 12px 10px; }
+    .rc:nth-child(3n + 1) { border-left: 0; }
+    .rc:nth-child(n + 4) { border-top: 1px solid var(--line-2); }
+    .rc-count { font-size: 26px; }
+    .rc-label { font-size: 12px; }
+  }
+  @media (max-width: 640px) {
+    .app { padding-inline: 16px; padding-block: 18px 56px; }
+    .dlg { width: 100%; max-width: 100%; height: 100%; max-height: 100%; margin: 0; border: 0; border-radius: 0; }
+    .g-2, .g-3 { grid-template-columns: minmax(0, 1fr); }
+    .g-2.keep { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dlg-head, .dlg-body, .dlg-foot { padding-inline: 16px; }
+    .actions { width: 100%; }
+    .actions .btn-primary { flex: 1; }
+  }
+  @media (max-width: 400px) {
+    .route { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .rc:nth-child(n) { border-left: 1px solid var(--line-2); border-top: 1px solid var(--line-2); }
+    .rc:nth-child(odd) { border-left: 0; }
+    .rc:nth-child(-n + 2) { border-top: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+
+  /* ---------- вход ---------- */
+  .gate { display: grid; justify-items: center; padding-block: 8px 40px; }
+  .gate-card {
+    width: min(440px, 100%); display: grid; gap: 14px; padding: 24px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  }
+  .gate-card h2 { margin: 0; font-family: var(--f-display); font-weight: 500; font-size: 26px; line-height: 1.1; letter-spacing: .02em; text-transform: uppercase; }
+  .gate-text { margin: 0; color: var(--muted); }
+  .gate-card .btn { width: 100%; height: 42px; }
+  .app.locked .route, .app.locked .bar, .app.locked .sheet, .app.locked .foot,
+  .app.locked .actions, .app.locked .notice { display: none !important; }
+
+  /* ---------- подвал ---------- */
+  .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 12px 2px 0; font-size: 12.5px; color: var(--muted); }
+  .foot .spacer { flex: 1; }
+  .link {
+    padding: 0; border: 0; background: none; color: var(--ink-2); font-size: 12.5px; cursor: pointer;
+    text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px;
+  }
+  .link:hover { color: var(--ink); text-decoration-color: currentColor; }
+  #syncText.err { color: var(--danger); }
+</style>
+</head>
+<body>
+<div class="app" lang="ru">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Производство · металлоконструкции · печи · БМЗ</p>
+      <h1>Журнал заказов</h1>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" id="btnExport" hidden title="Скачать весь журнал файлом Excel">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.5m0 0L5 7m3 3 3-3M3 13h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Excel</span>
+      </button>
+      <button type="button" class="btn btn-primary" id="btnNew" hidden>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Новый заказ</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="gate" id="gate" hidden>
+    <form class="gate-card" id="gateForm" novalidate>
+      <h2>Вход в журнал</h2>
+      <p class="gate-text">Введите код доступа. Имя нужно, чтобы в истории было видно, кто менял заказ.</p>
+      <label class="field" id="fld-api"><span>Адрес скрипта Google</span><input id="g-api" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec"></label>
+      <label class="field"><span>Код доступа</span><input id="g-code" type="password" autocomplete="current-password"></label>
+      <label class="field"><span>Ваше имя</span><input id="g-name" autocomplete="name" placeholder="Как подписывать изменения"></label>
+      <p class="form-msg" id="gateMsg" role="status"></p>
+      <button type="submit" class="btn btn-primary" id="gateBtn">Войти</button>
+    </form>
+  </section>
+
+  <div class="notice" id="notice" hidden>
+    <p id="noticeText"></p>
+    <button type="button" class="btn" id="noticeRetry" hidden>Повторить</button>
+  </div>
+
+  <nav class="route" id="route" aria-label="Заказы по этапам производства"></nav>
+
+  <div class="bar">
+    <div class="tabs" id="tabs" role="group" aria-label="Какие заказы показать"></div>
+    <div class="filters">
+      <label class="search">
+        <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m10.5 10.5 3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="search" id="q" placeholder="Поиск: заказчик, изделие, №" aria-label="Поиск по заказам" autocomplete="off">
+      </label>
+      <select class="select" id="kindFilter" aria-label="Вид изделия">
+        <option value="">Все изделия</option>
+      </select>
+      <span class="chip" id="stageChip" hidden>
+        <span id="stageChipText"></span>
+        <button type="button" id="stageChipClear" aria-label="Сбросить фильтр по этапу">
+          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2l6 6M8 2 2 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </span>
+    </div>
+  </div>
+
+  <section class="sheet" aria-label="Список заказов">
+    <div class="thead" id="thead">
+      <button type="button" class="th" data-sort="num" data-fk="th-num">№ · принят <span class="arr" id="arr-num"></span></button>
+      <span class="th">Заказчик</span>
+      <span class="th">Изделие и описание</span>
+      <span class="th">Этап</span>
+      <button type="button" class="th" data-sort="due" data-fk="th-due">Срок сдачи <span class="arr" id="arr-due"></span></button>
+    </div>
+    <div class="tbody" id="tbody"></div>
+    <div class="empty" id="empty" hidden>
+      <p id="emptyText"></p>
+      <button type="button" class="btn" id="emptyReset" hidden>Сбросить фильтры</button>
+      <button type="button" class="btn btn-primary" id="emptyAdd" hidden>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Добавить первый заказ</span>
+      </button>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span id="foot"></span>
+    <span class="spacer"></span>
+    <span id="syncText"></span>
+    <button type="button" class="link" id="btnRefresh">Обновить</button>
+    <a class="link" id="sheetLink" href="#" target="_blank" rel="noopener" hidden>Google Таблица</a>
+    <button type="button" class="link" id="btnLogout">Выйти<span id="whoName"></span></button>
+  </div>
+</div>
+
+<dialog class="dlg" id="dlg" aria-labelledby="dlgTitle">
+  <form id="orderForm" novalidate>
+    <div class="dlg-head">
+      <div>
+        <p class="eyebrow" id="dlgEyebrow">Новая запись в журнале</p>
+        <h2 id="dlgTitle">Новый заказ</h2>
+      </div>
+      <button type="button" class="icon-btn" id="dlgClose" aria-label="Закрыть">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dlg-body">
+      <div class="g g-2 keep">
+        <label class="field" id="fld-num"><span class="req">№ заказа</span><input id="f-num" inputmode="numeric" autocomplete="off"></label>
+        <label class="field" id="fld-received"><span class="req">Дата приёма</span><input id="f-received" type="date"></label>
+      </div>
+      <div class="g g-2">
+        <label class="field"><span>Заказчик</span><input id="f-customer" list="customerList" autocomplete="off" placeholder="Организация или ФИО"></label>
+        <label class="field"><span>Контакт</span><input id="f-contact" autocomplete="off" placeholder="Телефон, контактное лицо"></label>
+      </div>
+      <datalist id="customerList"></datalist>
+      <div class="g g-2">
+        <label class="field"><span>Вид изделия</span><select id="f-kind"></select></label>
+        <label class="field" id="fld-title"><span>Наименование</span><input id="f-title" autocomplete="off" placeholder="Например: навес 18×6 м"></label>
+      </div>
+      <label class="field" id="fld-desc"><span>Описание заказа</span><textarea id="f-desc" rows="5" placeholder="Размеры, марка и толщина металла, комплектация, покраска (RAL), доставка и монтаж…"></textarea></label>
+      <div class="g g-3">
+        <label class="field"><span>Этап</span><select id="f-stage"></select><small class="hint" id="stageHint"></small></label>
+        <label class="field" id="fld-due"><span>Срок сдачи</span><input id="f-due" type="date"></label>
+        <label class="field" id="fld-shipped" hidden><span>Дата отгрузки</span><input id="f-shipped" type="date"></label>
+      </div>
+      <div class="hist-wrap" id="histWrap" hidden>
+        <h3>История этапов</h3>
+        <ol class="hist" id="hist"></ol>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <p class="form-msg" id="formMsg" role="status"></p>
+      <button type="button" class="btn btn-danger" id="btnDelete">Удалить</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancel">Отмена</button>
+      <button type="submit" class="btn btn-primary" id="btnSave">Сохранить</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============ НАСТРОЙКА ============
+     Адрес веб-приложения Google Apps Script (заканчивается на /exec). */
+  var API_URL = 'https://script.google.com/macros/s/AKfycbzEh-UU8MMuUJ6PDiryl1GeI7XzcdwM7TUCjI50tWUo6vYok665IU9PaSWh0MF1QGwR/exec';
+
+  /* ============ справочники ============ */
+  var STAGES = [
+    { key: 'new',        op: '005', label: 'Принят',         hint: 'Заказ принят, ждёт запуска в работу' },
+    { key: 'design',     op: '010', label: 'Проектирование', hint: 'Чертежи, КМД, согласование с заказчиком' },
+    { key: 'supply',     op: '015', label: 'Закупка',        hint: 'Металл, огнеупоры, сэндвич-панели, комплектующие' },
+    { key: 'production', op: '020', label: 'Производство',   hint: 'Резка, гибка, сварка, сборка' },
+    { key: 'finish',     op: '025', label: 'Отделка',        hint: 'Грунт и покраска, футеровка, утепление и отделка модулей' },
+    { key: 'ready',      op: '030', label: 'Готов',          hint: 'Прошёл ОТК и испытания, ждёт отгрузки' },
+    { key: 'shipped',    op: '',    label: 'Отгружен',       hint: 'Передан заказчику' },
+    { key: 'cancelled',  op: '',    label: 'Отменён',        hint: 'Заказ снят' }
+  ];
+  var STAGE = {};
+  STAGES.forEach(function (s, i) { STAGE[s.key] = Object.assign({ i: i }, s); });
+  var ROUTE = STAGES.slice(0, 6);
+  var ROUTE_KEYS = ROUTE.map(function (s) { return s.key; });
+  function isActive(k) { return ROUTE_KEYS.indexOf(k) !== -1; }
+
+  var KINDS = [
+    { key: 'mk',          label: 'Металлоконструкции',      single: 'Металлоконструкция',      tag: 'Металлоконструкция' },
+    { key: 'mi',          label: 'Металлоизделия',          single: 'Металлоизделие',          tag: 'Металлоизделие' },
+    { key: 'incinerator', label: 'Инсинераторы',            single: 'Печь-инсинератор',        tag: 'Инсинератор' },
+    { key: 'boiler',      label: 'Водогрейные печи',        single: 'Водогрейная печь',        tag: 'Водогрейная печь' },
+    { key: 'bmz',         label: 'Блочно-модульные здания', single: 'Блочно-модульное здание', tag: 'БМЗ' },
+    { key: 'other',       label: 'Другое',                  single: 'Другое',                  tag: 'Другое' }
+  ];
+  var KIND = {};
+  KINDS.forEach(function (k) { KIND[k.key] = k; });
+
+  var TABS = [['active', 'В работе'], ['overdue', 'Просрочено'], ['shipped', 'Отгружено'], ['cancelled', 'Отменено'], ['all', 'Все']];
+  var XLSX_URL = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.mini.min.js';
+  var LS_KEY = 'zakazy-journal:v1';
+
+  /* ============ состояние ============ */
+  var state = {
+    mode: 'login',            // login | loading | live | error
+    orders: [],
+    tab: 'active', stage: '', kind: '', q: '', sort: null,
+    flashId: null, sheetUrl: '', errorMsg: '',
+    lastSync: 0, syncing: false, syncError: false
+  };
+
+  /* ============ утилиты ============ */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function str(v) { return typeof v === 'string' ? v : v == null ? '' : String(v); }
+  function norm(s) { return String(s).toLowerCase().replace(/ё/g, 'е'); }
+  function cssEsc(s) { return window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/["\\]/g, '\\$&'); }
+  function p2(n) { return String(n).padStart(2, '0'); }
+  function localYMD(d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+  function todayYMD() { return localYMD(new Date()); }
+  var RE_YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
+  function ymdToUTC(s) { var m = RE_YMD.exec(s || ''); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : NaN; }
+  function daysBetween(a, b) { return Math.round((ymdToUTC(b) - ymdToUTC(a)) / 864e5); }
+  function fmtDate(ymd, full) {
+    var m = RE_YMD.exec(ymd || '');
+    if (!m) return '';
+    if (full) return m[3] + '.' + m[2] + '.' + m[1];
+    return m[3] + '.' + m[2] + (m[1] === String(new Date().getFullYear()) ? '' : '.' + m[1].slice(2));
+  }
+  function fmtDateTime(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  function hhmm(ts) { var d = new Date(ts); return p2(d.getHours()) + ':' + p2(d.getMinutes()); }
+  function plural(n, one, few, many) {
+    var a = Math.abs(n) % 100, b = a % 10;
+    if (a > 10 && a < 20) return many;
+    if (b > 1 && b < 5) return few;
+    if (b === 1) return one;
+    return many;
+  }
+  function nDays(n) { return n + '\u00a0' + plural(n, 'день', 'дня', 'дней'); }
+  function splitDesc(s) {
+    var t = (s || '').trim(), i = t.indexOf('\n');
+    return i === -1 ? [t, ''] : [t.slice(0, i).trim(), t.slice(i + 1).trim()];
+  }
+  function findOrder(id) {
+    for (var i = 0; i < state.orders.length; i++) if (state.orders[i].id === id) return state.orders[i];
+    return null;
+  }
+
+  /* ============ сохранённый вход (только в этом браузере) ============ */
+  function loadCreds() {
+    try { var c = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); return c && typeof c === 'object' ? c : {}; }
+    catch (e) { return {}; }
+  }
+  function saveCreds() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(creds)); } catch (e) {}
+  }
+  var creds = loadCreds();   // { code, name, api }
+  function apiUrl() { return API_URL || creds.api || ''; }
+
+  /* ============ данные заказа ============ */
+  function normalize(d) {
+    var n = typeof d.num === 'number' ? d.num : parseInt(d.num, 10);
+    return {
+      id: str(d.id),
+      num: isFinite(n) ? n : 0,
+      received: str(d.received), customer: str(d.customer), contact: str(d.contact),
+      kind: KIND[d.kind] ? d.kind : '', title: str(d.title), description: str(d.description),
+      stage: STAGE[d.stage] ? d.stage : 'new', due: str(d.due), shipped: str(d.shipped),
+      history: Array.isArray(d.history) ? d.history.filter(function (h) { return h && typeof h === 'object' && STAGE[h.s]; }) : [],
+      createdAt: str(d.createdAt), updatedAt: str(d.updatedAt), updatedBy: str(d.updatedBy)
+    };
+  }
+  function isOverdue(o, today) { return isActive(o.stage) && !!o.due && o.due < today; }
+
+  function dueInfo(o, today) {
+    if (o.stage === 'cancelled') return { cls: 'muted', text: o.due ? fmtDate(o.due) : '—', sub: 'заказ отменён' };
+    if (o.stage === 'shipped') {
+      if (o.due && o.shipped) {
+        var late = daysBetween(o.due, o.shipped);
+        return late > 0
+          ? { cls: 'late', text: fmtDate(o.shipped), sub: 'отгружен с опозданием на ' + nDays(late) }
+          : { cls: 'ok', text: fmtDate(o.shipped), sub: 'отгружен в срок' };
+      }
+      return { cls: 'ok', text: o.shipped ? fmtDate(o.shipped) : '—', sub: 'отгружен' };
+    }
+    if (!o.due) return { cls: 'none', text: '—', sub: 'срок не указан' };
+    var left = daysBetween(today, o.due);
+    if (left < 0) return { cls: 'danger', text: fmtDate(o.due), sub: 'просрочен на ' + nDays(-left) };
+    if (left === 0) return { cls: 'warn', text: fmtDate(o.due), sub: 'сдать сегодня' };
+    if (left === 1) return { cls: 'warn', text: fmtDate(o.due), sub: 'сдать завтра' };
+    if (left <= 3) return { cls: 'warn', text: fmtDate(o.due), sub: 'через ' + nDays(left) };
+    return { cls: '', text: fmtDate(o.due), sub: 'через ' + nDays(left) };
+  }
+
+  function stageSince(o) {
+    if (!isActive(o.stage) || o.stage === 'new') return '';
+    for (var i = o.history.length - 1; i >= 0; i--) {
+      var h = o.history[i];
+      if (h.s === o.stage && h.at) {
+        var d = new Date(h.at);
+        if (!isNaN(d)) return fmtDate(localYMD(d));
+      }
+    }
+    return '';
+  }
+
+  function currentOrders() { return state.mode === 'live' ? state.orders : []; }
+  function nextNum() {
+    var max = 0;
+    state.orders.forEach(function (o) { if (o.num > max) max = o.num; });
+    return max + 1;
+  }
+
+  /* ============ фильтры и сортировка ============ */
+  function counts(list, today) {
+    var c = { active: 0, overdue: 0, shipped: 0, cancelled: 0, all: list.length, stage: {}, late: {} };
+    ROUTE_KEYS.forEach(function (k) { c.stage[k] = 0; c.late[k] = 0; });
+    list.forEach(function (o) {
+      if (isActive(o.stage)) {
+        c.active++; c.stage[o.stage]++;
+        if (isOverdue(o, today)) { c.overdue++; c.late[o.stage]++; }
+      } else if (o.stage === 'shipped') c.shipped++;
+      else if (o.stage === 'cancelled') c.cancelled++;
+    });
+    return c;
+  }
+  function filterList(list, today) {
+    var q = norm(state.q).replace(/^№\s*/, '');
+    return list.filter(function (o) {
+      if (state.tab === 'active' && !isActive(o.stage)) return false;
+      if (state.tab === 'overdue' && !isOverdue(o, today)) return false;
+      if (state.tab === 'shipped' && o.stage !== 'shipped') return false;
+      if (state.tab === 'cancelled' && o.stage !== 'cancelled') return false;
+      if (state.stage && o.stage !== state.stage) return false;
+      if (q) {
+        var hay = norm([o.num, o.customer, o.contact, o.title, o.description, KIND[o.kind] ? KIND[o.kind].single : ''].join(' '));
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+  }
+  function defaultSort() {
+    if (state.tab === 'active' || state.tab === 'overdue') return { key: 'due', dir: 'asc' };
+    if (state.tab === 'shipped') return { key: 'shipped', dir: 'desc' };
+    return { key: 'num', dir: 'desc' };
+  }
+  function sortList(list) {
+    var s = state.sort || defaultSort();
+    var dir = s.dir === 'desc' ? -1 : 1;
+    function byNum(a, b) { return (a.num - b.num) * dir; }
+    function byDate(field) {
+      return function (a, b) {
+        var x = a[field] || '', y = b[field] || '';
+        if (x === y) return byNum(a, b);
+        if (!x) return 1;
+        if (!y) return -1;
+        return (x < y ? -1 : 1) * dir;
+      };
+    }
+    var cmp = s.key === 'due' ? byDate('due') : s.key === 'shipped' ? byDate('shipped') : byNum;
+    return list.slice().sort(cmp);
+  }
+
+  /* ============ элементы ============ */
+  var els = {
+    app: document.querySelector('.app'),
+    btnNew: $('btnNew'), btnExport: $('btnExport'),
+    gate: $('gate'), gateForm: $('gateForm'), gateMsg: $('gateMsg'), gateBtn: $('gateBtn'),
+    gApiField: $('fld-api'), gApi: $('g-api'), gCode: $('g-code'), gName: $('g-name'),
+    notice: $('notice'), noticeText: $('noticeText'), noticeRetry: $('noticeRetry'),
+    route: $('route'), tabs: $('tabs'), q: $('q'), kindFilter: $('kindFilter'),
+    stageChip: $('stageChip'), stageChipText: $('stageChipText'), stageChipClear: $('stageChipClear'),
+    thead: $('thead'), tbody: $('tbody'), empty: $('empty'), emptyText: $('emptyText'), emptyReset: $('emptyReset'), emptyAdd: $('emptyAdd'),
+    foot: $('foot'), syncText: $('syncText'), btnRefresh: $('btnRefresh'), sheetLink: $('sheetLink'), btnLogout: $('btnLogout'), whoName: $('whoName'),
+    dlg: $('dlg'), form: $('orderForm'), dlgTitle: $('dlgTitle'), dlgEyebrow: $('dlgEyebrow'), dlgClose: $('dlgClose'),
+    histWrap: $('histWrap'), hist: $('hist'), formMsg: $('formMsg'),
+    btnDelete: $('btnDelete'), btnCancel: $('btnCancel'), btnSave: $('btnSave'),
+    stageHint: $('stageHint'), fldShipped: $('fld-shipped'), customerList: $('customerList'), toast: $('toast')
+  };
+  var f = {
+    num: $('f-num'), received: $('f-received'), customer: $('f-customer'), contact: $('f-contact'),
+    kind: $('f-kind'), title: $('f-title'), desc: $('f-desc'), stage: $('f-stage'), due: $('f-due'), shipped: $('f-shipped')
+  };
+
+  els.kindFilter.insertAdjacentHTML('beforeend', KINDS.map(function (k) {
+    return '<option value="' + k.key + '">' + esc(k.label) + '</option>';
+  }).join(''));
+  f.kind.innerHTML = '<option value="">— не выбрано —</option>' + KINDS.map(function (k) {
+    return '<option value="' + k.key + '">' + esc(k.single) + '</option>';
+  }).join('');
+  f.stage.innerHTML = STAGES.map(function (s) { return '<option value="' + s.key + '">' + esc(s.label) + '</option>'; }).join('');
+
+  /* ============ отрисовка ============ */
+  var CHEV = '<svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function stageOptions(cur) {
+    return STAGES.map(function (s) {
+      return '<option value="' + s.key + '"' + (s.key === cur ? ' selected' : '') + '>' + esc(s.label) + '</option>';
+    }).join('');
+  }
+  function routeMini(stage) {
+    var idx = stage === 'shipped' ? ROUTE.length : stage === 'cancelled' ? -1 : ROUTE_KEYS.indexOf(stage);
+    return '<span class="rmini" aria-hidden="true">' + ROUTE.map(function (s, i) {
+      return i <= idx ? '<i class="on" style="--c: var(--st-' + s.key + ')"></i>' : '<i></i>';
+    }).join('') + '</span>';
+  }
+  function rowHTML(o, due, since) {
+    var kind = KIND[o.kind];
+    var parts = splitDesc(o.description);
+    var title = o.title || parts[0] || 'Без названия';
+    var desc = o.title ? o.description.trim() : parts[1];
+    var cls = 'row' + (o.stage === 'cancelled' ? ' is-cancelled' : '') + (due.cls === 'danger' ? ' is-late' : '');
+    var id = esc(o.id);
+    return '<article class="' + cls + '" data-id="' + id + '" data-fk="row-' + id + '" tabindex="0" aria-label="Заказ № ' + esc(o.num) + '">' +
+      '<div class="c-num"><span class="num">' + (o.num ? esc(o.num) : '—') + '</span>' +
+        (o.received ? '<span class="recv">от ' + esc(fmtDate(o.received)) + '</span>' : '') + '</div>' +
+      '<div class="c-cust"><span class="cust">' + esc(o.customer || '—') + '</span>' +
+        (o.contact ? '<span class="contact">' + esc(o.contact) + '</span>' : '') + '</div>' +
+      '<div class="c-item">' + (kind ? '<span class="kind">' + esc(kind.tag) + '</span>' : '') +
+        '<span class="title">' + esc(title) + '</span>' +
+        (desc ? '<span class="desc">' + esc(desc) + '</span>' : '') + '</div>' +
+      '<div class="c-stage">' +
+        '<span class="stage-pick" style="--st: var(--st-' + o.stage + ')"><span class="dot" aria-hidden="true"></span>' +
+          '<select class="stage-select" id="st-' + id + '" data-id="' + id + '" data-fk="sel-' + id + '" aria-label="Этап заказа № ' + esc(o.num) + '">' +
+          stageOptions(o.stage) + '</select>' + CHEV + '</span>' +
+        routeMini(o.stage) +
+        (since ? '<span class="since">на этапе с ' + esc(since) + '</span>' : '') +
+      '</div>' +
+      '<div class="c-due due--' + (due.cls || 'plain') + '"><span class="due-date">' + esc(due.text) + '</span><span class="due-sub">' + esc(due.sub) + '</span></div>' +
+    '</article>';
+  }
+
+  var rowCache = new Map();
+  function renderList(list, today) {
+    els.tbody.querySelectorAll('.skel').forEach(function (n) { n.remove(); });
+    var keep = new Set();
+    var nodes = list.map(function (o) {
+      var due = dueInfo(o, today), since = stageSince(o);
+      var sig = JSON.stringify([o.num, o.received, o.customer, o.contact, o.kind, o.title, o.description, o.stage,
+        o.due, o.shipped, due.cls, due.sub, since]);
+      var rec = rowCache.get(o.id);
+      if (!rec || rec.sig !== sig) {
+        var t = document.createElement('template');
+        t.innerHTML = rowHTML(o, due, since).trim();
+        var el = t.content.firstElementChild;
+        if (rec && rec.el.parentNode) rec.el.replaceWith(el);
+        rec = { sig: sig, el: el };
+        rowCache.set(o.id, rec);
+      }
+      keep.add(o.id);
+      return rec.el;
+    });
+    rowCache.forEach(function (rec, id) { if (!keep.has(id)) { rec.el.remove(); rowCache.delete(id); } });
+    var ref = els.tbody.firstChild;
+    nodes.forEach(function (el) {
+      if (el === ref) ref = ref.nextSibling;
+      else els.tbody.insertBefore(el, ref);
+    });
+  }
+  function clearRows() {
+    rowCache.forEach(function (rec) { rec.el.remove(); });
+    rowCache.clear();
+  }
+  function renderSkeleton() {
+    clearRows();
+    if (!els.tbody.querySelector('.skel')) {
+      els.tbody.innerHTML = new Array(5).join('<div class="skel"><i></i><i></i><i></i></div>');
+    }
+  }
+  function renderRoute(c, loading) {
+    els.route.innerHTML = ROUTE.map(function (s) {
+      var n = loading ? '–' : c.stage[s.key];
+      var late = loading ? 0 : c.late[s.key];
+      return '<button type="button" class="rc" data-stage="' + s.key + '" data-fk="rc-' + s.key + '" style="--st: var(--st-' + s.key + ')"' +
+        ' aria-pressed="' + (state.stage === s.key) + '" title="' + esc(s.hint) + '">' +
+        '<span class="rc-op">' + s.op + '</span>' +
+        '<span class="rc-count' + (n === 0 ? ' zero' : '') + '">' + n + '</span>' +
+        '<span class="rc-label">' + esc(s.label) + '</span>' +
+        '<span class="rc-late">' + (late ? late + ' с просрочкой' : '') + '</span>' +
+      '</button>';
+    }).join('');
+  }
+  function renderTabs(c, loading) {
+    els.tabs.innerHTML = TABS.map(function (t) {
+      var k = t[0];
+      return '<button type="button" class="tab' + (k === 'overdue' && c.overdue ? ' late' : '') + '" data-tab="' + k + '" data-fk="tab-' + k + '"' +
+        ' aria-pressed="' + (state.tab === k) + '">' + t[1] + '<span class="n">' + (loading ? '' : c[k]) + '</span></button>';
+    }).join('');
+  }
+  function renderNotice() {
+    var err = state.mode === 'error';
+    els.notice.hidden = !err;
+    els.noticeText.textContent = err ? state.errorMsg : '';
+    els.noticeRetry.hidden = !err;
+  }
+  function renderEmpty(list) {
+    if (list.length) { els.empty.hidden = true; return; }
+    if (state.mode !== 'live' || !state.orders.length) {
+      els.emptyText.textContent = state.mode === 'error' ? 'Заказы не загрузились.' : 'Журнал пуст. Добавьте первый заказ — он сразу появится здесь.';
+      els.emptyReset.hidden = true;
+      els.emptyAdd.hidden = state.mode !== 'live';
+      els.empty.hidden = false;
+      return;
+    }
+    var filtered = !!(state.q || state.kind || state.stage);
+    els.emptyText.textContent = filtered ? 'По этим условиям заказов нет.'
+      : state.tab === 'overdue' ? 'Просроченных заказов нет.'
+      : state.tab === 'active' ? 'Сейчас нет заказов в работе.'
+      : state.tab === 'shipped' ? 'Отгруженных заказов пока нет.'
+      : state.tab === 'cancelled' ? 'Отменённых заказов нет.'
+      : 'Заказов пока нет.';
+    els.emptyReset.hidden = !filtered;
+    els.emptyAdd.hidden = true;
+    els.empty.hidden = false;
+  }
+  function renderFoot(list, all) {
+    els.foot.textContent = list.length ? 'Показано ' + list.length + ' из ' + all.length : '';
+    els.syncText.textContent = state.syncing ? 'обновляю…'
+      : state.syncError ? 'нет связи с таблицей'
+      : state.lastSync ? 'обновлено в ' + hhmm(state.lastSync) : '';
+    els.syncText.classList.toggle('err', !!state.syncError && !state.syncing);
+    els.sheetLink.hidden = !state.sheetUrl;
+    if (state.sheetUrl) els.sheetLink.href = state.sheetUrl;
+    els.whoName.textContent = creds.name ? ' (' + creds.name + ')' : '';
+  }
+
+  function activeFk() {
+    var a = document.activeElement;
+    return a && a.dataset ? a.dataset.fk || '' : '';
+  }
+  function restoreFocus(fk) {
+    if (!fk || els.dlg.open) return;
+    var a = document.activeElement;
+    if (a && a.dataset && a.dataset.fk === fk && document.contains(a)) return;
+    var el = document.querySelector('[data-fk="' + cssEsc(fk) + '"]');
+    if (el) el.focus({ preventScroll: true });
+  }
+
+  function render() {
+    var locked = state.mode === 'login';
+    els.app.classList.toggle('locked', locked);
+    els.gate.hidden = !locked;
+    if (locked) return;
+
+    var today = todayYMD();
+    var fk = activeFk();
+    var loading = state.mode === 'loading';
+    var all = currentOrders();
+    var byKind = state.kind ? all.filter(function (o) { return o.kind === state.kind; }) : all;
+    var c = counts(byKind, today);
+
+    els.btnNew.hidden = state.mode !== 'live';
+    els.btnExport.hidden = !(state.mode === 'live' && state.orders.length);
+    renderNotice();
+    renderRoute(c, loading);
+    renderTabs(c, loading);
+
+    if (state.stage && STAGE[state.stage]) {
+      els.stageChip.hidden = false;
+      els.stageChip.style.setProperty('--st', 'var(--st-' + state.stage + ')');
+      els.stageChipText.textContent = 'Этап: ' + STAGE[state.stage].label;
+    } else {
+      els.stageChip.hidden = true;
+    }
+    var s = state.sort || defaultSort();
+    ['num', 'due'].forEach(function (k) {
+      $('arr-' + k).textContent = s.key === k ? (s.dir === 'asc' ? '↑' : '↓') : '';
+    });
+
+    if (loading) {
+      renderSkeleton();
+      els.empty.hidden = true;
+      renderFoot([], []);
+      restoreFocus(fk);
+      return;
+    }
+    var list = sortList(filterList(byKind, today));
+    renderList(list, today);
+    renderEmpty(list);
+    renderFoot(list, all);
+
+    if (state.flashId && rowCache.has(state.flashId)) {
+      var el = rowCache.get(state.flashId).el;
+      state.flashId = null;
+      el.classList.add('flash');
+      el.addEventListener('animationend', function () { el.classList.remove('flash'); }, { once: true });
+      try { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) { el.scrollIntoView(); }
+    }
+    restoreFocus(fk);
+  }
+
+  /* ============ сообщения ============ */
+  var toastTimer = null;
+  function toast(msg, kind) {
+    els.toast.textContent = msg;
+    els.toast.className = 'toast show' + (kind === 'error' ? ' error' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { els.toast.className = 'toast' + (kind === 'error' ? ' error' : ''); }, kind === 'error' ? 5200 : 2600);
+  }
+  function showFormMsg(msg, isErr) {
+    els.formMsg.textContent = msg || '';
+    els.formMsg.className = 'form-msg' + (isErr ? ' err' : '');
+  }
+  function setGateMsg(msg, isErr) {
+    els.gateMsg.textContent = msg || '';
+    els.gateMsg.className = 'form-msg' + (isErr ? ' err' : '');
+  }
+  function errorText(e) {
+    var code = e && e.error;
+    if (code === 'network' || code === 'http' || code === 'timeout') {
+      return 'Нет связи с Google Таблицей. Проверьте интернет. Если не помогает — проверьте, что скрипт развёрнут с доступом «Все».';
+    }
+    if (code === 'not_configured') return 'В скрипте Google не задан код доступа (ACCESS_CODE).';
+    if (code === 'busy') return 'Таблица сейчас занята — повторите через несколько секунд.';
+    if (code === 'not_found') return 'Заказ не найден — возможно, его уже удалили. Список обновлён.';
+    if (code === 'num_taken') return 'Такой номер заказа уже есть в журнале' + (e.next ? ' — свободный номер ' + e.next : '') + '.';
+    if (code === 'bad_code') return 'Неверный код доступа.';
+    if (e && e.message) return 'Ошибка: ' + e.message;
+    return 'Не удалось выполнить действие. Попробуйте ещё раз.';
+  }
+
+  /* ============ связь с Google Таблицей ============ */
+  function api(action, payload) {
+    var url = apiUrl();
+    if (!url) return Promise.reject({ error: 'network', message: 'не указан адрес скрипта' });
+    var body = JSON.stringify(Object.assign({ action: action, code: creds.code || '', who: creds.name || '' }, payload || {}));
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 30000);
+    // text/plain без заголовков — Google Apps Script принимает такой запрос без предварительной проверки CORS
+    return fetch(url, { method: 'POST', body: body, redirect: 'follow', signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) {
+        if (!r.ok) throw { error: 'http', message: 'HTTP ' + r.status };
+        return r.json().catch(function () { throw { error: 'http', message: 'сервер ответил не в том формате' }; });
+      }, function (err) {
+        throw { error: err && err.name === 'AbortError' ? 'timeout' : 'network', message: String((err && err.message) || err) };
+      })
+      .then(function (res) {
+        clearTimeout(timer);
+        if (!res || res.ok !== true) throw (res && res.error ? res : { error: 'server', message: 'пустой ответ' });
+        return res;
+      }, function (e) {
+        clearTimeout(timer);
+        throw e;
+      });
+  }
+
+  function applyList(res) {
+    if (!res || !Array.isArray(res.orders)) return;
+    state.orders = res.orders.map(normalize).sort(function (a, b) { return b.num - a.num; });
+    if (res.sheetUrl) state.sheetUrl = res.sheetUrl;
+    state.lastSync = Date.now();
+    state.syncError = false;
+    if (state.mode !== 'login') state.mode = 'live';
+    render();
+  }
+
+  var writeChain = Promise.resolve(), pendingWrites = 0;
+  function write(action, payload) {
+    pendingWrites++;
+    var p = writeChain.then(function () { return api(action, payload); });
+    writeChain = p.catch(function () {});
+    return p.then(function (res) {
+      pendingWrites--;
+      if (!pendingWrites) applyList(res);
+      return res;
+    }, function (e) {
+      pendingWrites--;
+      if (e && e.error === 'bad_code') logout('Код доступа изменился — введите новый.');
+      else if (!pendingWrites) refresh();
+      throw e;
+    });
+  }
+
+  function load() {
+    state.mode = 'loading';
+    render();
+    return api('list').then(applyList, function (e) {
+      if (e && e.error === 'bad_code') { logout('Код доступа не подошёл — введите его заново.'); return; }
+      state.mode = 'error';
+      state.errorMsg = errorText(e);
+      render();
+    });
+  }
+  function refresh(manual) {
+    if (state.mode !== 'live' || pendingWrites) return;
+    state.syncing = !!manual;
+    if (manual) render();
+    api('list').then(function (res) {
+      state.syncing = false;
+      if (!pendingWrites) applyList(res); else render();
+    }, function (e) {
+      state.syncing = false;
+      if (e && e.error === 'bad_code') { logout('Код доступа изменился — введите новый.'); return; }
+      state.syncError = true;
+      render();
+      if (manual) toast(errorText(e), 'error');
+    });
+  }
+
+  /* ============ вход и выход ============ */
+  function showGate(msg) {
+    state.mode = 'login';
+    els.gApiField.hidden = !!API_URL;
+    els.gApi.value = creds.api || '';
+    els.gName.value = creds.name || '';
+    els.gCode.value = '';
+    setGateMsg(msg || '', !!msg);
+    els.gateBtn.disabled = false;
+    els.gateBtn.textContent = 'Войти';
+    render();
+    setTimeout(function () { (API_URL || creds.api ? els.gCode : els.gApi).focus(); }, 0);
+  }
+  function logout(msg) {
+    creds.code = '';
+    saveCreds();
+    state.orders = [];
+    state.sheetUrl = '';
+    state.lastSync = 0;
+    clearRows();
+    if (els.dlg.open) closeDialog();
+    showGate(msg);
+  }
+  els.gateForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var apiVal = API_URL ? '' : els.gApi.value.trim();
+    var code = els.gCode.value.trim();
+    var name = els.gName.value.trim();
+    if (!API_URL && !/^https:\/\/script\.google(usercontent)?\.com\//.test(apiVal)) {
+      setGateMsg('Вставьте адрес веб-приложения — он начинается с https://script.google.com/', true);
+      els.gApi.focus();
+      return;
+    }
+    if (!code) { setGateMsg('Введите код доступа.', true); els.gCode.focus(); return; }
+    creds = { code: code, name: name.slice(0, 60), api: apiVal };
+    els.gateBtn.disabled = true;
+    els.gateBtn.textContent = 'Проверяю…';
+    setGateMsg('');
+    api('list').then(function (res) {
+      saveCreds();
+      state.mode = 'loading';
+      applyList(res);
+    }, function (err) {
+      creds.code = '';
+      els.gateBtn.disabled = false;
+      els.gateBtn.textContent = 'Войти';
+      setGateMsg(errorText(err), true);
+      if (err && err.error === 'bad_code') { els.gCode.select(); els.gCode.focus(); }
+    });
+  });
+
+  /* ============ смена этапа прямо в списке ============ */
+  function changeStage(id, stage) {
+    var o = findOrder(id);
+    if (!o || !STAGE[stage] || o.stage === stage || state.mode !== 'live') return;
+    var prev = { stage: o.stage, shipped: o.shipped, history: o.history };
+    o.stage = stage;
+    if (stage === 'shipped') { if (!o.shipped) o.shipped = todayYMD(); }
+    else o.shipped = '';
+    o.history = o.history.concat([{ s: stage, at: new Date().toISOString(), by: creds.name || '' }]);
+    render();
+    write('stage', { id: id, stage: stage }).then(function () {
+      toast('№ ' + o.num + ': ' + STAGE[stage].label.toLowerCase() + (stage === 'shipped' && !prev.shipped ? ', дата отгрузки — сегодня' : ''));
+    }, function (e) {
+      var cur = findOrder(id);
+      if (cur && cur === o) { cur.stage = prev.stage; cur.shipped = prev.shipped; cur.history = prev.history; render(); }
+      if (!(e && e.error === 'bad_code')) toast(errorText(e), 'error');
+    });
+  }
+
+  /* ============ карточка заказа ============ */
+  var editing = null, formSnapshot = '', armTimer = null;
+
+  function serializeForm() { return JSON.stringify(Object.keys(f).map(function (k) { return f[k].value; })); }
+  function isDirty() { return !!formSnapshot && serializeForm() !== formSnapshot; }
+
+  function syncStageUI() {
+    var s = STAGE[f.stage.value] || STAGE['new'];
+    els.stageHint.textContent = s.hint;
+    var shipped = f.stage.value === 'shipped';
+    els.fldShipped.hidden = !shipped;
+    if (shipped && !f.shipped.value) f.shipped.value = todayYMD();
+  }
+  function disarmDelete() {
+    clearTimeout(armTimer);
+    els.btnDelete.classList.remove('armed');
+    els.btnDelete.textContent = 'Удалить';
+  }
+  function renderHistory(o) {
+    if (!o || !o.history.length) { els.histWrap.hidden = true; els.hist.innerHTML = ''; return; }
+    els.histWrap.hidden = false;
+    els.hist.innerHTML = o.history.slice().reverse().map(function (h) {
+      var st = STAGE[h.s] || STAGE['new'];
+      return '<li style="--st: var(--st-' + st.key + ')"><span class="d"></span>' +
+        '<span><b>' + esc(st.label) + '</b>' + (h.by ? '<span class="who"> · ' + esc(h.by) + '</span>' : '') + '</span>' +
+        '<time>' + esc(fmtDateTime(h.at)) + '</time></li>';
+    }).join('');
+  }
+
+  function openDialog(o) {
+    if (state.mode !== 'live') return;
+    editing = o || null;
+    var today = todayYMD();
+    els.dlgEyebrow.textContent = o ? (o.received ? 'Принят ' + fmtDate(o.received, true) : 'Заказ на производство') : 'Новая запись в журнале';
+    els.dlgTitle.textContent = o ? 'Заказ № ' + (o.num || '—') : 'Новый заказ';
+    f.num.value = o ? String(o.num || '') : String(nextNum());
+    f.received.value = o ? o.received : today;
+    f.customer.value = o ? o.customer : '';
+    f.contact.value = o ? o.contact : '';
+    f.kind.value = o ? o.kind : '';
+    f.title.value = o ? o.title : '';
+    f.desc.value = o ? o.description : '';
+    f.stage.value = o ? o.stage : 'new';
+    f.due.value = o ? o.due : '';
+    f.shipped.value = o ? o.shipped : '';
+    els.form.querySelectorAll('.field.invalid').forEach(function (n) { n.classList.remove('invalid'); });
+
+    var names = [];
+    state.orders.forEach(function (x) { if (x.customer && names.indexOf(x.customer) === -1) names.push(x.customer); });
+    els.customerList.innerHTML = names.slice(0, 300).map(function (n) { return '<option value="' + esc(n) + '"></option>'; }).join('');
+
+    syncStageUI();
+    renderHistory(o);
+    disarmDelete();
+    els.btnDelete.hidden = !o;
+    els.btnDelete.disabled = false;
+    setSaving(false);
+    showFormMsg('');
+    formSnapshot = serializeForm();
+
+    try { els.dlg.showModal(); } catch (e) { els.dlg.setAttribute('open', ''); }
+    els.dlg.querySelector('.dlg-body').scrollTop = 0;
+    if (!o) f.customer.focus();
+  }
+  function openById(id) {
+    var o = findOrder(id);
+    if (o) openDialog(o);
+  }
+  function closeDialog() {
+    formSnapshot = '';
+    if (els.dlg.open) { try { els.dlg.close(); } catch (e) { els.dlg.removeAttribute('open'); } }
+    editing = null;
+  }
+
+  function readForm() {
+    var stage = STAGE[f.stage.value] ? f.stage.value : 'new';
+    return {
+      num: parseInt(f.num.value.replace(/\D+/g, ''), 10),
+      received: f.received.value,
+      customer: f.customer.value.trim(), contact: f.contact.value.trim(),
+      kind: f.kind.value, title: f.title.value.trim(), description: f.desc.value.trim(),
+      stage: stage, due: f.due.value,
+      shipped: stage === 'shipped' ? (f.shipped.value || todayYMD()) : ''
+    };
+  }
+  function validate(v) {
+    if (!isFinite(v.num) || v.num < 1) return ['num', 'Укажите номер заказа — целое число больше нуля.'];
+    var clash = null;
+    state.orders.forEach(function (o) { if (o.num === v.num && (!editing || o.id !== editing.id)) clash = o; });
+    if (clash) return ['num', 'Номер ' + v.num + ' уже занят (' + (clash.customer || clash.title || 'другой заказ') + '). Свободный номер — ' + nextNum() + '.'];
+    if (!v.received) return ['received', 'Укажите дату приёма заказа.'];
+    if (!v.title && !v.description) return ['title', 'Напишите наименование или описание заказа.'];
+    if (v.due && v.received && v.due < v.received) return ['due', 'Срок сдачи раньше даты приёма — проверьте даты.'];
+    return null;
+  }
+  function setSaving(on) {
+    els.btnSave.disabled = on;
+    els.btnSave.textContent = on ? 'Сохраняю…' : 'Сохранить';
+  }
+  function revealOrder(v) {
+    var tab = v.stage === 'shipped' ? 'shipped' : v.stage === 'cancelled' ? 'cancelled' : 'active';
+    if (state.tab !== 'all' && state.tab !== tab) { state.tab = tab; state.sort = null; }
+    if (state.stage && state.stage !== v.stage) state.stage = '';
+    if (state.kind && state.kind !== v.kind) { state.kind = ''; els.kindFilter.value = ''; }
+    if (state.q) { state.q = ''; els.q.value = ''; }
+  }
+
+  function saveForm(e) {
+    e.preventDefault();
+    if (state.mode !== 'live') { showFormMsg('Нет связи с журналом — обновите страницу.', true); return; }
+    var v = readForm();
+    var bad = validate(v);
+    if (bad) {
+      showFormMsg(bad[1], true);
+      var fld = $('fld-' + bad[0]);
+      if (fld) fld.classList.add('invalid');
+      (f[bad[0]] || f.title).focus();
+      return;
+    }
+    var wasNew = !editing;
+    var order = {
+      id: editing ? editing.id : '', num: v.num, received: v.received, customer: v.customer, contact: v.contact,
+      kind: v.kind, title: v.title, description: v.description, stage: v.stage, due: v.due, shipped: v.shipped
+    };
+    setSaving(true);
+    showFormMsg('Сохраняю в Google Таблицу…');
+    write('save', { order: order }).then(function (res) {
+      if (wasNew) { state.flashId = res.savedId || null; revealOrder(v); }
+      closeDialog();
+      render();
+      toast('Заказ № ' + v.num + (wasNew ? ' добавлен в журнал' : ' сохранён'));
+    }, function (err) {
+      if (err && err.error === 'bad_code') return;
+      setSaving(false);
+      if (err && err.error === 'num_taken') {
+        $('fld-num').classList.add('invalid');
+        f.num.focus();
+      }
+      showFormMsg(errorText(err), true);
+    });
+  }
+
+  function onDeleteClick() {
+    if (!editing || state.mode !== 'live') return;
+    if (!els.btnDelete.classList.contains('armed')) {
+      els.btnDelete.classList.add('armed');
+      els.btnDelete.textContent = 'Точно удалить? Нажмите ещё раз';
+      clearTimeout(armTimer);
+      armTimer = setTimeout(disarmDelete, 4000);
+      return;
+    }
+    disarmDelete();
+    var o = editing;
+    els.btnDelete.disabled = true;
+    showFormMsg('Удаляю…');
+    write('delete', { id: o.id }).then(function () {
+      closeDialog();
+      toast('Заказ № ' + o.num + ' удалён');
+    }, function (err) {
+      if (err && err.error === 'bad_code') return;
+      els.btnDelete.disabled = false;
+      showFormMsg(errorText(err), true);
+    });
+  }
+
+  /* ============ выгрузка в Excel ============ */
+  var xlsxPromise = null, exporting = false;
+  function loadXlsx() {
+    if (window.XLSX && window.XLSX.utils) return Promise.resolve(window.XLSX);
+    if (xlsxPromise) return xlsxPromise;
+    xlsxPromise = new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = XLSX_URL;
+      s.async = true;
+      s.onload = function () { if (window.XLSX && window.XLSX.utils) resolve(window.XLSX); else reject(new Error('xlsx')); };
+      s.onerror = function () { xlsxPromise = null; s.remove(); reject(new Error('xlsx')); };
+      document.head.appendChild(s);
+    });
+    return xlsxPromise;
+  }
+  function exportXlsx() {
+    if (exporting || !state.orders.length) return;
+    exporting = true;
+    var label = els.btnExport.querySelector('span');
+    els.btnExport.disabled = true;
+    label.textContent = 'Готовлю…';
+    loadXlsx().then(function (X) {
+      var today = todayYMD();
+      var list = state.orders.slice().sort(function (a, b) { return a.num - b.num; });
+      var head = ['№', 'Дата приёма', 'Заказчик', 'Контакт', 'Вид изделия', 'Наименование', 'Описание', 'Этап', 'Срок сдачи', 'Дата отгрузки', 'Срок: статус'];
+      var aoa = [head].concat(list.map(function (o) {
+        return [o.num || null, null, o.customer, o.contact, KIND[o.kind] ? KIND[o.kind].single : '', o.title, o.description,
+          STAGE[o.stage].label, null, null, dueInfo(o, today).sub];
+      }));
+      var ws = X.utils.aoa_to_sheet(aoa);
+      var base = Date.UTC(1899, 11, 30);
+      function putDate(r, c, ymd) {
+        var t = ymdToUTC(ymd);
+        if (!isNaN(t)) ws[X.utils.encode_cell({ r: r, c: c })] = { t: 'n', v: (t - base) / 864e5, z: 'dd.mm.yyyy' };
+      }
+      list.forEach(function (o, i) { putDate(i + 1, 1, o.received); putDate(i + 1, 8, o.due); putDate(i + 1, 9, o.shipped); });
+      ws['!cols'] = [6, 12, 30, 24, 22, 34, 70, 16, 12, 14, 28].map(function (w) { return { wch: w }; });
+      ws['!autofilter'] = { ref: X.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: aoa.length - 1, c: head.length - 1 } }) };
+      var wb = X.utils.book_new();
+      X.utils.book_append_sheet(wb, ws, 'Заказы');
+      var buf = X.write(wb, { bookType: 'xlsx', type: 'array' });
+      var blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'Журнал заказов ' + fmtDate(today, true) + '.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    }).catch(function () {
+      toast('Не удалось подготовить файл Excel. Проверьте интернет и попробуйте ещё раз.', 'error');
+    }).then(function () {
+      exporting = false;
+      els.btnExport.disabled = false;
+      label.textContent = 'Excel';
+    });
+  }
+
+  /* ============ события ============ */
+  var qTimer = null;
+  els.btnNew.addEventListener('click', function () { openDialog(null); });
+  els.emptyAdd.addEventListener('click', function () { openDialog(null); });
+  els.btnExport.addEventListener('click', exportXlsx);
+  els.noticeRetry.addEventListener('click', function () { load(); });
+  els.btnRefresh.addEventListener('click', function () { if (state.mode === 'live') refresh(true); else if (state.mode === 'error') load(); });
+  els.btnLogout.addEventListener('click', function () { logout(''); });
+  els.route.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-stage]');
+    if (!b) return;
+    var k = b.getAttribute('data-stage');
+    state.stage = state.stage === k ? '' : k;
+    if (state.stage && state.tab !== 'active' && state.tab !== 'overdue' && state.tab !== 'all') { state.tab = 'active'; state.sort = null; }
+    render();
+  });
+  els.tabs.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tab]');
+    if (!b) return;
+    state.tab = b.getAttribute('data-tab');
+    state.sort = null;
+    if (state.tab === 'shipped' || state.tab === 'cancelled') state.stage = '';
+    render();
+  });
+  els.q.addEventListener('input', function () {
+    clearTimeout(qTimer);
+    qTimer = setTimeout(function () { state.q = els.q.value.trim(); render(); }, 120);
+  });
+  els.kindFilter.addEventListener('change', function () { state.kind = els.kindFilter.value; render(); });
+  els.stageChipClear.addEventListener('click', function () { state.stage = ''; render(); });
+  els.emptyReset.addEventListener('click', function () {
+    state.q = ''; els.q.value = ''; state.kind = ''; els.kindFilter.value = ''; state.stage = '';
+    render();
+  });
+  els.thead.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-sort]');
+    if (!b) return;
+    var key = b.getAttribute('data-sort');
+    var cur = state.sort || defaultSort();
+    state.sort = cur.key === key ? { key: key, dir: cur.dir === 'asc' ? 'desc' : 'asc' } : { key: key, dir: key === 'num' ? 'desc' : 'asc' };
+    render();
+  });
+  els.tbody.addEventListener('change', function (e) {
+    var sel = e.target.closest('.stage-select');
+    if (sel) changeStage(sel.getAttribute('data-id'), sel.value);
+  });
+  els.tbody.addEventListener('click', function (e) {
+    if (e.target.closest('select, button, a, input')) return;
+    var row = e.target.closest('.row');
+    if (row) openById(row.getAttribute('data-id'));
+  });
+  els.tbody.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if ((e.key === 'Enter' || e.key === ' ') && t.classList && t.classList.contains('row')) {
+      e.preventDefault();
+      openById(t.getAttribute('data-id'));
+    }
+  });
+
+  els.form.addEventListener('submit', saveForm);
+  els.btnCancel.addEventListener('click', closeDialog);
+  els.dlgClose.addEventListener('click', closeDialog);
+  els.dlg.addEventListener('cancel', function (e) {
+    if (isDirty()) {
+      e.preventDefault();
+      showFormMsg('Есть несохранённые изменения — нажмите «Сохранить» или «Отмена».', true);
+    }
+  });
+  els.dlg.addEventListener('close', function () { editing = null; formSnapshot = ''; disarmDelete(); });
+  els.btnDelete.addEventListener('click', onDeleteClick);
+  f.stage.addEventListener('change', syncStageUI);
+  f.customer.addEventListener('change', function () {
+    if (f.contact.value.trim()) return;
+    var name = f.customer.value.trim();
+    for (var i = 0; i < state.orders.length; i++) {
+      if (state.orders[i].customer === name && state.orders[i].contact) { f.contact.value = state.orders[i].contact; break; }
+    }
+  });
+  els.form.addEventListener('input', function (e) {
+    var fld = e.target.closest('.field');
+    if (fld) fld.classList.remove('invalid');
+  });
+
+  /* автообновление: раз в минуту, пока вкладка открыта, и при возврате на вкладку */
+  setInterval(function () {
+    if (document.visibilityState === 'visible') refresh(false);
+  }, 60000);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && Date.now() - state.lastSync > 20000) refresh(false);
+  });
+  setInterval(function () { if (state.mode === 'live' && !els.dlg.open) render(); }, 10 * 60 * 1000);
+
+  /* ============ запуск ============ */
+  if (apiUrl() && creds.code) load();
+  else showGate('');
+})();
+</script>
+</body>
+</html>
