@@ -4,234 +4,180 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#ECEFF2" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFFDF5">
 <title>Журнал заказов производства</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231E3A66'/%3E%3Cpath d='M9 11h14M9 16h14M9 21h9' stroke='white' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23FFC425'/%3E%3Cpath d='M10 11h12M10 16h12M10 21h8' stroke='%232D2A24' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"></noscript>
 <style>
   :root {
-    --ground: #ECEFF2;
+    color-scheme: light;
+    --ground: #FFFDF5;
     --surface: #FFFFFF;
-    --surface-2: #F5F7F9;
-    --ink: #19202A;
-    --ink-2: #384350;
-    --muted: #5A6572;
-    --faint: #8C96A1;
-    --line: #D3D9DF;
-    --line-2: #E4E8EC;
-    --accent: #1E3A66;
-    --accent-ink: #FFFFFF;
-    --focus: #3A6BD6;
-    --danger: #B3352A;
-    --warn: #93600F;
-    --ok: #2B7354;
-    --st-new: #7E8995;
-    --st-design: #C39A38;
-    --st-supply: #A5652E;
-    --st-production: #7A4A96;
-    --st-finish: #3D6BC6;
-    --st-ready: #2C8A67;
-    --st-shipped: #66717D;
-    --st-cancelled: #A3ACB5;
-    --tint: 14%;
-    --shadow-dlg: 0 24px 64px rgba(14, 20, 28, .28);
-    --f-display: "Oswald", "Roboto Condensed", "Arial Narrow", sans-serif;
-    --f-ui: "Golos Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --ground: #101317;
-      --surface: #171B20;
-      --surface-2: #1D2228;
-      --ink: #E4E8EC;
-      --ink-2: #C2C9D0;
-      --muted: #98A3AE;
-      --faint: #6F7984;
-      --line: #2C333B;
-      --line-2: #232930;
-      --accent: #CFDBF0;
-      --accent-ink: #0E1520;
-      --focus: #86A8F2;
-      --danger: #F07A6D;
-      --warn: #E3A94F;
-      --ok: #5DC497;
-      --st-new: #9AA5B0;
-      --st-design: #DDB659;
-      --st-supply: #D08F54;
-      --st-production: #B383D3;
-      --st-finish: #81A7EF;
-      --st-ready: #55C49C;
-      --st-shipped: #98A3AE;
-      --st-cancelled: #6F7984;
-      --tint: 22%;
-      --shadow-dlg: 0 24px 64px rgba(0, 0, 0, .55);
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --ground: #101317;
-    --surface: #171B20;
-    --surface-2: #1D2228;
-    --ink: #E4E8EC;
-    --ink-2: #C2C9D0;
-    --muted: #98A3AE;
-    --faint: #6F7984;
-    --line: #2C333B;
-    --line-2: #232930;
-    --accent: #CFDBF0;
-    --accent-ink: #0E1520;
-    --focus: #86A8F2;
-    --danger: #F07A6D;
-    --warn: #E3A94F;
-    --ok: #5DC497;
-    --st-new: #9AA5B0;
-    --st-design: #DDB659;
-    --st-supply: #D08F54;
-    --st-production: #B383D3;
-    --st-finish: #81A7EF;
-    --st-ready: #55C49C;
-    --st-shipped: #98A3AE;
-    --st-cancelled: #6F7984;
-    --tint: 22%;
-    --shadow-dlg: 0 24px 64px rgba(0, 0, 0, .55);
+    --surface-2: #FFF8E1;
+    --surface-3: #FFF1C2;
+    --ink: #2D2A24;
+    --ink-2: #4D483D;
+    --muted: #7C7563;
+    --faint: #A89F88;
+    --line: #F0E5C4;
+    --line-2: #F6EFD8;
+    --accent: #FFC425;
+    --accent-hover: #FFB700;
+    --accent-ink: #2D2A24;
+    --focus: #E2A300;
+    --danger: #C4432B;
+    --danger-soft: #FDEDE8;
+    --warn: #B36A00;
+    --ok: #2E7F50;
+    --st-new: #A39B87;
+    --st-design: #E5B400;
+    --st-supply: #E8892A;
+    --st-production: #9670C4;
+    --st-finish: #4D93CE;
+    --st-ready: #38A06A;
+    --st-shipped: #A39B87;
+    --st-cancelled: #CFC6B0;
+    --tint: 17%;
+    --shadow: 0 1px 2px rgba(90, 70, 0, .05), 0 8px 24px rgba(90, 70, 0, .06);
+    --shadow-dlg: 0 24px 64px rgba(70, 52, 0, .22);
+    --font: "Nunito", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
   [hidden] { display: none !important; }
+  html { background: var(--ground); }
   body {
+    margin: 0;
     background: var(--ground);
     color: var(--ink);
-    font-family: var(--f-ui);
-    font-size: 14px;
+    font-family: var(--font);
+    font-size: 15px;
     line-height: 1.45;
     -webkit-font-smoothing: antialiased;
   }
   button, input, select, textarea { font: inherit; color: inherit; }
-  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  :focus-visible { outline: 3px solid color-mix(in srgb, var(--focus) 55%, transparent); outline-offset: 2px; }
 
-  .app { max-width: 1280px; margin-inline: auto; padding-inline: 24px; padding-block: 28px 72px; }
+  .app { max-width: 1280px; margin-inline: auto; padding-inline: 24px; padding-block: 24px 72px; }
 
   /* ---------- шапка ---------- */
-  .top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 22px; }
-  .eyebrow { margin: 0; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
-  .top h1 {
-    margin: 4px 0 0;
-    font-family: var(--f-display);
-    font-weight: 500;
-    font-size: clamp(28px, 4vw, 36px);
-    line-height: 1.05;
-    letter-spacing: .03em;
-    text-transform: uppercase;
-    text-wrap: balance;
+  .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin-bottom: 20px; }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .logo {
+    display: grid; place-items: center; flex: none;
+    width: 42px; height: 42px; border-radius: 13px;
+    background: var(--accent); color: var(--accent-ink);
+    box-shadow: 0 2px 0 rgba(160, 110, 0, .18);
   }
+  .top h1 { margin: 0; font-weight: 800; font-size: clamp(24px, 3.4vw, 30px); line-height: 1.15; letter-spacing: -.01em; text-wrap: balance; }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    height: 38px; padding: 0 14px;
-    border: 1px solid var(--line); border-radius: 8px;
+    height: 40px; padding: 0 16px;
+    border: 1px solid var(--line); border-radius: 12px;
     background: var(--surface); color: var(--ink);
-    font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap;
-    cursor: pointer; transition: border-color .15s, background-color .15s, opacity .15s;
+    font-size: 15px; font-weight: 700; line-height: 1; white-space: nowrap;
+    cursor: pointer; transition: border-color .15s, background-color .15s, box-shadow .15s;
   }
   .btn:hover { border-color: var(--faint); }
   .btn svg { flex: none; }
-  .btn:disabled { opacity: .55; cursor: default; }
-  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-  .btn-primary:hover { border-color: var(--accent); opacity: .9; }
+  .btn:disabled { opacity: .6; cursor: default; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: 0 2px 0 rgba(160, 110, 0, .18); }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
   .btn-danger { border-color: transparent; background: transparent; color: var(--danger); }
-  .btn-danger:hover { border-color: var(--danger); }
-  .btn-danger.armed { background: var(--danger); border-color: var(--danger); color: var(--surface); }
+  .btn-danger:hover { background: var(--danger-soft); }
+  .btn-danger.armed { background: var(--danger); border-color: var(--danger); color: #FFFFFF; }
 
-  /* ---------- пояснение ---------- */
+  /* ---------- сообщение над журналом ---------- */
   .notice {
     display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
-    margin-bottom: 18px; padding: 12px 16px;
-    border: 1px dashed var(--faint); border-radius: 10px;
-    background: var(--surface); color: var(--ink-2);
+    margin-bottom: 18px; padding: 14px 18px;
+    border: 1px solid var(--line); border-radius: 16px;
+    background: var(--surface-2); color: var(--ink-2);
   }
   .notice p { margin: 0; flex: 1 1 320px; }
 
-  /* ---------- маршрут: заказы по этапам ---------- */
+  /* ---------- этапы ---------- */
   .route {
     display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
-    margin-bottom: 22px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    margin-bottom: 20px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
+    box-shadow: var(--shadow);
   }
   .rc {
     position: relative;
-    display: grid; gap: 1px; align-content: start; justify-items: start;
-    padding: 15px 16px 12px;
+    display: grid; gap: 2px; align-content: start; justify-items: start;
+    padding: 16px 16px 12px;
     border: 0; border-left: 1px solid var(--line-2);
     background: transparent; text-align: left; cursor: pointer;
     transition: background-color .15s;
   }
   .rc:first-child { border-left: 0; }
-  .rc::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--st); transition: height .15s; }
+  .rc::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--st); transition: height .15s; }
   .rc:hover { background: var(--surface-2); }
-  .rc[aria-pressed="true"] { background: var(--surface-2); background: color-mix(in srgb, var(--st) 10%, var(--surface)); }
-  .rc[aria-pressed="true"]::before { height: 5px; }
-  .rc-op { font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; color: var(--faint); }
-  .rc-count { font-family: var(--f-display); font-weight: 500; font-size: 30px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .rc[aria-pressed="true"] { background: var(--surface-2); background: color-mix(in srgb, var(--st) 12%, var(--surface)); }
+  .rc[aria-pressed="true"]::before { height: 6px; }
+  .rc-count { font-weight: 800; font-size: 28px; line-height: 1.15; font-variant-numeric: tabular-nums; }
   .rc-count.zero { color: var(--faint); }
-  .rc-label { font-size: 13px; font-weight: 500; color: var(--ink-2); hyphens: auto; overflow-wrap: break-word; max-width: 100%; }
-  .rc-late { min-height: 18px; font-size: 12px; font-weight: 500; color: var(--danger); }
+  .rc-label { font-size: 14px; font-weight: 700; color: var(--ink-2); hyphens: auto; overflow-wrap: break-word; max-width: 100%; }
+  .rc-late { min-height: 18px; font-size: 12.5px; font-weight: 700; color: var(--danger); }
 
   /* ---------- вкладки и фильтры ---------- */
   .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
   .tabs {
-    display: flex; gap: 2px; padding: 3px; max-width: 100%;
-    background: var(--line-2); border-radius: 10px;
+    display: flex; gap: 3px; padding: 4px; max-width: 100%;
+    background: var(--surface-3); border-radius: 14px;
     overflow-x: auto; scrollbar-width: none;
   }
   .tabs::-webkit-scrollbar { display: none; }
   .tab {
     display: inline-flex; align-items: center; gap: 7px;
-    height: 32px; padding: 0 12px; border: 0; border-radius: 7px;
-    background: transparent; color: var(--muted);
-    font-size: 13.5px; font-weight: 500; white-space: nowrap; cursor: pointer;
+    height: 34px; padding: 0 13px; border: 0; border-radius: 10px;
+    background: transparent; color: var(--ink-2);
+    font-size: 14px; font-weight: 700; white-space: nowrap; cursor: pointer;
   }
-  .tab:hover { color: var(--ink); }
-  .tab[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(15, 25, 35, .1); }
-  .tab .n { font-family: var(--f-mono); font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; }
-  .tab.late .n { color: var(--danger); font-weight: 500; }
+  .tab:hover { background: rgba(255, 255, 255, .55); }
+  .tab[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(90, 70, 0, .12); }
+  .tab .n { font-size: 12.5px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tab.late .n { color: var(--danger); }
 
   .filters { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; flex: 1 1 440px; min-width: 0; }
   .search { position: relative; flex: 0 1 290px; min-width: 0; }
-  .search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
+  .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
   .search input {
-    width: 100%; height: 36px; padding: 0 12px 0 34px;
-    border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 14px;
+    width: 100%; height: 40px; padding: 0 12px 0 36px;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 15px;
   }
   .search input::placeholder { color: var(--faint); }
-  .select { height: 36px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 14px; cursor: pointer; max-width: 100%; }
+  .select { height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 15px; cursor: pointer; max-width: 100%; }
   .chip {
     display: inline-flex; align-items: center; gap: 4px;
-    height: 30px; padding: 0 3px 0 11px; border-radius: 999px;
-    background: var(--surface); background: color-mix(in srgb, var(--st) var(--tint), var(--surface));
+    height: 32px; padding: 0 4px 0 12px; border-radius: 999px;
+    background: var(--surface-2); background: color-mix(in srgb, var(--st) var(--tint), var(--surface));
     border: 1px solid var(--line); border-color: color-mix(in srgb, var(--st) 40%, transparent);
-    font-size: 13px; font-weight: 500;
+    font-size: 14px; font-weight: 700;
   }
   .chip button { display: grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
-  .chip button:hover { color: var(--ink); background: var(--line-2); }
+  .chip button:hover { color: var(--ink); background: rgba(255, 255, 255, .7); }
 
   /* ---------- список заказов ---------- */
-  .sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); }
   .thead, .row {
     display: grid;
-    grid-template-columns: 96px minmax(0, 1fr) minmax(0, 2.1fr) 196px 150px;
-    column-gap: 18px; padding-inline: 18px;
+    grid-template-columns: 100px minmax(0, 1fr) minmax(0, 2.1fr) 200px 156px;
+    column-gap: 18px; padding-inline: 20px;
   }
-  .thead { padding-block: 9px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+  .thead { padding-block: 10px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
   .th {
     display: inline-flex; align-items: center; gap: 4px; justify-self: start;
     padding: 0; border: 0; background: none; text-align: left;
-    font-family: var(--f-mono); font-size: 11px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+    font-size: 13px; font-weight: 700; color: var(--muted);
   }
   button.th { cursor: pointer; }
   button.th:hover { color: var(--ink); }
@@ -239,63 +185,69 @@
 
   .row {
     position: relative;
-    padding-block: 14px; border-top: 1px solid var(--line-2);
-    align-items: start; cursor: pointer; transition: background-color .12s;
+    padding-block: 15px; border-top: 1px solid var(--line-2);
+    align-items: start; cursor: pointer; transition: background-color .12s, opacity .2s;
   }
   .tbody > .row:first-child { border-top: 0; }
-  .row:hover { background: var(--surface-2); }
+  .row:hover { background: #FFFCEE; }
   .row > * { min-width: 0; }
-  .row.is-late::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--danger); }
+  .row.is-late::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 4px; border-radius: 0 4px 4px 0; background: var(--danger); }
+  .row.is-pending { opacity: .62; cursor: progress; }
   .row.flash { animation: flash 1.8s ease-out; }
-  @keyframes flash { from { background-color: color-mix(in srgb, var(--focus) 20%, var(--surface)); } to { background-color: transparent; } }
+  @keyframes flash { from { background-color: var(--surface-3); } to { background-color: transparent; } }
 
   .c-num { display: grid; gap: 2px; justify-items: start; align-content: start; }
-  .num { font-family: var(--f-mono); font-weight: 500; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .num::before { content: "№\00a0"; color: var(--faint); font-weight: 400; }
-  .recv { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .num { font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .num::before { content: "№\00a0"; color: var(--faint); font-weight: 700; }
+  .recv { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .saving { font-size: 12.5px; font-weight: 700; color: var(--warn); }
   .c-cust { display: grid; gap: 2px; align-content: start; }
-  .cust { font-weight: 500; overflow-wrap: anywhere; }
-  .contact { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
-  .c-item { display: grid; gap: 3px; align-content: start; }
-  .kind { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-  .title { font-weight: 600; font-size: 14.5px; line-height: 1.35; overflow-wrap: anywhere; }
+  .cust { font-weight: 700; overflow-wrap: anywhere; }
+  .contact { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  .c-item { display: grid; gap: 4px; align-content: start; justify-items: start; }
+  .kind {
+    display: inline-block; padding: 1px 9px; border-radius: 999px;
+    background: var(--surface-2); color: var(--ink-2);
+    font-size: 12.5px; font-weight: 700;
+  }
+  .title { font-weight: 800; font-size: 15.5px; line-height: 1.35; overflow-wrap: anywhere; }
   .desc {
-    font-size: 13px; color: var(--ink-2); white-space: pre-line; overflow-wrap: anywhere; hyphens: auto;
+    font-size: 14px; color: var(--ink-2); white-space: pre-line; overflow-wrap: anywhere; hyphens: auto;
     display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
   }
   .is-cancelled .title { text-decoration: line-through; text-decoration-color: var(--faint); color: var(--muted); }
 
   .c-stage { display: grid; gap: 7px; justify-items: start; align-content: start; }
   .stage-pick { position: relative; display: inline-flex; align-items: center; max-width: 100%; }
-  .stage-pick .dot { position: absolute; left: 11px; width: 8px; height: 8px; border-radius: 50%; background: var(--st); pointer-events: none; }
-  .stage-pick .chev { position: absolute; right: 10px; color: var(--muted); pointer-events: none; }
+  .stage-pick .dot { position: absolute; left: 12px; width: 9px; height: 9px; border-radius: 50%; background: var(--st); pointer-events: none; }
+  .stage-pick .chev { position: absolute; right: 11px; color: var(--muted); pointer-events: none; }
   .stage-select {
     appearance: none; -webkit-appearance: none;
-    max-width: 100%; height: 30px; padding: 0 28px 0 26px;
+    max-width: 100%; height: 32px; padding: 0 30px 0 28px;
     border: 1px solid var(--line); border-color: color-mix(in srgb, var(--st) 40%, transparent); border-radius: 999px;
     background: var(--surface-2); background: color-mix(in srgb, var(--st) var(--tint), var(--surface));
-    color: var(--ink); font-size: 13px; font-weight: 500; text-overflow: ellipsis; cursor: pointer;
+    color: var(--ink); font-size: 14px; font-weight: 700; text-overflow: ellipsis; cursor: pointer;
   }
-  .stage-select:disabled { opacity: 1; color: var(--ink); cursor: inherit; padding-right: 12px; }
+  .stage-select:disabled { opacity: 1; color: var(--ink); cursor: inherit; padding-right: 14px; }
   .stage-select:disabled + .chev { display: none; }
   .rmini { display: flex; gap: 3px; }
-  .rmini i { width: 20px; height: 4px; border-radius: 2px; background: var(--line); }
+  .rmini i { width: 21px; height: 5px; border-radius: 3px; background: var(--line); }
   .rmini i.on { background: var(--c); }
-  .since { font-size: 12px; color: var(--muted); }
+  .since { font-size: 13px; color: var(--muted); }
 
   .c-due { display: grid; gap: 2px; align-content: start; }
-  .due-date { font-family: var(--f-mono); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .due-sub { font-size: 12.5px; color: var(--muted); }
-  .due--danger .due-date { color: var(--danger); font-weight: 500; }
-  .due--danger .due-sub { color: var(--danger); font-weight: 600; }
-  .due--warn .due-sub { color: var(--warn); font-weight: 600; }
+  .due-date { font-weight: 800; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .due-sub { font-size: 13px; color: var(--muted); }
+  .due--danger .due-date { color: var(--danger); }
+  .due--danger .due-sub { color: var(--danger); font-weight: 700; }
+  .due--warn .due-sub { color: var(--warn); font-weight: 700; }
   .due--ok .due-sub { color: var(--ok); }
   .due--late .due-sub { color: var(--warn); }
-  .due--none .due-date, .due--muted .due-date { color: var(--faint); }
+  .due--none .due-date, .due--muted .due-date { color: var(--faint); font-weight: 700; }
 
-  .skel { display: grid; gap: 9px; padding: 18px; border-top: 1px solid var(--line-2); }
+  .skel { display: grid; gap: 10px; padding: 20px; border-top: 1px solid var(--line-2); }
   .skel:first-child { border-top: 0; }
-  .skel i { display: block; height: 10px; border-radius: 4px; background: var(--line-2); }
+  .skel i { display: block; height: 11px; border-radius: 6px; background: var(--line-2); }
   .skel i:nth-child(1) { width: 30%; }
   .skel i:nth-child(2) { width: 70%; }
   .skel i:nth-child(3) { width: 48%; }
@@ -304,65 +256,83 @@
   }
   @keyframes pulse { to { opacity: .45; } }
 
-  .empty { display: grid; gap: 14px; justify-items: center; padding: 56px 18px; text-align: center; color: var(--muted); }
+  .empty { display: grid; gap: 14px; justify-items: center; padding: 56px 18px; text-align: center; color: var(--muted); font-size: 15.5px; }
   .empty p { margin: 0; }
-  .foot { margin: 10px 2px 0; font-size: 12.5px; color: var(--muted); }
+
+  .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 12px 4px 0; font-size: 13.5px; color: var(--muted); }
+  .foot .spacer { flex: 1; }
+  .link {
+    padding: 0; border: 0; background: none; color: var(--ink-2); font-size: 13.5px; font-weight: 700; cursor: pointer;
+    text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px;
+  }
+  .link:hover { color: var(--ink); }
+  #syncText.err { color: var(--danger); font-weight: 700; }
+
+  /* ---------- вход ---------- */
+  .gate { display: grid; justify-items: center; padding-block: 12px 40px; }
+  .gate-card {
+    width: min(440px, 100%); display: grid; gap: 14px; padding: 26px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow);
+  }
+  .gate-card h2 { margin: 0; font-weight: 800; font-size: 24px; line-height: 1.2; }
+  .gate-text { margin: 0; color: var(--muted); }
+  .gate-card .btn { width: 100%; height: 46px; font-size: 16px; }
+  .app.locked .route, .app.locked .bar, .app.locked .sheet, .app.locked .foot,
+  .app.locked .actions, .app.locked .notice { display: none !important; }
 
   /* ---------- карточка заказа ---------- */
   .dlg {
     width: min(760px, calc(100vw - 32px)); max-height: min(92vh, 980px);
-    padding: 0; border: 1px solid var(--line); border-radius: 14px;
+    padding: 0; border: 1px solid var(--line); border-radius: 22px;
     background: var(--surface); color: var(--ink); box-shadow: var(--shadow-dlg);
   }
   .dlg[open] { display: flex; flex-direction: column; }
-  .dlg::backdrop { background: rgba(12, 17, 24, .52); }
+  .dlg::backdrop { background: rgba(45, 38, 20, .38); }
   .dlg form { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0; }
-  .dlg-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 22px 14px; border-bottom: 1px solid var(--line-2); }
-  .dlg-head h2 { margin: 3px 0 0; font-family: var(--f-display); font-weight: 500; font-size: 24px; line-height: 1.1; letter-spacing: .02em; text-transform: uppercase; }
-  .icon-btn { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+  .dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 22px 14px; border-bottom: 1px solid var(--line-2); }
+  .dlg-head h2 { margin: 0; font-weight: 800; font-size: 22px; line-height: 1.2; }
+  .icon-btn { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); cursor: pointer; }
   .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
   .dlg-body { flex: 1; min-height: 0; overflow-y: auto; display: grid; gap: 14px; align-content: start; padding: 18px 22px; }
-  .dlg-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 22px; border-top: 1px solid var(--line-2); background: var(--surface-2); }
+  .dlg-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 22px; border-top: 1px solid var(--line-2); background: var(--surface-2); }
   .dlg-foot .spacer { flex: 1; }
-  .form-msg { flex: 1 1 100%; margin: 0; font-size: 13px; color: var(--muted); }
+  .form-msg { flex: 1 1 100%; margin: 0; font-size: 14px; color: var(--muted); }
   .form-msg:empty { display: none; }
-  .form-msg.err { color: var(--danger); font-weight: 500; }
+  .form-msg.err { color: var(--danger); font-weight: 700; }
 
   .g { display: grid; gap: 12px; }
   .g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .field { display: grid; gap: 6px; align-content: start; min-width: 0; }
-  .field > span { font-size: 12.5px; font-weight: 500; color: var(--muted); }
+  .field > span { font-size: 13.5px; font-weight: 700; color: var(--ink-2); }
   .field input, .field select, .field textarea {
-    width: 100%; min-height: 40px; padding: 8px 11px;
-    border: 1px solid var(--line); border-radius: 8px;
-    background: var(--surface); color: var(--ink); font-size: 14px; line-height: 1.4;
+    width: 100%; min-height: 42px; padding: 9px 12px;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--surface); color: var(--ink); font-size: 15px; line-height: 1.4;
   }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--focus); outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 0; }
   .field textarea { min-height: 124px; resize: vertical; }
   .field input::placeholder, .field textarea::placeholder { color: var(--faint); }
-  .field input:disabled, .field select:disabled, .field textarea:disabled {
-    background: var(--surface-2); color: var(--ink-2); -webkit-text-fill-color: var(--ink-2); opacity: 1;
-  }
   .field.invalid input, .field.invalid textarea { border-color: var(--danger); }
-  .field .hint { font-size: 12px; color: var(--muted); }
+  .field .hint { font-size: 13px; color: var(--muted); }
   .req::after { content: " *"; color: var(--danger); }
 
-  .hist-wrap h3 { margin: 4px 0 8px; font-family: var(--f-mono); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .hist-wrap h3 { margin: 4px 0 8px; font-size: 15px; font-weight: 800; color: var(--ink); }
   .hist { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
-  .hist li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: baseline; gap: 10px; font-size: 13px; }
-  .hist .d { width: 8px; height: 8px; border-radius: 50%; background: var(--st); }
-  .hist b { font-weight: 600; }
+  .hist li { display: grid; grid-template-columns: 9px minmax(0, 1fr) auto; align-items: baseline; gap: 10px; font-size: 14px; }
+  .hist .d { width: 9px; height: 9px; border-radius: 50%; background: var(--st); }
+  .hist b { font-weight: 800; }
   .hist .who { color: var(--muted); }
-  .hist time { font-family: var(--f-mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .hist time { font-size: 13px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 
   .toast {
     position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 60;
-    max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 8px;
-    background: var(--ink); color: var(--surface); font-size: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+    max-width: calc(100vw - 32px); padding: 11px 18px; border-radius: 14px;
+    background: var(--ink); color: #FFFFFF; font-size: 15px; font-weight: 600; box-shadow: 0 10px 28px rgba(40, 30, 0, .25);
     opacity: 0; transform: translate(-50%, 12px); transition: opacity .2s, transform .2s; pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
-  .toast.error { background: var(--danger); color: var(--surface); }
+  .toast.error { background: var(--danger); }
 
   /* ---------- узкие экраны ---------- */
   @media (max-width: 900px) {
@@ -370,7 +340,7 @@
     .row {
       grid-template-columns: minmax(0, 1fr) auto;
       grid-template-areas: "num due" "item item" "cust cust" "stage stage";
-      row-gap: 8px; column-gap: 12px; padding: 14px 16px;
+      row-gap: 8px; column-gap: 12px; padding: 15px 16px;
     }
     .c-num { grid-area: num; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
     .c-due { grid-area: due; justify-items: end; text-align: right; }
@@ -379,24 +349,25 @@
     .c-stage { grid-area: stage; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
     .filters { flex-basis: 100%; justify-content: flex-start; }
     .search { flex: 1 1 220px; }
-    .tab { padding: 0 10px; }
+    .tab { padding: 0 11px; }
   }
   @media (max-width: 760px) {
     .route { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .rc { padding: 13px 12px 10px; }
+    .rc { padding: 14px 12px 10px; }
     .rc:nth-child(3n + 1) { border-left: 0; }
     .rc:nth-child(n + 4) { border-top: 1px solid var(--line-2); }
-    .rc-count { font-size: 26px; }
-    .rc-label { font-size: 12px; }
+    .rc-count { font-size: 25px; }
+    .rc-label { font-size: 13px; }
   }
   @media (max-width: 640px) {
-    .app { padding-inline: 16px; padding-block: 18px 56px; }
+    .app { padding-inline: 16px; padding-block: 16px 56px; }
     .dlg { width: 100%; max-width: 100%; height: 100%; max-height: 100%; margin: 0; border: 0; border-radius: 0; }
     .g-2, .g-3 { grid-template-columns: minmax(0, 1fr); }
     .g-2.keep { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .dlg-head, .dlg-body, .dlg-foot { padding-inline: 16px; }
     .actions { width: 100%; }
     .actions .btn-primary { flex: 1; }
+    .logo { width: 38px; height: 38px; border-radius: 12px; }
   }
   @media (max-width: 400px) {
     .route { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -407,44 +378,24 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; animation: none !important; }
   }
-
-  /* ---------- вход ---------- */
-  .gate { display: grid; justify-items: center; padding-block: 8px 40px; }
-  .gate-card {
-    width: min(440px, 100%); display: grid; gap: 14px; padding: 24px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
-  }
-  .gate-card h2 { margin: 0; font-family: var(--f-display); font-weight: 500; font-size: 26px; line-height: 1.1; letter-spacing: .02em; text-transform: uppercase; }
-  .gate-text { margin: 0; color: var(--muted); }
-  .gate-card .btn { width: 100%; height: 42px; }
-  .app.locked .route, .app.locked .bar, .app.locked .sheet, .app.locked .foot,
-  .app.locked .actions, .app.locked .notice { display: none !important; }
-
-  /* ---------- подвал ---------- */
-  .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 12px 2px 0; font-size: 12.5px; color: var(--muted); }
-  .foot .spacer { flex: 1; }
-  .link {
-    padding: 0; border: 0; background: none; color: var(--ink-2); font-size: 12.5px; cursor: pointer;
-    text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px;
-  }
-  .link:hover { color: var(--ink); text-decoration-color: currentColor; }
-  #syncText.err { color: var(--danger); }
 </style>
 </head>
 <body>
-<div class="app" lang="ru">
+<div class="app">
   <header class="top">
-    <div>
-      <p class="eyebrow">Производство · металлоконструкции · печи · БМЗ</p>
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4.5h6M8.5 10h7M8.5 14h7M8.5 18h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </span>
       <h1>Журнал заказов</h1>
     </div>
     <div class="actions">
       <button type="button" class="btn" id="btnExport" hidden title="Скачать весь журнал файлом Excel">
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.5m0 0L5 7m3 3 3-3M3 13h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.5m0 0L5 7m3 3 3-3M3 13h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>Excel</span>
       </button>
       <button type="button" class="btn btn-primary" id="btnNew" hidden>
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Новый заказ</span>
       </button>
     </div>
@@ -473,7 +424,7 @@
     <div class="tabs" id="tabs" role="group" aria-label="Какие заказы показать"></div>
     <div class="filters">
       <label class="search">
-        <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m10.5 10.5 3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m10.5 10.5 3 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         <input type="search" id="q" placeholder="Поиск: заказчик, изделие, №" aria-label="Поиск по заказам" autocomplete="off">
       </label>
       <select class="select" id="kindFilter" aria-label="Вид изделия">
@@ -482,7 +433,7 @@
       <span class="chip" id="stageChip" hidden>
         <span id="stageChipText"></span>
         <button type="button" id="stageChipClear" aria-label="Сбросить фильтр по этапу">
-          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2l6 6M8 2 2 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2l6 6M8 2 2 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
       </span>
     </div>
@@ -490,7 +441,7 @@
 
   <section class="sheet" aria-label="Список заказов">
     <div class="thead" id="thead">
-      <button type="button" class="th" data-sort="num" data-fk="th-num">№ · принят <span class="arr" id="arr-num"></span></button>
+      <button type="button" class="th" data-sort="num" data-fk="th-num">№ и дата <span class="arr" id="arr-num"></span></button>
       <span class="th">Заказчик</span>
       <span class="th">Изделие и описание</span>
       <span class="th">Этап</span>
@@ -501,7 +452,7 @@
       <p id="emptyText"></p>
       <button type="button" class="btn" id="emptyReset" hidden>Сбросить фильтры</button>
       <button type="button" class="btn btn-primary" id="emptyAdd" hidden>
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Добавить первый заказ</span>
       </button>
     </div>
@@ -520,12 +471,9 @@
 <dialog class="dlg" id="dlg" aria-labelledby="dlgTitle">
   <form id="orderForm" novalidate>
     <div class="dlg-head">
-      <div>
-        <p class="eyebrow" id="dlgEyebrow">Новая запись в журнале</p>
-        <h2 id="dlgTitle">Новый заказ</h2>
-      </div>
+      <h2 id="dlgTitle">Новый заказ</h2>
       <button type="button" class="icon-btn" id="dlgClose" aria-label="Закрыть">
-        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </button>
     </div>
     <div class="dlg-body">
@@ -569,20 +517,19 @@
 (function () {
   'use strict';
 
-  /* ============ НАСТРОЙКА ============
-     Адрес веб-приложения Google Apps Script (заканчивается на /exec). */
+  /* Адрес веб-приложения Google Apps Script (заканчивается на /exec) */
   var API_URL = 'https://script.google.com/macros/s/AKfycbzEh-UU8MMuUJ6PDiryl1GeI7XzcdwM7TUCjI50tWUo6vYok665IU9PaSWh0MF1QGwR/exec';
 
   /* ============ справочники ============ */
   var STAGES = [
-    { key: 'new',        op: '005', label: 'Принят',         hint: 'Заказ принят, ждёт запуска в работу' },
-    { key: 'design',     op: '010', label: 'Проектирование', hint: 'Чертежи, КМД, согласование с заказчиком' },
-    { key: 'supply',     op: '015', label: 'Закупка',        hint: 'Металл, огнеупоры, сэндвич-панели, комплектующие' },
-    { key: 'production', op: '020', label: 'Производство',   hint: 'Резка, гибка, сварка, сборка' },
-    { key: 'finish',     op: '025', label: 'Отделка',        hint: 'Грунт и покраска, футеровка, утепление и отделка модулей' },
-    { key: 'ready',      op: '030', label: 'Готов',          hint: 'Прошёл ОТК и испытания, ждёт отгрузки' },
-    { key: 'shipped',    op: '',    label: 'Отгружен',       hint: 'Передан заказчику' },
-    { key: 'cancelled',  op: '',    label: 'Отменён',        hint: 'Заказ снят' }
+    { key: 'new',        label: 'Принят',         hint: 'Заказ принят, ждёт запуска в работу' },
+    { key: 'design',     label: 'Проектирование', hint: 'Чертежи, КМД, согласование с заказчиком' },
+    { key: 'supply',     label: 'Закупка',        hint: 'Металл, огнеупоры, сэндвич-панели, комплектующие' },
+    { key: 'production', label: 'Производство',   hint: 'Резка, гибка, сварка, сборка' },
+    { key: 'finish',     label: 'Отделка',        hint: 'Грунт и покраска, футеровка, утепление и отделка модулей' },
+    { key: 'ready',      label: 'Готов',          hint: 'Прошёл ОТК и испытания, ждёт отгрузки' },
+    { key: 'shipped',    label: 'Отгружен',       hint: 'Передан заказчику' },
+    { key: 'cancelled',  label: 'Отменён',        hint: 'Заказ снят' }
   ];
   var STAGE = {};
   STAGES.forEach(function (s, i) { STAGE[s.key] = Object.assign({ i: i }, s); });
@@ -603,12 +550,13 @@
 
   var TABS = [['active', 'В работе'], ['overdue', 'Просрочено'], ['shipped', 'Отгружено'], ['cancelled', 'Отменено'], ['all', 'Все']];
   var XLSX_URL = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.mini.min.js';
-  var LS_KEY = 'zakazy-journal:v1';
+  var LS_KEY = 'zakazy-journal:v1';     // код и имя (только в этом браузере)
+  var LS_DATA = 'zakazy-journal:data';  // последний загруженный список — для мгновенного запуска
 
   /* ============ состояние ============ */
   var state = {
     mode: 'login',            // login | loading | live | error
-    orders: [],
+    orders: [], ver: '',
     tab: 'active', stage: '', kind: '', q: '', sort: null,
     flashId: null, sheetUrl: '', errorMsg: '',
     lastSync: 0, syncing: false, syncError: false
@@ -658,8 +606,10 @@
     for (var i = 0; i < state.orders.length; i++) if (state.orders[i].id === id) return state.orders[i];
     return null;
   }
+  function byNumDesc(a, b) { return b.num - a.num; }
+  function tmpId() { return 'tmp-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 
-  /* ============ сохранённый вход (только в этом браузере) ============ */
+  /* ============ то, что хранится в этом браузере ============ */
   function loadCreds() {
     try { var c = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); return c && typeof c === 'object' ? c : {}; }
     catch (e) { return {}; }
@@ -669,6 +619,22 @@
   }
   var creds = loadCreds();   // { code, name, api }
   function apiUrl() { return API_URL || creds.api || ''; }
+
+  function loadData() {
+    try {
+      var d = JSON.parse(localStorage.getItem(LS_DATA) || 'null');
+      if (d && Array.isArray(d.orders) && d.api === apiUrl()) return d;
+    } catch (e) {}
+    return null;
+  }
+  function saveData() {
+    try {
+      localStorage.setItem(LS_DATA, JSON.stringify({ api: apiUrl(), ver: state.ver, sheetUrl: state.sheetUrl, orders: state.orders }));
+    } catch (e) {}
+  }
+  function clearData() {
+    try { localStorage.removeItem(LS_DATA); } catch (e) {}
+  }
 
   /* ============ данные заказа ============ */
   function normalize(d) {
@@ -785,7 +751,7 @@
     stageChip: $('stageChip'), stageChipText: $('stageChipText'), stageChipClear: $('stageChipClear'),
     thead: $('thead'), tbody: $('tbody'), empty: $('empty'), emptyText: $('emptyText'), emptyReset: $('emptyReset'), emptyAdd: $('emptyAdd'),
     foot: $('foot'), syncText: $('syncText'), btnRefresh: $('btnRefresh'), sheetLink: $('sheetLink'), btnLogout: $('btnLogout'), whoName: $('whoName'),
-    dlg: $('dlg'), form: $('orderForm'), dlgTitle: $('dlgTitle'), dlgEyebrow: $('dlgEyebrow'), dlgClose: $('dlgClose'),
+    dlg: $('dlg'), form: $('orderForm'), dlgTitle: $('dlgTitle'), dlgClose: $('dlgClose'),
     histWrap: $('histWrap'), hist: $('hist'), formMsg: $('formMsg'),
     btnDelete: $('btnDelete'), btnCancel: $('btnCancel'), btnSave: $('btnSave'),
     stageHint: $('stageHint'), fldShipped: $('fld-shipped'), customerList: $('customerList'), toast: $('toast')
@@ -804,7 +770,7 @@
   f.stage.innerHTML = STAGES.map(function (s) { return '<option value="' + s.key + '">' + esc(s.label) + '</option>'; }).join('');
 
   /* ============ отрисовка ============ */
-  var CHEV = '<svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var CHEV = '<svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   function stageOptions(cur) {
     return STAGES.map(function (s) {
@@ -822,11 +788,12 @@
     var parts = splitDesc(o.description);
     var title = o.title || parts[0] || 'Без названия';
     var desc = o.title ? o.description.trim() : parts[1];
-    var cls = 'row' + (o.stage === 'cancelled' ? ' is-cancelled' : '') + (due.cls === 'danger' ? ' is-late' : '');
+    var cls = 'row' + (o.stage === 'cancelled' ? ' is-cancelled' : '') + (due.cls === 'danger' ? ' is-late' : '') + (o.pending ? ' is-pending' : '');
     var id = esc(o.id);
     return '<article class="' + cls + '" data-id="' + id + '" data-fk="row-' + id + '" tabindex="0" aria-label="Заказ № ' + esc(o.num) + '">' +
       '<div class="c-num"><span class="num">' + (o.num ? esc(o.num) : '—') + '</span>' +
-        (o.received ? '<span class="recv">от ' + esc(fmtDate(o.received)) + '</span>' : '') + '</div>' +
+        (o.received ? '<span class="recv">от ' + esc(fmtDate(o.received)) + '</span>' : '') +
+        (o.pending ? '<span class="saving">сохраняю…</span>' : '') + '</div>' +
       '<div class="c-cust"><span class="cust">' + esc(o.customer || '—') + '</span>' +
         (o.contact ? '<span class="contact">' + esc(o.contact) + '</span>' : '') + '</div>' +
       '<div class="c-item">' + (kind ? '<span class="kind">' + esc(kind.tag) + '</span>' : '') +
@@ -834,7 +801,7 @@
         (desc ? '<span class="desc">' + esc(desc) + '</span>' : '') + '</div>' +
       '<div class="c-stage">' +
         '<span class="stage-pick" style="--st: var(--st-' + o.stage + ')"><span class="dot" aria-hidden="true"></span>' +
-          '<select class="stage-select" id="st-' + id + '" data-id="' + id + '" data-fk="sel-' + id + '" aria-label="Этап заказа № ' + esc(o.num) + '">' +
+          '<select class="stage-select" id="st-' + id + '" data-id="' + id + '" data-fk="sel-' + id + '" aria-label="Этап заказа № ' + esc(o.num) + '"' + (o.pending ? ' disabled' : '') + '>' +
           stageOptions(o.stage) + '</select>' + CHEV + '</span>' +
         routeMini(o.stage) +
         (since ? '<span class="since">на этапе с ' + esc(since) + '</span>' : '') +
@@ -850,7 +817,7 @@
     var nodes = list.map(function (o) {
       var due = dueInfo(o, today), since = stageSince(o);
       var sig = JSON.stringify([o.num, o.received, o.customer, o.contact, o.kind, o.title, o.description, o.stage,
-        o.due, o.shipped, due.cls, due.sub, since]);
+        o.due, o.shipped, due.cls, due.sub, since, !!o.pending]);
       var rec = rowCache.get(o.id);
       if (!rec || rec.sig !== sig) {
         var t = document.createElement('template');
@@ -886,7 +853,6 @@
       var late = loading ? 0 : c.late[s.key];
       return '<button type="button" class="rc" data-stage="' + s.key + '" data-fk="rc-' + s.key + '" style="--st: var(--st-' + s.key + ')"' +
         ' aria-pressed="' + (state.stage === s.key) + '" title="' + esc(s.hint) + '">' +
-        '<span class="rc-op">' + s.op + '</span>' +
         '<span class="rc-count' + (n === 0 ? ' zero' : '') + '">' + n + '</span>' +
         '<span class="rc-label">' + esc(s.label) + '</span>' +
         '<span class="rc-late">' + (late ? late + ' с просрочкой' : '') + '</span>' +
@@ -928,10 +894,11 @@
   }
   function renderFoot(list, all) {
     els.foot.textContent = list.length ? 'Показано ' + list.length + ' из ' + all.length : '';
-    els.syncText.textContent = state.syncing ? 'обновляю…'
+    els.syncText.textContent = pendingWrites ? 'сохраняю…'
+      : state.syncing ? 'обновляю…'
       : state.syncError ? 'нет связи с таблицей'
       : state.lastSync ? 'обновлено в ' + hhmm(state.lastSync) : '';
-    els.syncText.classList.toggle('err', !!state.syncError && !state.syncing);
+    els.syncText.classList.toggle('err', !!state.syncError && !state.syncing && !pendingWrites);
     els.sheetLink.hidden = !state.sheetUrl;
     if (state.sheetUrl) els.sheetLink.href = state.sheetUrl;
     els.whoName.textContent = creds.name ? ' (' + creds.name + ')' : '';
@@ -1008,7 +975,7 @@
     els.toast.textContent = msg;
     els.toast.className = 'toast show' + (kind === 'error' ? ' error' : '');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { els.toast.className = 'toast' + (kind === 'error' ? ' error' : ''); }, kind === 'error' ? 5200 : 2600);
+    toastTimer = setTimeout(function () { els.toast.className = 'toast' + (kind === 'error' ? ' error' : ''); }, kind === 'error' ? 5200 : 2400);
   }
   function showFormMsg(msg, isErr) {
     els.formMsg.textContent = msg || '';
@@ -1020,10 +987,11 @@
   }
   function errorText(e) {
     var code = e && e.error;
-    if (code === 'network' || code === 'http' || code === 'timeout') {
-      return 'Нет связи с Google Таблицей. Проверьте интернет. Если не помогает — проверьте, что скрипт развёрнут с доступом «Все».';
+    if (code === 'network' || code === 'http') {
+      return 'Нет связи с Google Таблицей. Проверьте интернет и попробуйте ещё раз.';
     }
-    if (code === 'not_configured') return 'В скрипте Google не задан код доступа (ACCESS_CODE).';
+    if (code === 'timeout') return 'Google Таблица не ответила вовремя. Проверьте интернет и попробуйте ещё раз.';
+    if (code === 'not_configured') return 'В скрипте Google не задан код доступа.';
     if (code === 'busy') return 'Таблица сейчас занята — повторите через несколько секунд.';
     if (code === 'not_found') return 'Заказ не найден — возможно, его уже удалили. Список обновлён.';
     if (code === 'num_taken') return 'Такой номер заказа уже есть в журнале' + (e.next ? ' — свободный номер ' + e.next : '') + '.';
@@ -1038,8 +1006,8 @@
     if (!url) return Promise.reject({ error: 'network', message: 'не указан адрес скрипта' });
     var body = JSON.stringify(Object.assign({ action: action, code: creds.code || '', who: creds.name || '' }, payload || {}));
     var ctrl = window.AbortController ? new AbortController() : null;
-    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 30000);
-    // text/plain без заголовков — Google Apps Script принимает такой запрос без предварительной проверки CORS
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 25000);
+    // простой запрос text/plain: Google Apps Script принимает его без предварительной проверки CORS
     return fetch(url, { method: 'POST', body: body, redirect: 'follow', signal: ctrl ? ctrl.signal : undefined })
       .then(function (r) {
         if (!r.ok) throw { error: 'http', message: 'HTTP ' + r.status };
@@ -1056,14 +1024,27 @@
         throw e;
       });
   }
+  var warmed = false;
+  function warmUp() {
+    // «будим» скрипт Google, пока человек вводит код, — вход проходит быстрее
+    var url = apiUrl();
+    if (warmed || !url) return;
+    warmed = true;
+    try { fetch(url, { method: 'GET', mode: 'no-cors', cache: 'no-store' }).catch(function () {}); } catch (e) {}
+  }
 
   function applyList(res) {
-    if (!res || !Array.isArray(res.orders)) return;
-    state.orders = res.orders.map(normalize).sort(function (a, b) { return b.num - a.num; });
-    if (res.sheetUrl) state.sheetUrl = res.sheetUrl;
-    state.lastSync = Date.now();
+    if (!res) return;
+    state.syncing = false;
     state.syncError = false;
+    state.lastSync = Date.now();
+    if (res.sheetUrl) state.sheetUrl = res.sheetUrl;
     if (state.mode !== 'login') state.mode = 'live';
+    if (!res.same && Array.isArray(res.orders)) {
+      state.orders = res.orders.map(normalize).sort(byNumDesc);
+      state.ver = res.ver || '';
+      saveData();
+    }
     render();
   }
 
@@ -1074,7 +1055,7 @@
     writeChain = p.catch(function () {});
     return p.then(function (res) {
       pendingWrites--;
-      if (!pendingWrites) applyList(res);
+      if (!pendingWrites) applyList(res); else render();
       return res;
     }, function (e) {
       pendingWrites--;
@@ -1084,10 +1065,27 @@
     });
   }
 
+  function start() {
+    var cached = loadData();
+    if (!cached) { load(); return; }
+    // мгновенно показываем последний сохранённый список и тихо сверяем его с таблицей
+    state.orders = cached.orders.map(normalize).sort(byNumDesc);
+    state.ver = cached.ver || '';
+    state.sheetUrl = cached.sheetUrl || '';
+    state.mode = 'live';
+    state.syncing = true;
+    render();
+    api('list', { ver: state.ver }).then(applyList, function (e) {
+      state.syncing = false;
+      if (e && e.error === 'bad_code') { logout('Код доступа изменился — введите новый.'); return; }
+      state.syncError = true;
+      render();
+    });
+  }
   function load() {
     state.mode = 'loading';
     render();
-    return api('list').then(applyList, function (e) {
+    return api('list', {}).then(applyList, function (e) {
       if (e && e.error === 'bad_code') { logout('Код доступа не подошёл — введите его заново.'); return; }
       state.mode = 'error';
       state.errorMsg = errorText(e);
@@ -1096,11 +1094,10 @@
   }
   function refresh(manual) {
     if (state.mode !== 'live' || pendingWrites) return;
-    state.syncing = !!manual;
+    state.syncing = true;
     if (manual) render();
-    api('list').then(function (res) {
-      state.syncing = false;
-      if (!pendingWrites) applyList(res); else render();
+    api('list', { ver: state.ver }).then(function (res) {
+      if (!pendingWrites) applyList(res); else { state.syncing = false; render(); }
     }, function (e) {
       state.syncing = false;
       if (e && e.error === 'bad_code') { logout('Код доступа изменился — введите новый.'); return; }
@@ -1111,6 +1108,18 @@
   }
 
   /* ============ вход и выход ============ */
+  var gateTimer = null;
+  function gateBusy(on) {
+    clearInterval(gateTimer);
+    els.gateBtn.disabled = on;
+    if (!on) { els.gateBtn.textContent = 'Войти'; return; }
+    var t0 = Date.now();
+    els.gateBtn.textContent = 'Вхожу…';
+    gateTimer = setInterval(function () {
+      var sec = Math.round((Date.now() - t0) / 1000);
+      if (sec >= 3) els.gateBtn.textContent = 'Подключаюсь к таблице… ' + sec + ' с';
+    }, 500);
+  }
   function showGate(msg) {
     state.mode = 'login';
     els.gApiField.hidden = !!API_URL;
@@ -1118,15 +1127,17 @@
     els.gName.value = creds.name || '';
     els.gCode.value = '';
     setGateMsg(msg || '', !!msg);
-    els.gateBtn.disabled = false;
-    els.gateBtn.textContent = 'Войти';
+    gateBusy(false);
     render();
+    warmUp();
     setTimeout(function () { (API_URL || creds.api ? els.gCode : els.gApi).focus(); }, 0);
   }
   function logout(msg) {
     creds.code = '';
     saveCreds();
+    clearData();
     state.orders = [];
+    state.ver = '';
     state.sheetUrl = '';
     state.lastSync = 0;
     clearRows();
@@ -1145,17 +1156,16 @@
     }
     if (!code) { setGateMsg('Введите код доступа.', true); els.gCode.focus(); return; }
     creds = { code: code, name: name.slice(0, 60), api: apiVal };
-    els.gateBtn.disabled = true;
-    els.gateBtn.textContent = 'Проверяю…';
+    gateBusy(true);
     setGateMsg('');
-    api('list').then(function (res) {
+    api('list', {}).then(function (res) {
+      gateBusy(false);
       saveCreds();
       state.mode = 'loading';
       applyList(res);
-    }, function (err) {
+    }).catch(function (err) {
+      gateBusy(false);
       creds.code = '';
-      els.gateBtn.disabled = false;
-      els.gateBtn.textContent = 'Войти';
       setGateMsg(errorText(err), true);
       if (err && err.error === 'bad_code') { els.gCode.select(); els.gCode.focus(); }
     });
@@ -1164,19 +1174,18 @@
   /* ============ смена этапа прямо в списке ============ */
   function changeStage(id, stage) {
     var o = findOrder(id);
-    if (!o || !STAGE[stage] || o.stage === stage || state.mode !== 'live') return;
+    if (!o || o.pending || !STAGE[stage] || o.stage === stage || state.mode !== 'live') return;
     var prev = { stage: o.stage, shipped: o.shipped, history: o.history };
     o.stage = stage;
     if (stage === 'shipped') { if (!o.shipped) o.shipped = todayYMD(); }
     else o.shipped = '';
     o.history = o.history.concat([{ s: stage, at: new Date().toISOString(), by: creds.name || '' }]);
     render();
-    write('stage', { id: id, stage: stage }).then(function () {
-      toast('№ ' + o.num + ': ' + STAGE[stage].label.toLowerCase() + (stage === 'shipped' && !prev.shipped ? ', дата отгрузки — сегодня' : ''));
-    }, function (e) {
+    toast('№ ' + o.num + ': ' + STAGE[stage].label.toLowerCase() + (stage === 'shipped' && !prev.shipped ? ', дата отгрузки — сегодня' : ''));
+    write('stage', { id: id, stage: stage }).then(null, function (e) {
       var cur = findOrder(id);
       if (cur && cur === o) { cur.stage = prev.stage; cur.shipped = prev.shipped; cur.history = prev.history; render(); }
-      if (!(e && e.error === 'bad_code')) toast(errorText(e), 'error');
+      if (!(e && e.error === 'bad_code')) toast('Этап не сохранился. ' + errorText(e), 'error');
     });
   }
 
@@ -1213,7 +1222,6 @@
     if (state.mode !== 'live') return;
     editing = o || null;
     var today = todayYMD();
-    els.dlgEyebrow.textContent = o ? (o.received ? 'Принят ' + fmtDate(o.received, true) : 'Заказ на производство') : 'Новая запись в журнале';
     els.dlgTitle.textContent = o ? 'Заказ № ' + (o.num || '—') : 'Новый заказ';
     f.num.value = o ? String(o.num || '') : String(nextNum());
     f.received.value = o ? o.received : today;
@@ -1235,8 +1243,6 @@
     renderHistory(o);
     disarmDelete();
     els.btnDelete.hidden = !o;
-    els.btnDelete.disabled = false;
-    setSaving(false);
     showFormMsg('');
     formSnapshot = serializeForm();
 
@@ -1246,7 +1252,9 @@
   }
   function openById(id) {
     var o = findOrder(id);
-    if (o) openDialog(o);
+    if (!o) return;
+    if (o.pending) { toast('Заказ ещё сохраняется — секунду…'); return; }
+    openDialog(o);
   }
   function closeDialog() {
     formSnapshot = '';
@@ -1275,16 +1283,21 @@
     if (v.due && v.received && v.due < v.received) return ['due', 'Срок сдачи раньше даты приёма — проверьте даты.'];
     return null;
   }
-  function setSaving(on) {
-    els.btnSave.disabled = on;
-    els.btnSave.textContent = on ? 'Сохраняю…' : 'Сохранить';
-  }
   function revealOrder(v) {
     var tab = v.stage === 'shipped' ? 'shipped' : v.stage === 'cancelled' ? 'cancelled' : 'active';
     if (state.tab !== 'all' && state.tab !== tab) { state.tab = tab; state.sort = null; }
     if (state.stage && state.stage !== v.stage) state.stage = '';
     if (state.kind && state.kind !== v.kind) { state.kind = ''; els.kindFilter.value = ''; }
     if (state.q) { state.q = ''; els.q.value = ''; }
+  }
+  function reopenWithError(o, v, err) {
+    openDialog(o);
+    f.num.value = String(v.num); f.received.value = v.received; f.customer.value = v.customer; f.contact.value = v.contact;
+    f.kind.value = v.kind; f.title.value = v.title; f.desc.value = v.description; f.stage.value = v.stage;
+    f.due.value = v.due; f.shipped.value = v.shipped || '';
+    syncStageUI();
+    if (err && err.error === 'num_taken') $('fld-num').classList.add('invalid');
+    showFormMsg('Заказ не сохранился. ' + errorText(err), true);
   }
 
   function saveForm(e) {
@@ -1299,26 +1312,33 @@
       (f[bad[0]] || f.title).focus();
       return;
     }
-    var wasNew = !editing;
+    var orig = editing, wasNew = !orig;
+    var now = new Date().toISOString(), who = creds.name || '';
     var order = {
-      id: editing ? editing.id : '', num: v.num, received: v.received, customer: v.customer, contact: v.contact,
+      id: wasNew ? '' : orig.id, num: v.num, received: v.received, customer: v.customer, contact: v.contact,
       kind: v.kind, title: v.title, description: v.description, stage: v.stage, due: v.due, shipped: v.shipped
     };
-    setSaving(true);
-    showFormMsg('Сохраняю в Google Таблицу…');
-    write('save', { order: order }).then(function (res) {
-      if (wasNew) { state.flashId = res.savedId || null; revealOrder(v); }
-      closeDialog();
-      render();
+    // сразу показываем заказ в списке, а в таблицу он уходит в фоне
+    var local = normalize(Object.assign({}, order, {
+      id: wasNew ? tmpId() : orig.id,
+      history: wasNew ? [{ s: v.stage, at: now, by: who }]
+        : (orig.stage !== v.stage ? orig.history.concat([{ s: v.stage, at: now, by: who }]) : orig.history),
+      createdAt: wasNew ? now : orig.createdAt, updatedAt: now, updatedBy: who
+    }));
+    local.pending = true;
+    if (wasNew) state.orders.unshift(local);
+    else state.orders = state.orders.map(function (x) { return x.id === orig.id ? local : x; });
+    if (wasNew) { state.flashId = local.id; revealOrder(v); }
+    closeDialog();
+    render();
+    write('save', { order: order }).then(function () {
       toast('Заказ № ' + v.num + (wasNew ? ' добавлен в журнал' : ' сохранён'));
     }, function (err) {
       if (err && err.error === 'bad_code') return;
-      setSaving(false);
-      if (err && err.error === 'num_taken') {
-        $('fld-num').classList.add('invalid');
-        f.num.focus();
-      }
-      showFormMsg(errorText(err), true);
+      if (wasNew) state.orders = state.orders.filter(function (x) { return x.id !== local.id; });
+      else state.orders = state.orders.map(function (x) { return x.id === local.id ? orig : x; });
+      render();
+      reopenWithError(wasNew ? null : orig, v, err);
     });
   }
 
@@ -1333,15 +1353,18 @@
     }
     disarmDelete();
     var o = editing;
-    els.btnDelete.disabled = true;
-    showFormMsg('Удаляю…');
-    write('delete', { id: o.id }).then(function () {
-      closeDialog();
-      toast('Заказ № ' + o.num + ' удалён');
-    }, function (err) {
+    var idx = state.orders.indexOf(o);
+    state.orders = state.orders.filter(function (x) { return x !== o; });
+    closeDialog();
+    render();
+    toast('Заказ № ' + o.num + ' удалён');
+    write('delete', { id: o.id }).then(null, function (err) {
       if (err && err.error === 'bad_code') return;
-      els.btnDelete.disabled = false;
-      showFormMsg(errorText(err), true);
+      if (!findOrder(o.id)) {
+        state.orders.splice(Math.max(0, Math.min(idx, state.orders.length)), 0, o);
+        render();
+      }
+      toast('Заказ № ' + o.num + ' не удалился. ' + errorText(err), 'error');
     });
   }
 
@@ -1368,7 +1391,7 @@
     label.textContent = 'Готовлю…';
     loadXlsx().then(function (X) {
       var today = todayYMD();
-      var list = state.orders.slice().sort(function (a, b) { return a.num - b.num; });
+      var list = state.orders.filter(function (o) { return !o.pending; }).sort(function (a, b) { return a.num - b.num; });
       var head = ['№', 'Дата приёма', 'Заказчик', 'Контакт', 'Вид изделия', 'Наименование', 'Описание', 'Этап', 'Срок сдачи', 'Дата отгрузки', 'Срок: статус'];
       var aoa = [head].concat(list.map(function (o) {
         return [o.num || null, null, o.customer, o.contact, KIND[o.kind] ? KIND[o.kind].single : '', o.title, o.description,
@@ -1497,7 +1520,7 @@
   setInterval(function () { if (state.mode === 'live' && !els.dlg.open) render(); }, 10 * 60 * 1000);
 
   /* ============ запуск ============ */
-  if (apiUrl() && creds.code) load();
+  if (apiUrl() && creds.code) start();
   else showGate('');
 })();
 </script>
