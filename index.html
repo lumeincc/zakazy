@@ -2131,9 +2131,12 @@ var Dogovor = (function () {
       }
     });
     despeckle(ink, W, H, Math.max(4, Math.round(9 * (W / 2480) * (W / 2480))));
-    var d = img.data;
-    for (var i = 0, j = 0, n = W * H; i < n; i++, j += 4) { var v = ink[i] ? 0 : 255; d[j] = d[j + 1] = d[j + 2] = v; d[j + 3] = 255; }
-    ctx.putImageData(img, 0, 0);
+    if (window.__dogovorDebug) {   // для отладки — очищенная страница на холсте
+      var d = img.data;
+      for (var i = 0, j = 0, n = W * H; i < n; i++, j += 4) { var v = ink[i] ? 0 : 255; d[j] = d[j + 1] = d[j + 2] = v; d[j + 3] = 255; }
+      ctx.putImageData(img, 0, 0);
+    }
+    img = null;
     return sc;
   }
   // крапинки (пыль, шум сканера) — связные пятна меньше точки в конце предложения
@@ -2283,23 +2286,27 @@ var Dogovor = (function () {
       if (k >= list.length) return worker.setParameters({ tessedit_pageseg_mode: '3' });
       job.check();
       pp(0.7 * k / list.length);
-      var it = list[k++], c2 = document.createElement('canvas');
-      c2.width = it.w + pad * 2;
-      c2.height = it.h + pad * 2;
-      var x = c2.getContext('2d');
-      x.fillStyle = '#ffffff';
-      x.fillRect(0, 0, c2.width, c2.height);
-      x.drawImage(cv, it.x, it.y, it.w, it.h, pad, pad, it.w, it.h);
-      return worker.recognize(c2, {}, { text: false, blocks: false, hocr: false, tsv: true }).then(function (r) {
+      var it = list[k++];
+      return worker.recognize(pbm(ink, W, it.x, it.y, it.w, it.h, pad), {}, { text: false, blocks: false, hocr: false, tsv: true }).then(function (r) {
         var ws = ocrWords(r.data.tsv);
         ws.forEach(function (w) { w.x += it.x - pad; w.top += it.y - pad; });
         it.cell.words = ws;
-        it.cell.own = true;
-        c2.width = c2.height = 0;
         return next();
       });
     }
     return worker.setParameters({ tessedit_pageseg_mode: '6' }).then(next);
+  }
+  // картинка для распознавателя — сразу чёрно-белая (PBM), без кодирования холста в PNG:
+  // так быстрее, и в фоновой вкладке ничего не ждёт простоя браузера
+  function pbm(ink, W, x0, y0, w, h, pad) {
+    var ow = w + pad * 2, oh = h + pad * 2, stride = (ow + 7) >> 3, head = 'P4\n' + ow + ' ' + oh + '\n', hb = head.length;
+    var out = new Uint8Array(hb + stride * oh), i, x, y;
+    for (i = 0; i < hb; i++) out[i] = head.charCodeAt(i);
+    for (y = 0; y < h; y++) {
+      var src = (y0 + y) * W + x0, row = hb + (y + pad) * stride;
+      for (x = 0; x < w; x++) if (ink[src + x]) { var X = x + pad; out[row + (X >> 3)] |= 0x80 >> (X & 7); }
+    }
+    return out;
   }
   // страница-скан: чистим, читаем ячейки таблиц, затем остальной текст (таблицы на картинке закрашены)
   function scanImage(worker, cv, job, pp) {
@@ -2307,13 +2314,13 @@ var Dogovor = (function () {
     if (window.__dogovorDebug) (window.__dogovorScans = window.__dogovorScans || []).push({ url: cv.toDataURL('image/png'), grids: grids.map(function (g) { return { xs: g.xs, ys: g.ys }; }) });
     return ocrCells(worker, cv, sc, job, pp).then(function () {
       job.check();
-      if (grids.length) {
-        var ctx = cv.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        grids.forEach(function (g) { ctx.fillRect(g.xs[0] - 3, g.ys[0] - 3, g.xs[g.C] - g.xs[0] + 6, g.ys[g.R] - g.ys[0] + 6); });
-      }
+      var ink = sc.ink, W = sc.W, H = sc.H;
+      grids.forEach(function (g) {   // таблицы уже прочитаны — на остальной странице их нет
+        var x0 = Math.max(0, Math.round(g.xs[0]) - 3), x1 = Math.min(W, Math.round(g.xs[g.C]) + 4);
+        for (var y = Math.max(0, Math.round(g.ys[0]) - 3); y < Math.min(H, Math.round(g.ys[g.R]) + 4); y++) ink.fill(0, y * W + x0, y * W + x1);
+      });
       worker.holder.part = function (x) { pp(grids.length ? 0.7 + 0.3 * x : x); };
-      return worker.recognize(cv, {}, { text: false, blocks: false, hocr: false, tsv: true }).then(function (r) {
+      return worker.recognize(pbm(ink, W, 0, 0, W, H, 0), {}, { text: false, blocks: false, hocr: false, tsv: true }).then(function (r) {
         worker.holder.part = null;
         sc.ink = null;
         var words = ocrWords(r.data.tsv).filter(function (w) { return !cellOf(grids, w.x + w.w / 2, w.top + w.h / 2); });
