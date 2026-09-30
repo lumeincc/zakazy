@@ -1870,17 +1870,18 @@ var Dogovor = (function () {
   function ocrPdf(pages, job) {
     var need = pages.filter(function (p) { return textLen(p.items) < 30; });
     if (!need.length) return Promise.resolve();
-    var todo = need.slice(0, MAX_OCR_PAGES);
+    var todo = need.slice(0, MAX_OCR_PAGES), prog = todo.map(function () { return 0; }), done = 0;
     job.ocrCut = need.length > todo.length;
-    return ocrWorker(job).then(function (worker) {
-      var k = 0;
-      function next() {
-        if (k >= todo.length) return Promise.resolve();
+    function report() { var sum = 0; prog.forEach(function (x) { sum += x; }); job.say(null, sum / todo.length); }
+    return ocrWorker(job).then(function () { return ocrPool(job, todo.length); }).then(function (workers) {
+      var next = 0;
+      job.say(todo.length > 1 ? 'Распознаю скан: ' + todo.length + ' ' + plural(todo.length, 'страница', 'страницы', 'страниц') + '…' : 'Распознаю скан…', 0);
+      function run(worker) {
+        if (next >= todo.length) return Promise.resolve();
         job.check();
-        var p = todo[k++], at = k;
-        job.say('Распознаю скан: страница ' + at + ' из ' + todo.length + '…', (at - 1) / todo.length);
-        job.ocrPart = function (x) { job.say(null, (at - 1 + x) / todo.length); };
-        var scale = Math.min(3, 2480 / Math.max(p.w, p.h));
+        var idx = next++, p = todo[idx];
+        var pp = function (x) { prog[idx] = Math.max(prog[idx], Math.min(1, x)); report(); };
+        var scale = Math.min(4.2, SCAN_LONG / Math.max(p.w, p.h));
         var vp = p.pg.getViewport({ scale: scale });
         var cv = document.createElement('canvas');
         cv.width = Math.round(vp.width);
@@ -1890,20 +1891,26 @@ var Dogovor = (function () {
         ctx.fillRect(0, 0, cv.width, cv.height);
         return p.pg.render({ canvasContext: ctx, viewport: vp }).promise.then(function () {
           job.check();
-          return worker.recognize(cv, {}, { text: false, blocks: false, hocr: false, tsv: true });
-        }).then(function (r) {
-          p.items = ocrItems(r.data.tsv, 1 / scale);
-          p.ocr = true;
+          return scanImage(worker, cv, job, pp);
+        }).then(function (res) {
+          scanPage(p, res, 1 / scale);
           cv.width = cv.height = 0;
-          return next();
+          prog[idx] = 1;
+          done++;
+          if (todo.length > 1 && done < todo.length) job.say('Распознаю скан: готово ' + done + ' из ' + todo.length + ' страниц…', null);
+          report();
+          return run(worker);
         });
       }
-      return next();
+      return Promise.all(workers.map(run));
     });
   }
-  function ocrWorker(job) {
-    if (job.worker) return Promise.resolve(job.worker);
-    job.say('Это скан — загружаю распознавание текста (в первый раз около 6 МБ)…', 0);
+  function plural(n, one, few, many) {
+    var a = n % 100, b = n % 10;
+    return a > 10 && a < 20 ? many : b === 1 ? one : b > 1 && b < 5 ? few : many;
+  }
+  function makeWorker(job, first) {
+    var holder = { part: null };
     return loadTesseract().then(function (T) {
       job.check();
       return T.createWorker(['rus', 'eng'], 1, {
@@ -1912,19 +1919,428 @@ var Dogovor = (function () {
         errorHandler: function () { /* ошибка придёт через promise */ },
         logger: function (m) {
           if (!m || job.cancelled) return;
-          if (m.status === 'recognizing text') { if (job.ocrPart) job.ocrPart(m.progress || 0); }
-          else if (/loading/.test(m.status || '') && m.progress > 0 && m.progress < 1) job.say('Загружаю распознавание текста… ' + Math.round(m.progress * 100) + '%', null);
+          if (m.status === 'recognizing text') { if (holder.part) holder.part(m.progress || 0); }
+          else if (first && /loading/.test(m.status || '') && m.progress > 0 && m.progress < 1) job.say('Загружаю распознавание текста… ' + Math.round(m.progress * 100) + '%', null);
         }
       });
     }).then(function (worker) {
-      job.worker = worker;
-      job.check();
-      return worker.setParameters({ preserve_interword_spaces: '1', user_defined_dpi: '200' }).then(function () { return worker; });
-    }, function (e) {
+      worker.holder = holder;
+      job.workers.push(worker);
+      if (job.cancelled) throw fail('cancel');
+      return worker.setParameters({ preserve_interword_spaces: '1', user_defined_dpi: '300', tessedit_do_invert: '0' }).then(function () { return worker; });
+    });
+  }
+  function ocrWorker(job) {
+    if (job.workers.length) return Promise.resolve(job.workers[0]);
+    job.say('Это скан — загружаю распознавание текста (в первый раз около 6 МБ)…', 0);
+    return makeWorker(job, true).catch(function (e) {
       if (job.cancelled || (e && e.code === 'cancel')) throw fail('cancel');
       throw fail('ocrnet');
     });
   }
+  // на многоядерном компьютере страницы распознаются параллельно (2–3 распознавателя)
+  function ocrPool(job, pagesLeft) {
+    var cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 2;
+    var mobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
+    var want = Math.min(pagesLeft, mobile ? 1 : cores >= 8 ? 3 : cores >= 4 ? 2 : 1), extra = [];
+    for (var i = job.workers.length; i < want; i++) extra.push(makeWorker(job, false).catch(function () { return null; }));
+    return Promise.all(extra).then(function () { job.check(); return job.workers.slice(); });
+  }
+
+  /* ---------- скан: чистая чёрно-белая картинка без линий таблиц + сетка таблиц ---------- */
+  var SCAN_LONG = 3508;   // ≈300 точек на дюйм для листа A4
+  function grayMax(d, n) {
+    var g = new Uint8Array(n);
+    for (var i = 0, j = 0; i < n; i++, j += 4) {
+      var r = d[j], gg = d[j + 1], b = d[j + 2];
+      g[i] = r > gg ? (r > b ? r : b) : (gg > b ? gg : b);   // синие печати и подписи становятся светлыми
+    }
+    return g;
+  }
+  function otsu(g) {
+    var hist = new Float64Array(256), i, total = 0, sum = 0;
+    for (i = 0; i < g.length; i += 3) hist[g[i]]++;
+    for (i = 0; i < 256; i++) { total += hist[i]; sum += i * hist[i]; }
+    var wB = 0, sB = 0, best = 0, thr = 128;
+    for (i = 0; i < 256; i++) {
+      wB += hist[i];
+      if (!wB) continue;
+      var wF = total - wB;
+      if (!wF) break;
+      sB += i * hist[i];
+      var mB = sB / wB, mF = (sum - sB) / wF, v = wB * wF * (mB - mF) * (mB - mF);
+      if (v > best) { best = v; thr = i; }
+    }
+    return thr;
+  }
+  // «чернила»: пиксель темнее своей окрестности (окно ≈1/44 ширины) и не светлее общего порога —
+  // так пропадают просвечивающий текст с обратной стороны, тени и серый фон
+  function inkOf(g, W, H) {
+    var bw = (W + 7) >> 3, bh = (H + 7) >> 3, bs = new Float64Array(bw * bh), bc = new Float64Array(bw * bh), x, y, p;
+    for (y = 0; y < H; y++) {
+      var row = y * W, brow = (y >> 3) * bw;
+      for (x = 0; x < W; x++) { p = brow + (x >> 3); bs[p] += g[row + x]; bc[p]++; }
+    }
+    var R = Math.max(2, Math.floor(W / 44 / 16)), iw = bw + 1, S = new Float64Array(iw * (bh + 1)), Cn = new Float64Array(iw * (bh + 1));
+    for (y = 0; y < bh; y++) {
+      for (x = 0; x < bw; x++) {
+        p = (y + 1) * iw + x + 1;
+        S[p] = bs[y * bw + x] + S[p - 1] + S[p - iw] - S[p - iw - 1];
+        Cn[p] = bc[y * bw + x] + Cn[p - 1] + Cn[p - iw] - Cn[p - iw - 1];
+      }
+    }
+    var cap = otsu(g) + 30, thr = new Float32Array(bw * bh);
+    for (y = 0; y < bh; y++) {
+      for (x = 0; x < bw; x++) {
+        var y0 = Math.max(0, y - R), y1 = Math.min(bh, y + R + 1), x0 = Math.max(0, x - R), x1 = Math.min(bw, x + R + 1);
+        var s = S[y1 * iw + x1] - S[y0 * iw + x1] - S[y1 * iw + x0] + S[y0 * iw + x0];
+        var c = Cn[y1 * iw + x1] - Cn[y0 * iw + x1] - Cn[y1 * iw + x0] + Cn[y0 * iw + x0];
+        thr[y * bw + x] = Math.min(s / c - 18, cap);
+      }
+    }
+    var ink = new Uint8Array(W * H);
+    for (y = 0; y < H; y++) {
+      var row2 = y * W, brow2 = (y >> 3) * bw;
+      for (x = 0; x < W; x++) if (g[row2 + x] < thr[brow2 + (x >> 3)]) ink[row2 + x] = 1;
+    }
+    return ink;
+  }
+  // длинные отрезки «чернил» по строкам (горизонтальные линии) и по столбцам (вертикальные); разрывы до 2 px не считаются
+  function hRuns(ink, W, H, L) {
+    var out = [];
+    for (var y = 0; y < H; y++) {
+      var off = y * W, s = -1, last = -1;
+      for (var x = 0; x < W; x++) {
+        if (ink[off + x]) { if (s < 0) s = x; last = x; }
+        else if (s >= 0 && x - last > 2) { if (last - s + 1 >= L) out.push(y, s, last); s = -1; }
+      }
+      if (s >= 0 && last - s + 1 >= L) out.push(y, s, last);
+    }
+    return out;
+  }
+  function vRuns(ink, W, H, L) {
+    var out = [];
+    for (var x = 0; x < W; x++) {
+      var s = -1, last = -1;
+      for (var y = 0, off = x; y < H; y++, off += W) {
+        if (ink[off]) { if (s < 0) s = y; last = y; }
+        else if (s >= 0 && y - last > 2) { if (last - s + 1 >= L) out.push(x, s, last); s = -1; }
+      }
+      if (s >= 0 && last - s + 1 >= L) out.push(x, s, last);
+    }
+    return out;
+  }
+  // соседние отрезки (толщина линии, небольшой наклон «лесенкой») — одна линия
+  function groupRuns(runs) {
+    var lines = [], open = [], cur = -1;
+    for (var q = 0; q < runs.length; q += 3) {
+      var p = runs[q], a = runs[q + 1], b = runs[q + 2], hit = null, len = b - a + 1;
+      if (p !== cur) { cur = p; open = open.filter(function (L) { return p - L.p1 <= 2; }); }
+      for (var t = 0; t < open.length; t++) if (a <= open[t].b + 4 && b >= open[t].a - 4) { hit = open[t]; break; }
+      if (hit) {
+        if (a < hit.a) hit.a = a;
+        if (b > hit.b) hit.b = b;
+        hit.p1 = p;
+        hit.sum += p * len;
+        hit.n += len;
+        hit.runs.push(p, a, b);
+      } else {
+        hit = { p0: p, p1: p, a: a, b: b, sum: p * len, n: len, runs: [p, a, b] };
+        open.push(hit);
+        lines.push(hit);
+      }
+    }
+    lines.forEach(function (L) { L.pos = L.sum / L.n; });
+    return lines;
+  }
+  // наклон скана — по длинным горизонтальным линиям
+  function skewOf(lines, W) {
+    var sl = [];
+    lines.forEach(function (L) {
+      if (L.b - L.a < W / 4) return;
+      var n = 0, sx = 0, sy = 0, sxx = 0, sxy = 0, r = L.runs;
+      for (var q = 0; q < r.length; q += 3) {
+        var x = (r[q + 1] + r[q + 2]) / 2, w = r[q + 2] - r[q + 1] + 1;
+        n += w; sx += x * w; sy += r[q] * w; sxx += x * x * w; sxy += x * r[q] * w;
+      }
+      var den = n * sxx - sx * sx;
+      if (den > 0) sl.push((n * sxy - sx * sy) / den);
+    });
+    return sl.length ? median(sl) : 0;
+  }
+  function rotateCanvas(cv, angle) {
+    var c2 = document.createElement('canvas');
+    c2.width = cv.width;
+    c2.height = cv.height;
+    var x = c2.getContext('2d');
+    x.fillStyle = '#ffffff';
+    x.fillRect(0, 0, c2.width, c2.height);
+    x.translate(c2.width / 2, c2.height / 2);
+    x.rotate(angle);
+    x.drawImage(cv, -cv.width / 2, -cv.height / 2);
+    cv.getContext('2d').drawImage(c2, 0, 0);
+    c2.width = c2.height = 0;
+  }
+  function scanPrep(cv) {
+    var W = cv.width, H = cv.height, ctx = cv.getContext('2d'), img, ink, hl, tries = 0;
+    for (;;) {
+      img = ctx.getImageData(0, 0, W, H);
+      ink = inkOf(grayMax(img.data, W * H), W, H);
+      hl = groupRuns(hRuns(ink, W, H, Math.max(40, Math.round(W / 30))));
+      var sk = skewOf(hl, W);
+      if (tries++ || Math.abs(sk) < 0.0035 || Math.abs(sk) > 0.12) break;
+      rotateCanvas(cv, -Math.atan(sk));   // выравниваем и считаем заново
+    }
+    var vl = groupRuns(vRuns(ink, W, H, Math.max(40, Math.round(H / 50))));
+    // стираем линии вместе с краями толщиной в пиксель
+    function erase(lines, vert) {
+      lines.forEach(function (L) {
+        var r = L.runs;
+        for (var q = 0; q < r.length; q += 3) {
+          for (var o = -1; o <= 1; o++) {
+            var pp = r[q] + o;
+            if (pp < 0 || pp >= (vert ? W : H)) continue;
+            var a = Math.max(0, r[q + 1] - 1), b = Math.min((vert ? H : W) - 1, r[q + 2] + 1), z;
+            if (vert) for (z = a; z <= b; z++) ink[z * W + pp] = 0;
+            else for (z = a, pp *= W; z <= b; z++) ink[pp + z] = 0;
+          }
+        }
+      });
+    }
+    erase(hl, false);
+    erase(vl, true);
+    var sc = { h: hl, v: vl, W: W, H: H, ink: ink };
+    sc.grids = gridTables(sc);
+    // обрывки линий вдоль границ ячеек (слабые, прерывистые места) — тоже убираем
+    sc.grids.forEach(function (g) {
+      var b = Math.max(3, Math.round(g.T / 2)), x, y, q, r, c;
+      for (r = 0; r < g.R; r++) {
+        for (c = 0; c <= g.C; c++) {
+          if (!g.vb[r][c]) continue;
+          var gx = Math.round(g.xs[c]), ya = Math.max(0, Math.round(g.ys[r]) - b), yb = Math.min(H - 1, Math.round(g.ys[r + 1]) + b);
+          for (x = Math.max(0, gx - b); x <= Math.min(W - 1, gx + b); x++) for (y = ya; y <= yb; y++) ink[y * W + x] = 0;
+        }
+      }
+      for (r = 0; r <= g.R; r++) {
+        for (c = 0; c < g.C; c++) {
+          if (!g.hb[r][c]) continue;
+          var gy = Math.round(g.ys[r]), xa = Math.max(0, Math.round(g.xs[c]) - b), xb = Math.min(W - 1, Math.round(g.xs[c + 1]) + b);
+          for (y = Math.max(0, gy - b); y <= Math.min(H - 1, gy + b); y++) for (q = y * W, x = xa; x <= xb; x++) ink[q + x] = 0;
+        }
+      }
+    });
+    despeckle(ink, W, H, Math.max(4, Math.round(9 * (W / 2480) * (W / 2480))));
+    var d = img.data;
+    for (var i = 0, j = 0, n = W * H; i < n; i++, j += 4) { var v = ink[i] ? 0 : 255; d[j] = d[j + 1] = d[j + 2] = v; d[j + 3] = 255; }
+    ctx.putImageData(img, 0, 0);
+    return sc;
+  }
+  // крапинки (пыль, шум сканера) — связные пятна меньше точки в конце предложения
+  function despeckle(ink, W, H, minSize) {
+    var n = W * H, buf = new Int32Array(minSize + 1), stack = [], i;
+    for (i = 0; i < n; i++) {
+      if (ink[i] !== 1) continue;
+      var cnt = 0;
+      stack.length = 0;
+      stack.push(i);
+      ink[i] = 2;
+      while (stack.length) {
+        var p = stack.pop(), x = p % W, y = (p - x) / W;
+        if (cnt <= minSize) buf[cnt] = p;
+        cnt++;
+        for (var yy = y - 1; yy <= y + 1; yy++) {
+          if (yy < 0 || yy >= H) continue;
+          for (var xx = x - 1; xx <= x + 1; xx++) {
+            if (xx < 0 || xx >= W) continue;
+            var q = yy * W + xx;
+            if (ink[q] === 1) { ink[q] = 2; stack.push(q); }
+          }
+        }
+      }
+      if (cnt <= minSize) for (var k = 0; k < cnt; k++) ink[buf[k]] = 0;
+    }
+    for (i = 0; i < n; i++) if (ink[i] === 2) ink[i] = 1;
+  }
+  function clusterPos(arr, tol) {
+    arr = arr.slice().sort(function (a, b) { return a - b; });
+    var out = [], grp = [];
+    arr.forEach(function (v) {
+      if (grp.length && v - grp[grp.length - 1] > tol) { out.push(median(grp)); grp = []; }
+      grp.push(v);
+    });
+    if (grp.length) out.push(median(grp));
+    return out;
+  }
+  // таблицы: пересекающиеся горизонтальные и вертикальные линии → сетка, объединённые ячейки — где линии нет
+  function gridTables(sc) {
+    var W = sc.W, H = sc.H, T = Math.max(6, Math.round(W / 250));
+    var hs = sc.h.filter(function (L) { return L.b - L.a >= W / 30 && L.p1 - L.p0 < T * 3; });
+    var vs = sc.v.filter(function (L) { return L.b - L.a >= H / 50 && L.p1 - L.p0 < T * 3; });
+    var nh = hs.length, n = nh + vs.length, par = [], i;
+    for (i = 0; i < n; i++) par.push(i);
+    function find(a) { while (par[a] !== a) { par[a] = par[par[a]]; a = par[a]; } return a; }
+    hs.forEach(function (h, a) {
+      vs.forEach(function (v, b) {
+        if (v.pos >= h.a - T && v.pos <= h.b + T && h.pos >= v.a - T && h.pos <= v.b + T) par[find(a)] = find(nh + b);
+      });
+    });
+    var groups = {};
+    for (i = 0; i < n; i++) {
+      var gr = groups[find(i)] = groups[find(i)] || { h: [], v: [] };
+      if (i < nh) gr.h.push(hs[i]); else gr.v.push(vs[i - nh]);
+    }
+    var out = [];
+    Object.keys(groups).forEach(function (key) {
+      var g = groups[key];
+      if (g.h.length < 2 || g.v.length < 2) return;
+      var pos = function (L) { return L.pos; };
+      var xs = clusterPos(g.v.map(pos), T * 1.5), ys = clusterPos(g.h.map(pos), T * 1.5);
+      var ha = Math.min.apply(null, g.h.map(function (L) { return L.a; })), hb = Math.max.apply(null, g.h.map(function (L) { return L.b; }));
+      var va = Math.min.apply(null, g.v.map(function (L) { return L.a; })), vb = Math.max.apply(null, g.v.map(function (L) { return L.b; }));
+      if (ha < xs[0] - 3 * T) xs.unshift(ha);
+      if (hb > xs[xs.length - 1] + 3 * T) xs.push(hb);
+      if (va < ys[0] - 3 * T) ys.unshift(va);
+      if (vb > ys[ys.length - 1] + 3 * T) ys.push(vb);
+      var R = ys.length - 1, C = xs.length - 1;
+      if (R < 1 || C < 2 || xs[C] - xs[0] < W * 0.2) return;   // рамка, подчёркивание — не таблица
+      function cover(lines, at, from, to) {
+        var s = 0;
+        lines.forEach(function (L) { if (Math.abs(L.pos - at) <= T * 1.5) s += Math.max(0, Math.min(L.b, to) - Math.max(L.a, from)); });
+        return s >= (to - from) * 0.5;
+      }
+      var cp = [], r, c, vb = [], hb = [];
+      for (i = 0; i < R * C; i++) cp.push(i);
+      function f2(a) { while (cp[a] !== a) { cp[a] = cp[cp[a]]; a = cp[a]; } return a; }
+      for (r = 0; r < R; r++) {
+        vb.push([]);
+        for (c = 0; c <= C; c++) vb[r].push(c === 0 || c === C || cover(g.v, xs[c], ys[r], ys[r + 1]));
+      }
+      for (r = 0; r <= R; r++) {
+        hb.push([]);
+        for (c = 0; c < C; c++) hb[r].push(r === 0 || r === R || cover(g.h, ys[r], xs[c], xs[c + 1]));
+      }
+      for (r = 0; r < R; r++) {
+        for (c = 0; c < C; c++) {
+          if (c + 1 < C && !vb[r][c + 1]) cp[f2(r * C + c)] = f2(r * C + c + 1);
+          if (r + 1 < R && !hb[r + 1][c]) cp[f2(r * C + c)] = f2((r + 1) * C + c);
+        }
+      }
+      var cells = {};
+      for (r = 0; r < R; r++) {
+        for (c = 0; c < C; c++) {
+          var id = f2(r * C + c), cell = cells[id];
+          if (!cell) cells[id] = cell = { r0: r, r1: r, c0: c, c1: c, words: [] };
+          cell.r0 = Math.min(cell.r0, r); cell.r1 = Math.max(cell.r1, r);
+          cell.c0 = Math.min(cell.c0, c); cell.c1 = Math.max(cell.c1, c);
+        }
+      }
+      out.push({ xs: xs, ys: ys, R: R, C: C, T: T, cells: cells, at: f2, vb: vb, hb: hb });
+    });
+    return out.sort(function (a, b) { return a.ys[0] - b.ys[0]; });
+  }
+  function upperIdx(arr, v) { var i = 0; while (i < arr.length && arr[i] <= v) i++; return i; }
+  function cellOf(grids, cx, cy) {
+    for (var t = 0; t < grids.length; t++) {
+      var g = grids[t];
+      if (cx < g.xs[0] || cx > g.xs[g.C] || cy < g.ys[0] || cy > g.ys[g.R]) continue;
+      var r = Math.min(Math.max(upperIdx(g.ys, cy) - 1, 0), g.R - 1), c = Math.min(Math.max(upperIdx(g.xs, cx) - 1, 0), g.C - 1);
+      return g.cells[g.at(r * g.C + c)];
+    }
+    return null;
+  }
+  // слова одной ячейки → строки → текст (переносы склеиваются, как в ячейках PDF)
+  function cellText(ws) {
+    if (!ws.length) return '';
+    var hm = median(ws.map(function (w) { return w.h; })) || 10, lines = [];
+    ws.slice().sort(function (a, b) { return (a.top + a.h / 2) - (b.top + b.h / 2); }).forEach(function (w) {
+      var cy = w.top + w.h / 2, ln = lines[lines.length - 1];
+      if (ln && cy - ln.cy <= hm * 0.6) { ln.ws.push(w); ln.cy += (cy - ln.cy) / ln.ws.length; }
+      else lines.push({ cy: cy, ws: [w] });
+    });
+    return joinCell(lines.map(function (ln) {
+      return ln.ws.sort(function (a, b) { return a.x - b.x; }).map(function (w) { return w.s; }).join(' ');
+    }));
+  }
+  // каждую ячейку таблицы распознаём отдельно: так не путаются соседние колонки и цифры в узких ячейках
+  function ocrCells(worker, cv, sc, job, pp) {
+    var list = [], W = sc.W, ink = sc.ink;
+    sc.grids.forEach(function (g) {
+      Object.keys(g.cells).forEach(function (id) {
+        var cell = g.cells[id], m = Math.max(4, Math.round(g.T * 0.6));
+        var x0 = Math.round(g.xs[cell.c0]) + m, x1 = Math.round(g.xs[cell.c1 + 1]) - m, y0 = Math.round(g.ys[cell.r0]) + m, y1 = Math.round(g.ys[cell.r1 + 1]) - m;
+        if (x1 - x0 < 8 || y1 - y0 < 8) return;
+        var n = 0;
+        for (var y = y0; y < y1 && n < 40; y += 2) for (var x = x0, o = y * W; x < x1; x += 2) if (ink[o + x]) n++;
+        if (n < 12) return;   // пустая ячейка
+        list.push({ cell: cell, x: x0, y: y0, w: x1 - x0, h: y1 - y0 });
+      });
+    });
+    if (!list.length) return Promise.resolve();
+    var k = 0, pad = 24;
+    worker.holder.part = null;
+    function next() {
+      if (k >= list.length) return worker.setParameters({ tessedit_pageseg_mode: '3' });
+      job.check();
+      pp(0.7 * k / list.length);
+      var it = list[k++], c2 = document.createElement('canvas');
+      c2.width = it.w + pad * 2;
+      c2.height = it.h + pad * 2;
+      var x = c2.getContext('2d');
+      x.fillStyle = '#ffffff';
+      x.fillRect(0, 0, c2.width, c2.height);
+      x.drawImage(cv, it.x, it.y, it.w, it.h, pad, pad, it.w, it.h);
+      return worker.recognize(c2, {}, { text: false, blocks: false, hocr: false, tsv: true }).then(function (r) {
+        var ws = ocrWords(r.data.tsv);
+        ws.forEach(function (w) { w.x += it.x - pad; w.top += it.y - pad; });
+        it.cell.words = ws;
+        it.cell.own = true;
+        c2.width = c2.height = 0;
+        return next();
+      });
+    }
+    return worker.setParameters({ tessedit_pageseg_mode: '6' }).then(next);
+  }
+  // страница-скан: чистим, читаем ячейки таблиц, затем остальной текст (таблицы на картинке закрашены)
+  function scanImage(worker, cv, job, pp) {
+    var sc = scanPrep(cv), grids = sc.grids;
+    if (window.__dogovorDebug) (window.__dogovorScans = window.__dogovorScans || []).push({ url: cv.toDataURL('image/png'), grids: grids.map(function (g) { return { xs: g.xs, ys: g.ys }; }) });
+    return ocrCells(worker, cv, sc, job, pp).then(function () {
+      job.check();
+      if (grids.length) {
+        var ctx = cv.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        grids.forEach(function (g) { ctx.fillRect(g.xs[0] - 3, g.ys[0] - 3, g.xs[g.C] - g.xs[0] + 6, g.ys[g.R] - g.ys[0] + 6); });
+      }
+      worker.holder.part = function (x) { pp(grids.length ? 0.7 + 0.3 * x : x); };
+      return worker.recognize(cv, {}, { text: false, blocks: false, hocr: false, tsv: true }).then(function (r) {
+        worker.holder.part = null;
+        sc.ink = null;
+        var words = ocrWords(r.data.tsv).filter(function (w) { return !cellOf(grids, w.x + w.w / 2, w.top + w.h / 2); });
+        return { words: words, grids: grids, W: sc.W, H: sc.H };
+      });
+    });
+  }
+  function gridRows(g) {
+    var rows = [];
+    for (var r = 0; r < g.R; r++) {
+      var row = [], any = false;
+      for (var c = 0; c < g.C; c++) {
+        var cell = g.cells[g.at(r * g.C + c)], t = '';
+        if (cell.r0 === r && cell.c0 === c) { t = cellText(cell.words); if (t) any = true; }
+        row.push(t);
+      }
+      if (any) rows.push(row);
+    }
+    return rows;
+  }
+  function scanPage(p, res, k) {
+    p.items = wordsToItems(res.words, k);
+    p.grids = res.grids.map(function (g) {
+      return { y0: g.ys[0] * k, y1: g.ys[g.R] * k, xs: g.xs.map(function (x) { return x * k; }), rows: gridRows(g) };
+    }).filter(function (g) { return g.rows.length; });
+    p.ocr = true;
+  }
+
   // распознавание путает кириллицу с похожей латиницей: «He позднее», «a Покупатель», «TOO»
   var LAT2CYR = { A: 'А', B: 'В', C: 'С', E: 'Е', H: 'Н', K: 'К', M: 'М', O: 'О', P: 'Р', T: 'Т', X: 'Х', Y: 'У', a: 'а', c: 'с', e: 'е', o: 'о', p: 'р', x: 'х', y: 'у' };
   function fixLookalikes(w) {
@@ -1933,6 +2349,10 @@ var Dogovor = (function () {
     var cyr = /[А-Яа-яЁё]/.test(w);
     if (!cyr && !(lat.length <= 3 && lat.every(function (ch) { return LAT2CYR[ch]; }))) return w;
     return w.replace(/[ABCEHKMOPTXYaceopxy]/g, function (ch) { return LAT2CYR[ch]; });
+  }
+  // «№1» распознаётся как «Nel», «Ne2», «No 5»
+  function fixNumSign(s) {
+    return s.replace(/^N[eеoо°ºaа][l|I](?=$|[^A-Za-zА-Яа-яЁё])/, '№1').replace(/^N[eеoо°ºaа](?=\d)/, '№').replace(/^N[eе°ºaаoо]$/, '№');
   }
   // мусор у обреза скана («ПОД» слева от поля) и крапинки в конце строк («So», «ей») приклеиваются к тексту
   function dropEdgeNoise(byKey, words) {
@@ -1955,9 +2375,9 @@ var Dogovor = (function () {
       if (y && junk(z, 2) && z.conf < 75 && z.x - (y.x + y.w) > 6 * mh) ws.pop();
     });
   }
-  // слова из распознавания (TSV) → элементы как у PDF; выравниваем наклон скана
-  function ocrItems(tsv, k) {
-    var words = [], byKey = {};
+  // слова из распознавания (TSV) в координатах картинки
+  function ocrWords(tsv) {
+    var words = [];
     String(tsv || '').split('\n').forEach(function (line) {
       var c = line.split('\t');
       if (c.length < 12 || c[0] !== '5') return;
@@ -1966,10 +2386,22 @@ var Dogovor = (function () {
       if (conf < 25 && !/[0-9A-Za-zА-Яа-яЁё]{2}/.test(s)) return;   // штампы, подписи, пятна
       if (/^[^0-9A-Za-zА-Яа-яЁё—–-]+$/.test(s) && conf < 70) return;    // одиночные значки: ©, ‚, |, #
       if (/^[ilj]$/.test(s) && conf < 80) return;
-      s = fixLookalikes(s);
-      var w = { x: +c[6], top: +c[7], w: +c[8], h: +c[9], s: s, conf: conf, key: c[2] + '.' + c[3] + '.' + c[4] };
-      words.push(w);
-      (byKey[w.key] = byKey[w.key] || []).push(w);
+      s = s.replace(/^[|\[\]{}_]+|[|\[\]{}_]+$/g, '').replace(/[‚„`›‹]+/g, '').replace(/^[‘’']+(?=[А-Яа-яЁё])/, '');   // остатки рамок таблиц, крапинки
+      if (!s || (s.length <= 2 && conf < 45 && !/\d/.test(s))) return;
+      s = fixNumSign(fixLookalikes(s));
+      words.push({ x: +c[6], top: +c[7], w: +c[8], h: +c[9], s: s, conf: conf, key: c[2] + '.' + c[3] + '.' + c[4] });
+    });
+    return words;
+  }
+  // слова → элементы как у PDF: строки по распознаванию, выравнивание наклона, шум по краям
+  function wordsToItems(words, k) {
+    var byKey = {};
+    words.forEach(function (w) { (byKey[w.key] = byKey[w.key] || []).push(w); });
+    // строка-мусор (тень у края листа, штамп): неуверенно распознанные короткие обрывки
+    Object.keys(byKey).forEach(function (key) {
+      var ws = byKey[key], conf = 0, short = 0;
+      ws.forEach(function (w) { conf += w.conf; if (w.s.replace(/[^A-Za-zА-Яа-яЁё0-9]/g, '').length <= 3) short++; });
+      if (ws.length >= 3 && conf / ws.length < 55 && short >= ws.length * 0.6) byKey[key] = [];
     });
     dropEdgeNoise(byKey, words);
     var slopes = [];
@@ -1986,6 +2418,7 @@ var Dogovor = (function () {
     var items = [];
     Object.keys(byKey).forEach(function (key) {
       var ws = byKey[key];
+      if (!ws.length) return;
       var base = median(ws.map(function (w) { return w.top + w.h - slope * (w.x + w.w / 2); }));
       var hh = median(ws.map(function (w) { return w.h; }));
       ws.forEach(function (w) { items.push({ x: w.x * k, y: base * k, w: w.w * k, h: hh * k, s: w.s, word: true }); });
@@ -2008,7 +2441,7 @@ var Dogovor = (function () {
     job.say('Открываю фото…');
     return loadBitmap(file).then(function (img) {
       job.check();
-      var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height, scale = Math.min(1, 2600 / Math.max(w, h));
+      var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height, scale = Math.min(1.6, 3200 / Math.max(w, h));
       var cv = document.createElement('canvas');
       cv.width = Math.max(1, Math.round(w * scale));
       cv.height = Math.max(1, Math.round(h * scale));
@@ -2019,13 +2452,11 @@ var Dogovor = (function () {
       if (img.close) img.close();
       return ocrWorker(job).then(function (worker) {
         job.say('Распознаю текст на фото…', 0);
-        job.ocrPart = function (x) { job.say(null, x); };
-        return worker.setParameters({ user_defined_dpi: '300' }).then(function () {
-          return worker.recognize(cv, {}, { text: false, blocks: false, hocr: false, tsv: true });
-        });
-      }).then(function (r) {
-        var k = 595 / cv.width;
-        var doc = layout([{ n: 1, w: 595, h: cv.height * k, items: ocrItems(r.data.tsv, k), ocr: true }]);
+        return scanImage(worker, cv, job, function (x) { job.say(null, x); });
+      }).then(function (res) {
+        var k = 595 / cv.width, p = { n: 1, w: 595, h: cv.height * k };
+        scanPage(p, res, k);
+        var doc = layout([p]);
         cv.width = cv.height = 0;
         doc.type = 'image';
         doc.pages = 1;
@@ -2080,7 +2511,7 @@ var Dogovor = (function () {
     var seen = {};
     pages.forEach(function (p) {
       p.lines.forEach(function (ln) {
-        if (!(ln.y < p.h * 0.09 || ln.y > p.h * 0.93)) return;
+        if (ln.grid || !(ln.y < p.h * 0.09 || ln.y > p.h * 0.93)) return;
         var t = ln.text.trim();
         if (/^(?:-\s*)?\d{1,3}(?:\s*-)?$/.test(t) || /^(?:стр\.?|страница|лист)\s*\d{1,3}(?:\s*(?:из|\/)\s*\d{1,3})?$/i.test(t) || /^\d{1,3}\s*(?:из|\/)\s*\d{1,3}$/.test(t)) { ln.drop = true; return; }
         var key = low(t).replace(/\d+/g, '#');
@@ -2100,7 +2531,8 @@ var Dogovor = (function () {
   function dataLike(ln) { return ln.items.some(function (it) { return /^\d+([.,]\d+)?$/.test(it.s.trim()); }); }
   function headerBand(all, i, used) {
     var ln = all[i];
-    if (!ln || used[i] || ln.items.length < 2 || dataLike(ln)) return null;
+    if (!ln || used[i] || ln.grid || ln.items.length < 2 || dataLike(ln)) return null;
+    if (/^\d{1,2}(?:\.\d{1,2}){0,3}\.?\s/.test(ln.text) || ln.text.split(/\s+/).length > 16) return null;
     var band = [i];
     for (var j = i + 1; j < all.length && j <= i + 3; j++) {
       var nx = all[j], pv = all[band[band.length - 1]];
@@ -2227,13 +2659,16 @@ var Dogovor = (function () {
   }
   // строки одной ячейки PDF — перенос одного абзаца: «Блочно-» + «модульное», «вертикальны» + «е»
   var SHORT_WORDS = /^(и|в|с|к|у|о|а|на|по|из|за|от|до|не|для|при|без|под|над|или|шт|мм|см|м|кг|т|л)$/;
+  // хвост слова, перенесённый без дефиса в узкой ячейке: «Производительн» + «ость»
+  var RE_WORD_TAIL = /^(?:ость|ости|остью|ние|ния|нию|нием|ции|ция|цию|ций|тель|теля|телем|тели|телей|ный|ная|ное|ные|ного|ной|ных|ным|ными|ский|ская|ское|ские|ского|ской|ских|ами|ями|ения|ение|ении)(?![а-яё])/;
   function joinCell(parts) {
     var s = '';
     parts.forEach(function (x) {
       if (!s) { s = x; return; }
-      if (/[А-Яа-яЁёA-Za-z]-$/.test(s) && /^[а-яёa-z]/.test(x)) s += x;
+      if (/[А-Яа-яЁёA-Za-z]-$/.test(s) && /^[а-яёa-z0-9]/.test(x)) s += x;
       else if (/[а-яё]$/.test(s) && /^[а-яё]{1,3}$/.test(x) && !SHORT_WORDS.test(x)) s += x;
-      else if (/[.;:]$/.test(s) && /^[А-ЯЁA-Z]/.test(x)) s += '\n' + x;
+      else if (/[а-яё]{4}$/.test(s) && RE_WORD_TAIL.test(x)) s += x;
+      else if (/^[*•●▪■◦–—-]\s?\S/.test(x) || (/[.;:!]$/.test(s) && /^[А-ЯЁA-Z№0-9«"]/.test(x))) s += '\n' + x;
       else s += ' ' + x;
     });
     return s;
@@ -2271,7 +2706,7 @@ var Dogovor = (function () {
   }
   function heading(t) { return t.length <= 90 && /[А-ЯЁA-Z]{3}/.test(t) && t === t.toUpperCase(); }
   function joinLine(a, b) {
-    if (/[А-Яа-яЁёA-Za-z]-$/.test(a) && /^[а-яёa-z]/.test(b)) return a + b;   // перенос по слогам оставляем с дефисом: «блочно-модульное»
+    if (/[А-Яа-яЁёA-Za-z]-$/.test(a) && /^[а-яёa-z0-9]/.test(b)) return a + b;   // перенос с дефисом оставляем: «блочно-модульное», «ПИр-» + «1.0К»
     return a + ' ' + b;
   }
   function linesToParas(all, used) {
@@ -2282,7 +2717,7 @@ var Dogovor = (function () {
       if (used[i]) { cur = null; prev = null; continue; }
       var ln = all[i], t = ln.text;
       var brk = !cur || !prev ||
-        (ln.page === prev.page && ln.y - prev.y > Math.max(prev.h, ln.h) * 1.85) ||
+        (ln.page === prev.page && ln.y - prev.y > Math.max(prev.h, ln.h) * (ln.ocr ? 2.3 : 1.85)) ||
         /^(\d{1,2}(\.\d{1,2}){0,3}\.?|[•●▪■◦*–—-]|[а-яa-z]\)|\d{1,2}\))\s/.test(t) ||
         /[:;]$/.test(prev.text) ||
         ln.segs.length > 1 || prev.segs.length > 1 ||
@@ -2295,17 +2730,65 @@ var Dogovor = (function () {
     }
     return out;
   }
+  // сопоставление колонок таблицы на следующей странице с колонками первой части
+  function colMap(xa, xb, tol) {
+    if (Math.abs(xa[0] - xb[0]) > tol || Math.abs(xa[xa.length - 1] - xb[xb.length - 1]) > tol) return null;
+    var map = [];
+    for (var k = 0; k + 1 < xb.length; k++) {
+      var best = -1, dist = Infinity;
+      for (var t = 0; t + 1 < xa.length; t++) { var d = Math.abs(xa[t] - xb[k]); if (d < dist) { dist = d; best = t; } }
+      if (dist > tol) return null;
+      map.push(best);
+    }
+    return map;
+  }
+  function mergeGridPages(blocks, all, pages) {
+    for (var b = 1; b < blocks.length; b++) {
+      var A = blocks[b - 1], B = blocks[b];
+      if (B.page !== A.page + 1) continue;
+      var above = 0;
+      for (var k = 0; k < B.at; k++) if (all[k].page === B.page && !all[k].grid) above++;
+      if (above > 2) continue;
+      var map = colMap(A.xs, B.grid.xs, (pages[B.page].w || 595) * 0.025);
+      if (!map) continue;
+      var width = A.xs.length - 1;
+      var rows = B.rows.map(function (r) {
+        var out = [];
+        for (var q = 0; q < width; q++) out.push('');
+        r.forEach(function (c, q) { if (c) out[map[q]] = out[map[q]] ? out[map[q]] + '\n' + c : c; });
+        return out;
+      });
+      if (rows.length && low(rows[0].join('|')) === low(A.rows[0].join('|'))) rows.shift();   // шапка повторена
+      A.rows = A.rows.concat(rows);
+      A.page = B.page;
+      blocks.splice(b, 1);
+      b--;
+    }
+  }
   function layout(pages) {
-    var all = [], used = [], blocks = [], i;
+    var all = [], used = [], blocks = [], i, grids = false;
     pages.forEach(function (p, pi) {
       p.lines = buildLines(p.items, p.ocr ? 1.4 : 1.2);
-      p.lines.forEach(function (ln) { ln.page = pi; });
+      (p.grids || []).forEach(function (g) {
+        grids = true;
+        p.lines.push({ grid: g, y: g.y0, top: g.y0, h: 0, items: [], segs: [], text: '', x0: g.xs[0], x1: g.xs[g.xs.length - 1] });
+      });
+      p.lines.sort(function (a, b) { return a.y - b.y; });
+      p.lines.forEach(function (ln) { ln.page = pi; ln.ocr = !!p.ocr; });
     });
     dropRunning(pages);
     pages.forEach(function (p) { p.lines.forEach(function (ln) { if (!ln.drop) all.push(ln); }); });
     if (window.__dogovorDebug) window.__dogovorLines = all;
+    var gb = [];
     for (i = 0; i < all.length; i++) {
-      if (used[i]) continue;
+      if (!all[i].grid) continue;
+      gb.push({ t: 'table', rows: all[i].grid.rows, at: i, page: all[i].page, grid: all[i].grid, xs: all[i].grid.xs });
+      used[i] = true;
+    }
+    mergeGridPages(gb, all, pages);
+    blocks = blocks.concat(gb);
+    for (i = 0; i < all.length; i++) {
+      if (used[i] || (grids && all[i].ocr)) continue;   // на сканах с линиями таблицы берём только по линиям
       var t = specTable(all, i, used);
       if (t) blocks.push({ t: 'table', rows: t, at: i });
     }
@@ -2355,10 +2838,13 @@ var Dogovor = (function () {
     return doc;
   }
   function read(file, onProgress) {
-    var job = { cancelled: false, stops: [], worker: null };
+    var job = { cancelled: false, stops: [], workers: [] };
     job.say = function (text, part) { if (!job.cancelled && onProgress) { try { onProgress(text, part); } catch (e) { /* интерфейс */ } } };
     job.check = function () { if (job.cancelled) throw fail('cancel'); };
-    function stopWorker() { if (job.worker) { try { job.worker.terminate(); } catch (e) { /* уже остановлен */ } job.worker = null; } }
+    function stopWorker() {
+      job.workers.forEach(function (w) { try { w.terminate(); } catch (e) { /* уже остановлен */ } });
+      job.workers = [];
+    }
     job.cancel = function () {
       if (job.cancelled) return;
       job.cancelled = true;
@@ -2456,6 +2942,8 @@ var Dogovor = (function () {
   /* ---------- стороны договора ---------- */
   var ROLE_WORDS = '(заказчик|покупател[ьяюе]м?|подрядчик|поставщик|исполнител[ьяюе]м?|продав[е]?ц|изготовител[ьяюе]м?|генподрядчик|генеральн[а-яё]*\\s+подрядчик|субподрядчик|арендатор|получател[ьяюе]м?)';
   var RE_ROLE = new RegExp('(?:именуем[а-яё]*\\s+(?:в\\s+дальнейшем|далее)|\\(\\s*(?:далее|в\\s+дальнейшем)(?:\\s+по\\s+тексту)?|(?:^|[\\s,])далее(?:\\s+по\\s+тексту)?)\\s*[-–—:]?\\s*[«"“„\'`]?\\s*' + ROLE_WORDS + '(?![а-яё])', 'gi');
+  var RE_ROLE_FIRST = new RegExp('[«"“]\\s*' + ROLE_WORDS + '\\s*[»"”]\\s*,?\\s*(' + ORG_ABBR_SRC() + '\\s*[«"“][^»"”]{2,80}[»"”]|ИП\\s+[А-ЯЁ][а-яё]+(?:\\s+[А-ЯЁ][а-яё]*\\.?){1,2})', 'gi');
+  function ORG_ABBR_SRC() { return '(?:ТОО|ООО|АО|ПАО|ОАО|ЗАО|НАО|ГУ|КГУ|КГП|КГКП|РГП|РГКП|ГККП|ПК|КХ|ЧУ)'; }
   var RE_CUST = /^(заказчик|покупател|генподрядчик|генеральн|арендатор|получател)/;
   var RE_OURS = /^(подрядчик|поставщик|исполнител|продав|изготовител|субподрядчик)/;
   var ORG_FORMS = [
@@ -2506,6 +2994,14 @@ var Dogovor = (function () {
     }
     return cleanParty(before.slice(cut));
   }
+  // кусок текста вокруг найденного — по границам слов, без обрывков
+  function around(s, a, b) {
+    a = Math.max(0, a);
+    b = Math.min(s.length, b);
+    if (a > 0) { var sp = s.indexOf(' ', a); a = sp >= 0 && sp < a + 25 ? sp + 1 : a; }
+    if (b < s.length) { var ep = s.lastIndexOf(' ', b); b = ep > b - 25 ? ep : b; }
+    return s.slice(a, b).trim();
+  }
   function findParties(chunks) {
     var out = [];
     for (var i = 0; i < chunks.length && out.length < 8; i++) {
@@ -2515,7 +3011,13 @@ var Dogovor = (function () {
         var role = low(m[1]), side = RE_CUST.test(role) ? 'c' : RE_OURS.test(role) ? 'o' : '';
         if (!side) continue;
         var name = partyName(s.slice(0, m.index));
-        if (name) out.push({ side: side, role: m[1], name: name, src: s.slice(Math.max(0, m.index - 200), Math.min(s.length, RE_ROLE.lastIndex + 2)).trim() });
+        if (name) out.push({ side: side, role: m[1], name: name, src: around(s, m.index - 200, RE_ROLE.lastIndex + 2) });
+      }
+      if (i > 25) continue;
+      RE_ROLE_FIRST.lastIndex = 0;
+      while ((m = RE_ROLE_FIRST.exec(s))) {
+        var role2 = low(m[1]), side2 = RE_CUST.test(role2) ? 'c' : RE_OURS.test(role2) ? 'o' : '', name2 = side2 ? cleanParty(m[2]) : '';
+        if (name2) out.push({ side: side2, role: m[1], name: name2, src: around(s, m.index - 80, RE_ROLE_FIRST.lastIndex + 60) });
       }
     }
     return out;
@@ -2547,6 +3049,32 @@ var Dogovor = (function () {
     }
     return out;
   }
+  function quoteKey(name) {
+    var m = /«([^»]{2,})»/.exec(name || '');
+    return low(m ? m[1] : name).replace(/[^а-яa-z0-9]+/g, '');
+  }
+  function columnBlocks(tables, name) {
+    var key = quoteKey(name), out = [];
+    if (key.length < 3) return out;
+    tables.forEach(function (rows) {
+      var width = 0;
+      rows.forEach(function (r) { width = Math.max(width, r.length); });
+      if (width < 2 || width > 4 || out.length) return;
+      for (var r = 0; r < Math.min(rows.length, 3); r++) {
+        for (var c = 0; c < rows[r].length; c++) {
+          if (quoteKey(rows[r][c]).indexOf(key) === -1 && low(rows[r][c]).replace(/[^а-яa-z0-9]+/g, '').indexOf(key) === -1) continue;
+          out.push(rows.map(function (row) { return row[c] || ''; }).filter(Boolean).join('\n'));
+          return;
+        }
+      }
+    });
+    return out;
+  }
+  // «в лице директора Актайлаков Б.Т.» → «Актайлаков Б.Т.»
+  function personFrom(src) {
+    var m = /в\s+лице\s+(?:[а-яё-]+\s+){0,4}?([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+([А-ЯЁ])(?:\.\s?|[а-яё]+\s+)([А-ЯЁ])(?:\.|[а-яё]+)/.exec(src || '');
+    return m ? m[1] + ' ' + m[2] + '.' + m[3] + '.' : '';
+  }
   function nameFromBlocks(blocks) {
     for (var b = 0; b < blocks.length; b++) {
       var lines = blocks[b].split('\n');
@@ -2557,7 +3085,7 @@ var Dogovor = (function () {
     return '';
   }
   function contactFrom(blocks) {
-    var t = blocks.join('\n').replace(/\n/g, ' ');
+    var t = blocks.join('\n').replace(/\n/g, ' ').replace(/(^|[^А-Яа-яЁёA-Za-z])[ВB](?=\s?\(\d{3,5}\))/g, '$18');
     if (!t) return '';
     var phones = [], m, re = /(^|[^\d+])((?:\+\s?7|8)[\s\-–(]*\d{3,5}[\s\-–)]*\d{1,3}(?:[\s\-–]?\d{1,3}){1,3})(?!\s?\d)/g;
     while ((m = re.exec(t))) {
@@ -2581,8 +3109,9 @@ var Dogovor = (function () {
     return { qty: isFinite(q) ? q : '', unit: m[2] || '' };
   }
   function normUnit(u) {
-    var t = low(u).replace(/\s+/g, '').replace(/\.+$/, '');
+    var t = low(u).replace(/\s+/g, '').replace(/[.,;:]+$/, '');
     if (!t) return '';
+    if (/^(?:m|ш|щ|w|i|l{1,3}|ur|u)[тt]$|^ши$/.test(t)) return 'шт';   // «шт.» после распознавания: «mT.», «IT.», «ши.»
     if (/^(шт|штук|штука|штуки|ед|единица|единицы|единиц)$/.test(t)) return 'шт';
     if (/^(компл|комплект|комплекта|комплектов|к-т)$/.test(t)) return 'компл.';
     if (t === 'кг') return 'кг';
@@ -2710,7 +3239,7 @@ var Dogovor = (function () {
     'пусконаладке': 'пусконаладка', 'пуско-наладке': 'пуско-наладка', 'демонтажу': 'демонтаж', 'ремонту': 'ремонт', 'строительству': 'строительство',
     'поставку': 'поставка', 'изготовление': 'изготовление', 'производство': 'производство', 'монтаж': 'монтаж', 'доставку': 'доставка',
     'сборку': 'сборка', 'установку': 'установка', 'пусконаладку': 'пусконаладка' };
-  var RE_OBLIGE = /(?:подрядчик|поставщик|исполнитель|продавец|изготовитель)[а-яё]*\s+(?:по\s+заданию\s+(?:заказчика|покупателя)\s+)?(?:обязу[ею]тся|принима[ею]т\s+на\s+себя\s+обязательств[оа]?(?:\s+по)?)\s+(?:по\s+заданию\s+(?:заказчика|покупателя)\s*,?\s*)?/i;
+  var RE_OBLIGE = /[«"“]?(?:подрядчик|поставщик|исполнитель|продавец|изготовитель)[а-яё]*[»"”]?\s+(?:по\s+заданию\s+(?:заказчика|покупателя)\s+)?(?:обязу[ею]тся|принима[ею]т\s+на\s+себя\s+обязательств[оа]?(?:\s+по)?)\s+(?:по\s+заданию\s+(?:заказчика|покупателя)\s*,?\s*)?/i;
   var RE_VERBS = /^(?:(?:собственными|своими)\s+силами(?:\s+и\s+(?:средствами|из\s+своих\s+материалов|из\s+своего\s+материала))?\s*,?\s*)?(?:(?:изготовить|произвести|поставить|передать|продать|отгрузить|доставить|смонтировать|собрать|установить|разработать|спроектировать|выполнить|осуществить|оказать)(?:\s*,\s*|\s+и\s+|\s+|$))+/i;
   var RE_DIMS = /(размер(?:ом|ами|ы)?|габарит(?:ами|ы|ными\s+размерами)?|площадью|длиной|шириной|высотой|пролет(?:ом)?|пролёт(?:ом)?|диаметром|объ[её]мом|мощностью|производительностью)\s*[:\-–—]?\s*((?:[^,;()]|,(?=\d))+)/gi;
   var DIM_LABEL = { 'размер': 'Размер', 'размером': 'Размер', 'размерами': 'Размеры', 'размеры': 'Размеры', 'габарит': 'Габариты', 'габариты': 'Габариты',
@@ -2826,7 +3355,7 @@ var Dogovor = (function () {
   var RE_C_DESC = /^описани/;
   var RE_C_QTY = /кол-?\s*во|к-во|количеств|^кол[-.]?$|^колич/;
   var RE_C_UNIT = /^ед[\s.]|^ед$|единиц|^изм/;
-  var RE_C_NUM = /^(№|n|no)\.?\s*(п\s*[\/.]\s*п\.?)?$|^п\s*\/\s*п$/;
+  var RE_C_NUM = /^(№|n|no)\.?\s*(п\s*[\/.]\s*п\.?)?$|^п\.?\s*[\/.]?\s*п\.?$|^поз(?:\.|иция)?$/;
   var RE_C_MONEY = /цен[аы]|стоимост|сумм|итого|ндс|тенге|тг\.?|руб/;
   var RE_C_DUE = /срок|дата\s+(?:поставк|отгрузк)|график/;
   var RE_C_GENERIC = /^(характеристик[аи]?|описани[ея]|параметр[ыа]?|технические\s+характеристики|техническое\s+описание|примечани[ея]|комплектаци[яи]|размер[ыа]?)$/;
@@ -2850,6 +3379,23 @@ var Dogovor = (function () {
     if (!RE_PARAM_START.test(parts[1]) && !isParam(parts[1])) return null;
     return { name: parts[0], rest: parts.slice(1).join(', ') };
   }
+  var RE_C_CODE = /(?:^|[^а-яё])код(?![а-яё])|тн\s?вэд|тк\s?вэд|окпд|кпвэд|енс\s?тру|ктру|артикул|каталожн/;
+  var RE_C_PLACE = /мест[оа]\s+(?:поставк|доставк)|адрес|аванс|оплат|платеж|гаранти|условия\s+(?:поставки|оплаты)|базис|инкотермс|страна/;
+  var RE_SERVICE = /^(?:шеф-?\s?монтаж|монтаж|пуско-?\s?наладк|пусконаладк|доставк|транспортировк|обучени|проектировани|разработк[аи]\s+(?:проект|документ)|услуг)/i;
+  function isCodeLike(s) { return /^[\d\s.\-\/]{4,}$/.test(s) && /\d{4,}/.test(s.replace(/\s+/g, '')); }
+  // номер строки спецификации: «1», «1.2», «П.п 1.2» (распознанное «In 1.2», «ILn 32»)
+  function rowNum(s) {
+    var t = clean(s || '').replace(/\n/g, ' ').trim();
+    if (!t || t.length > 16) return null;
+    var m = /(\d{1,2})(?:\s*[.,]\s*(\d{1,2}))?\.?\s*$/.exec(t);
+    if (!m) return null;
+    var pre = t.slice(0, m.index).replace(/[\s.,]+$/, '');
+    if (pre.length > 6) return null;   // «П.п» распознаётся как угодно: «In», «Пл», «19»
+    var major = +m[1], minor = m[2] != null ? +m[2] : null;
+    if (minor == null && pre && /^\d\d$/.test(m[1])) { major = +m[1].charAt(0); minor = +m[1].charAt(1); }   // «32» после «П.п» — это 3.2
+    return { major: major, minor: minor };
+  }
+  function nonEmpty(c) { return c && String(c).trim(); }
   function specItems(rows) {
     for (var h = 0; h < Math.min(4, rows.length - 1); h++) {
       var head = rows[h].map(function (c) {
@@ -2862,24 +3408,63 @@ var Dogovor = (function () {
       if (cName < 0 || cQty < 0 || cName === cQty) continue;
       var cUnit = colIndex(head, RE_C_UNIT), cNum = colIndex(head, RE_C_NUM), cDue = colIndex(head, RE_C_DUE, RE_C_MONEY);
       if (cUnit === cName || cUnit === cQty) cUnit = -1;
-      var extra = [];
+      var start = h + 1, labels = rows[h].slice();
+      // шапка в два этажа: «Характеристики» → «Производительность | Топливо»
+      var sub = rows[start];
+      if (sub && !nonEmpty(sub[cName]) && !nonEmpty(sub[cQty]) && sub.some(nonEmpty) && sub.every(function (c) { return !nonEmpty(c) || !/\d/.test(c); })) {
+        sub.forEach(function (c, k) {
+          if (!nonEmpty(c)) return;
+          labels[k] = c;
+          if (!head[k]) { var j = k; while (j > 0 && !head[j]) j--; head[k] = head[j] + ' ' + low(c); }
+        });
+        start++;
+      }
+      // колонка номеров без понятного заголовка («П. п» распознано как «ПЦ. о»)
+      if (cNum < 0 && cName > 0) {
+        var cnt = 0, hit = 0;
+        for (var q = start; q < rows.length; q++) { if (nonEmpty(rows[q][0])) { cnt++; if (rowNum(rows[q][0])) hit++; } }
+        if (cnt && hit >= cnt * 0.5) cNum = 0;
+      }
+      var extra = [], codeCols = [], moneyCols = [];
       head.forEach(function (t, k) {
-        if (t && k !== cName && k !== cQty && k !== cUnit && k !== cNum && k !== cDue && !RE_C_MONEY.test(t) &&
-          !/мест[оа]\s+(?:поставк|доставк)|адрес|аванс|оплат|платеж|гаранти|условия\s+(?:поставки|оплаты)|базис|инкотермс|страна/.test(t)) extra.push(k);
+        if (!t || k === cName || k === cQty || k === cUnit || k === cNum || k === cDue) return;
+        if (RE_C_CODE.test(t)) codeCols.push(k);
+        else if (RE_C_MONEY.test(t)) moneyCols.push(k);
+        else if (!RE_C_PLACE.test(t)) extra.push(k);
       });
-      var items = [];
-      for (var r = h + 1; r < rows.length; r++) {
-        var row = rows[r];
+      var hasQty = false;
+      for (q = start; q < rows.length; q++) if (parseQty(rows[q][cQty] || '').qty !== '') { hasQty = true; break; }
+      var items = [], section = null;
+      for (var r = start; r < rows.length; r++) {
+        var row = rows[r].slice();
         var get = function (k) { return k >= 0 && k < row.length ? String(row[k] || '').trim() : ''; };
-        var first = row.filter(function (c) { return c && c.trim(); })[0] || '';
+        var filled = row.filter(nonEmpty), first = filled[0] || '';
         if (!first) continue;
         if (/^(итого|всего|в\s*т\.?\s*ч|в\s+том\s+числе|ндс|сумма|общая|скидка|к\s+оплате)/i.test(first) || /^(итого|всего)/i.test(get(cName))) continue;
         if (row.every(function (c) { return !c || !c.trim() || /^\d{1,2}$/.test(c.trim()); })) continue;
-        var nm = get(cName), qp = parseQty(get(cQty));
+        // текст объединённой ячейки попал в колонку кода или цены — это характеристика
+        codeCols.concat(moneyCols).forEach(function (k) {
+          var v = get(k);
+          if (!v || (codeCols.indexOf(k) >= 0 ? isCodeLike(v) : /\d/.test(v))) return;
+          var to = extra.filter(function (e) { return e > k && !get(e); })[0];
+          if (to == null) to = extra.filter(function (e) { return !get(e); }).pop();
+          if (to != null) { row[to] = v; row[k] = ''; }
+        });
+        var nm = get(cName), num = cNum >= 0 ? rowNum(get(cNum)) : null, qtyCell = get(cQty);
+        // строка-раздел: «Комплектация инсинератора», «4. Модульное здание»
+        if (filled.length === 1 && !num && hasQty && !parseQty(qtyCell).qty && (first !== nm || !get(cUnit)) && first.length <= 80) {
+          var sn = /^(\d{1,2})\s*[.,]?\s+(\S.*)$/.exec(first);
+          section = { text: clean(sn ? sn[2] : first).replace(/\n/g, ' ').replace(/[:.\s]+$/, ''), num: sn ? +sn[1] : null };
+          continue;
+        }
+        var qp = parseQty(qtyCell);
+        if (qp.qty !== '' && (qp.qty > 100000 || /\d{7,}/.test(qtyCell.replace(/\s+/g, '')))) qp = { qty: '', unit: '' };   // код товара, а не количество
         var params = extra.map(function (k) {
-          var v = get(k).replace(/\n+/g, '; ');
+          var v = get(k).split('\n').map(function (x) { return x.trim().replace(/[;,]$/, ''); }).filter(Boolean)
+            .reduce(function (acc, x) { return acc ? acc + (/:$/.test(acc) ? ' ' : '; ') + x : x; }, '');
           if (!v) return '';
-          return RE_C_GENERIC.test(head[k]) || RE_C_GENERIC.test(head[k].replace(/\s+/g, '')) ? dimsFix(v) : cap(clean(rows[h][k]).replace(/\s+/g, ' ').replace(/[:\s]+$/, '')) + ': ' + dimsFix(v);
+          var lab = low(labels[k] || '').replace(/\s+/g, ' ').trim();
+          return !lab || RE_C_GENERIC.test(lab) || RE_C_GENERIC.test(lab.replace(/\s+/g, '')) ? dimsFix(v) : cap(clean(labels[k]).replace(/\s+/g, ' ').replace(/[:\s]+$/, '')) + ': ' + dimsFix(v);
         }).filter(Boolean);
         if (!nm) {
           if (items.length && params.length) items[items.length - 1].params = items[items.length - 1].params.concat(params);
@@ -2892,12 +3477,49 @@ var Dogovor = (function () {
         if (sp) { name = sp.name; lines.unshift(cap(sp.rest)); }
         items.push({
           name: tidyName(name), qty: qp.qty, unit: normUnit(get(cUnit) || qp.unit),
-          params: lines.map(dimsFix).concat(params), due: get(cDue), src: 'спецификация'
+          params: lines.map(function (x) { return dimsFix(x.replace(/^\*\s*/, '')); }).concat(params), due: get(cDue), src: 'спецификация',
+          num: num, section: section
         });
       }
-      if (items.length) return items;
+      if (items.length) return foldItems(items);
     }
     return null;
+  }
+  // «1. Инсинератор» + «1.1 Горелка», «1.2 Вентилятор» → одно изделие с комплектацией; услуги — в общие условия
+  function foldItems(items) {
+    var out = [], tops = {}, last = null, notes = [], owner = null;
+    var nested = items.some(function (it) { return it.num && it.num.minor != null; });
+    var service = function (it) { return /^усл/i.test(it.unit) || RE_SERVICE.test(it.name); };
+    var goodsAll = items.filter(function (it) { return !service(it); });
+    items.forEach(function (it) {
+      var n = nested ? it.num : null;
+      if (goodsAll.length && service(it)) { notes.push('Услуги: ' + it.name + (it.params.length ? ' — ' + it.params.join('; ') : '')); return; }
+      if (n && n.minor == null) { tops[n.major] = it; it.subs = []; out.push(it); last = it; owner = null; return; }
+      if (n && n.minor != null) {
+        var parent = tops[n.major];
+        if (!parent && !(it.section && it.section.num === n.major)) parent = last;   // «Дополнительные опции» к предыдущему изделию
+        if (parent) { parent.subs.push(it); owner = parent; return; }
+      } else if (nested && owner && it.section === owner.subs[owner.subs.length - 1].section) {
+        owner.subs.push(it);   // номер не распознался, но строка — внутри комплектации
+        return;
+      }
+      owner = null;
+      out.push(it);
+    });
+    out.forEach(function (it) {
+      (it.subs || []).forEach(function (s, k) {
+        var label = s.section && (!s.section.num || s.section.num === (it.num && it.num.major)) ? s.section.text : 'Комплектация';
+        var prev = k ? it.subs[k - 1] : null, prevLabel = prev ? (prev.section && (!prev.section.num || prev.section.num === (it.num && it.num.major)) ? prev.section.text : 'Комплектация') : '';
+        if (label !== prevLabel) it.params.push(cap(label) + ':');
+        var what = s.params.map(function (x) { return x.replace(/[;,.\s]+$/, ''); }).join('; ');
+        if (what.length > 400) what = what.slice(0, 397).replace(/\s+\S*$/, '') + '…';
+        it.params.push('– ' + s.name + (s.qty !== '' ? ' — ' + s.qty + ' ' + (s.unit || 'шт') : '') + (what ? ': ' + what : ''));
+      });
+      delete it.subs;
+    });
+    out.forEach(function (it) { delete it.num; delete it.section; });
+    out.notes = notes;
+    return out;
   }
 
   /* ---------- размеры и параметры ---------- */
@@ -3022,7 +3644,7 @@ var Dogovor = (function () {
     if (/^(месяц|мес)/.test(unit)) return ['месяц', 'месяца', 'месяцев'][form];
     return (work ? 'раб. ' : cal ? 'кал. ' : '') + ['день', 'дня', 'дней'][form];
   }
-  function termsIn(s, cat0, contractDate, today, out) {
+  function termsIn(s, cat0, contractDate, today, out, prepay) {
     var yearHint = (contractDate || today).slice(0, 4);
     // конкретная дата: «до 15.11.2026», «не позднее «30» октября 2026 г.»
     findDates(s, yearHint).forEach(function (d) {
@@ -3039,10 +3661,14 @@ var Dogovor = (function () {
       var work = /^(рабоч|р\.|раб)/.test(kindW), cal = /^(календарн|к\.)/.test(kindW);
       if (/^банковск/.test(kindW)) continue;
       var after = s.slice(RE_DUR.lastIndex, RE_DUR.lastIndex + 140);
+      if (/^\s*до\s+(?:начала|момента|даты|дня|срока|окончания|истечения)/i.test(after)) continue;
       var bm = /^\s*,?\s*(?:со?\s+(?:момента|даты|дня)|после|от\s+(?:даты|момента)|считая\s+(?:с|от)\s+(?:даты|момента|дня))\s+([^.;]{3,110})/i.exec(after);
       var basis = bm ? low(bm[1]) : '', base = contractDate, approx = true, note = '';
       if (/подписани|заключени/.test(basis)) { note = 'от подписания'; approx = !contractDate; }
-      else if (/предоплат|аванс|оплат|поступлени[яе]\s+(?:денежн|средств)|перечислени/.test(basis)) note = 'от предоплаты';
+      else if (/предоплат|аванс|оплат|поступлени[яе]\s+(?:денежн|средств)|перечислени/.test(basis)) {
+        note = 'от предоплаты';
+        if (prepay) { base = prepay; note += ', оплата по графику до ' + fmt(prepay); }
+      }
       else if (/изготовлени|готовност/.test(basis)) { base = '@make'; note = 'после изготовления'; }
       else if (/согласовани|утвержд|получени[яе]\s+(?:заявк|чертеж|эскиз|техническ|исходн)/.test(basis)) note = 'от согласования';
       else if (basis) note = 'от ' + basis.replace(/\s+/g, ' ').split(' ').slice(0, 3).join(' ');
@@ -3064,11 +3690,23 @@ var Dogovor = (function () {
       out.push(t);
     }
   }
+  function prepayDate(chunks, contractDate) {
+    var best = '', re = /(?:^|[\s(])(?:до|не\s+позднее)\s+(\d{1,2}[.\/]\d{1,2}[.\/]\d{2,4})\s*(?:г\.?|года)?\s*[—–-]\s*\d[\d\s]{2,}\d\s*(?:\([^)]{0,90}\)\s*)?(?:тенге|тг|руб|₸)/gi;
+    chunks.forEach(function (c) {
+      var s = c.s.replace(/\n/g, ' '), m;
+      re.lastIndex = 0;
+      while ((m = re.exec(s))) {
+        var d = findDates(m[1], (contractDate || '').slice(0, 4))[0];
+        if (d && (!contractDate || d.ymd >= contractDate) && (!best || d.ymd < best)) best = d.ymd;
+      }
+    });
+    return best;
+  }
   function findTerms(chunks, contractDate, today) {
-    var out = [];
+    var out = [], prepay = prepayDate(chunks, contractDate);
     chunks.forEach(function (c) {
       if (c.s.length < 8 || !/(срок|не\s+позднее|не\s+позже|в\s+течени|до\s+[«"]?\d|\d\s*(?:рабоч|календарн|дн|р\.\s?д))/i.test(c.s)) return;
-      sentences(c.s.replace(/\n/g, ' ')).forEach(function (s) { termsIn(s, null, contractDate, today, out); });
+      sentences(c.s.replace(/\n/g, ' ')).forEach(function (s) { termsIn(s, null, contractDate, today, out, prepay); });
     });
     resolveTerms(out);
     // одинаковые сроки — один раз
@@ -3145,10 +3783,11 @@ var Dogovor = (function () {
     var parties = findParties(chunks), cust = null;
     parties.forEach(function (p) { if (!cust && p.side === 'c') cust = p; });
     var blocks = customerBlocks(chunks);
+    if (cust) blocks = columnBlocks(doc.tables || [], cust.name).concat(blocks);
     var items = [], params = [];
     (doc.tables || []).forEach(function (rows) {
       var sp = specItems(rows);
-      if (sp) { items = items.concat(sp); return; }
+      if (sp) { items = items.concat(sp); if (sp.notes) params = params.concat(sp.notes); return; }
       var pt = paramTable(rows);
       if (pt) params = params.concat(pt);
     });
@@ -3175,11 +3814,15 @@ var Dogovor = (function () {
     var seenT = {};
     terms = terms.filter(function (t) { var k = t.cat + '|' + t.date + '|' + t.label; if (seenT[k]) return false; seenT[k] = 1; return true; });
     var due = pickDue(terms);
+    var contact = contactFrom(blocks), who = cust ? personFrom(cust.src) : '';
+    var cur = /([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+([А-ЯЁ])\.\s?([А-ЯЁ])\.|([А-ЯЁ])\.\s?([А-ЯЁ])\.\s?[А-ЯЁ][а-яё]+/.exec(contact);
+    if (who && !cur) contact = [who, contact].filter(Boolean).join(', ');
+    else if (who && cur && cur[1] && doc.ocr && who.slice(-4) === cur[2] + '.' + cur[3] + '.') contact = contact.replace(cur[0], who);   // на скане фамилия в преамбуле чище, чем под печатью
     var kind = guessKind(title + ' ' + items.map(function (it) { return it.name; }).join(' '), all);
     return {
       number: head.number, date: head.date,
       customer: cust ? cust.name : nameFromBlocks(blocks), customerSrc: cust ? cust.src : '',
-      contact: contactFrom(blocks), kind: kind, title: title, items: items, params: params,
+      contact: contact, kind: kind, title: title, items: items, params: params,
       terms: terms, due: due ? due.date : '', dueTerm: due, subject: subj ? subj.src : ''
     };
   }
@@ -5627,8 +6270,17 @@ var Dogovor = (function () {
     showCFormMsg(doc.ocr ? 'Договор распознан со скана — проверьте цифры особенно внимательно.' : '', false);
     cState('res');
     syncCItems();
+    growAll();
     cSnapshot = serializeCForm();
     els.cdlg.querySelector('.dlg-body').scrollTop = 0;
+  }
+  // поле параметров растёт под текст (комплектация бывает длинной), но не больше ~16 строк
+  function growTA(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight + 2, 400) + 'px';
+  }
+  function growAll() {
+    [].forEach.call(els.cdlg.querySelectorAll('.ci-params textarea, #c-params'), function (ta) { if (ta.value) growTA(ta); });
   }
   function readCItems() {
     return cItemRows().map(function (row) {
@@ -5733,6 +6385,7 @@ var Dogovor = (function () {
     if (fld) fld.classList.remove('invalid', 'miss', 'miss-q');
     if (e.target === cf.due) syncTermsPressed();
     if (e.target.closest('.ci') && e.target.getAttribute('data-f') === 'name') renderCPlan();
+    if (e.target.tagName === 'TEXTAREA' && (e.target.closest('.ci-params') || e.target === cf.params)) growTA(e.target);
   });
   els.cform.addEventListener('change', function (e) { if (e.target.name === 'csplit') syncCItems(); });
   els.cTerms.addEventListener('click', function (e) {
