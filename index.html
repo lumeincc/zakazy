@@ -1889,7 +1889,8 @@ var Dogovor = (function () {
         var ctx = cv.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, cv.width, cv.height);
-        return p.pg.render({ canvasContext: ctx, viewport: vp }).promise.then(function () {
+        // режим «печать»: без requestAnimationFrame, иначе в фоновой вкладке отрисовка встаёт
+        return p.pg.render({ canvasContext: ctx, viewport: vp, intent: 'print' }).promise.then(function () {
           job.check();
           return scanImage(worker, cv, job, pp);
         }).then(function (res) {
