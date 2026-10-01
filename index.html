@@ -4336,7 +4336,7 @@ var Dogovor = (function () {
   function renderSync() {
     els.syncText.textContent = pendingWrites ? 'сохраняю…'
       : state.syncing ? 'обновляю…'
-      : state.syncError ? 'нет связи с таблицей'
+      : state.syncError ? 'нет связи с таблицей — пробую снова…'
       : state.lastSync ? 'обновлено в ' + hhmm(state.lastSync) : '';
     els.syncText.classList.toggle('err', !!state.syncError && !state.syncing && !pendingWrites);
   }
@@ -4515,6 +4515,8 @@ var Dogovor = (function () {
 
   function applyList(res) {
     if (!res) return;
+    syncFails = 0;
+    clearTimeout(retryTimer);
     state.syncing = false;
     state.syncError = false;
     state.lastSync = Date.now();
@@ -4563,12 +4565,7 @@ var Dogovor = (function () {
     state.syncing = true;
     render();
     // в старой копии нет заявок — просим у таблицы полный список
-    api('list', { ver: hasP ? state.ver : '' }).then(applyList, function (e) {
-      state.syncing = false;
-      if (e && e.error === 'bad_code') { logout('Код доступа изменился — введите новый.'); return; }
-      state.syncError = true;
-      render();
-    });
+    api('list', { ver: hasP ? state.ver : '' }).then(applyList, function (e) { syncFailed(e, false); });
   }
   function load() {
     state.mode = 'loading';
@@ -4582,17 +4579,31 @@ var Dogovor = (function () {
   }
   function refresh(manual) {
     if (state.mode !== 'live' || pendingWrites) return;
+    clearTimeout(retryTimer);
     state.syncing = true;
-    if (manual) render();
+    if (manual) render(); else renderSync();
     api('list', { ver: state.ver }).then(function (res) {
       if (!pendingWrites) applyList(res); else { state.syncing = false; render(); }
-    }, function (e) {
-      state.syncing = false;
-      if (e && e.error === 'bad_code') { logout('Код доступа изменился — введите новый.'); return; }
-      state.syncError = true;
-      render();
-      if (manual) toast(errorText(e), 'error');
-    });
+    }, function (e) { syncFailed(e, manual); });
+  }
+  // связь пропала: первый сбой — тихо повторяем через пару секунд (чаще всего это миг без сети),
+  // дальше показываем «нет связи» и сами пробуем снова всё реже, пока не получится
+  var retryTimer = null, syncFails = 0;
+  function syncFailed(e, manual) {
+    state.syncing = false;
+    if (e && e.error === 'bad_code') { logout('Код доступа изменился — введите новый.'); return; }
+    syncFails++;
+    clearTimeout(retryTimer);
+    if (syncFails === 1 && !manual) {
+      state.syncing = true;
+      renderSync();
+      retryTimer = setTimeout(function () { refresh(false); }, 3000);
+      return;
+    }
+    state.syncError = true;
+    render();
+    if (manual) toast(errorText(e), 'error');
+    retryTimer = setTimeout(function () { refresh(false); }, syncFails === 1 ? 3000 : Math.min(60000, 10000 * (syncFails - 1)));
   }
 
   /* ============ вход и выход ============ */
@@ -6548,8 +6559,10 @@ var Dogovor = (function () {
     if (document.visibilityState === 'visible') refresh(false);
   }, 60000);
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible' && Date.now() - state.lastSync > 20000) refresh(false);
+    if (document.visibilityState === 'visible' && (state.syncError || Date.now() - state.lastSync > 20000)) refresh(false);
   });
+  // интернет вернулся (Wi-Fi, ноутбук проснулся) — сразу сверяемся с таблицей
+  window.addEventListener('online', function () { syncFails = 0; refresh(false); });
   setInterval(function () { if (state.mode === 'live' && !anyDialogOpen()) render(); }, 10 * 60 * 1000);
 
   /* ============ запуск ============ */
