@@ -2965,7 +2965,7 @@ var Dogovor = (function () {
         if (m[2].trim()) { lines.push({ t: m[2].trim(), gap: true }); gap = false; }
         return;
       }
-      if (RE_G_JUNK.test(t)) return;
+      if (RE_G_JUNK.test(t) || /^[_\-–—=.\s]{6,}$/.test(t)) return;
       lines.push({ t: t, gap: gap });
       gap = false;
     });
@@ -4296,7 +4296,7 @@ var Dogovor = (function () {
         from = RE_ROLE.lastIndex + /^[\s»"”')]*/.exec(s.slice(RE_ROLE.lastIndex))[0].length;   // следующая сторона описана после этой роли
         if (!side) continue;
         var name = partyName(s.slice(start, m.index));
-        if (name) out.push({ side: side, role: m[1], name: name, src: around(s, m.index - 200, RE_ROLE.lastIndex + 2) });
+        if (name) out.push({ side: side, role: m[1], name: name, src: around(s, m.index - 200, RE_ROLE.lastIndex + 2), seg: s.slice(start, m.index) });
       }
       if (i > 25) continue;
       RE_ROLE_FIRST.lastIndex = 0;
@@ -4396,7 +4396,7 @@ var Dogovor = (function () {
   function normUnit(u) {
     var t = low(u).replace(/\s+/g, '').replace(/[.,;:]+$/, '');
     if (!t) return '';
-    if (/^(?:m|ш|щ|w|i|l{1,3}|ur|u)[тt]$|^ши$/.test(t)) return 'шт';   // «шт.» после распознавания: «mT.», «IT.», «ши.»
+    if (/^(?:m|ш|щ|w|[il1|і]{1,3}|ur|u)[тt]$|^ши$/.test(t)) return 'шт';   // «шт.» после распознавания: «mT.», «IT.», «IIIT.», «ши.»
     if (/^(шт|штук|штука|штуки|ед|единица|единицы|единиц)$/.test(t)) return 'шт';
     if (/^(компл|комплект|комплекта|комплектов|к-т)$/.test(t)) return 'компл.';
     if (t === 'кг') return 'кг';
@@ -5101,7 +5101,7 @@ var Dogovor = (function () {
     var seenT = {};
     terms = terms.filter(function (t) { var k = t.cat + '|' + t.date + '|' + t.label; if (seenT[k]) return false; seenT[k] = 1; return true; });
     var due = pickDue(terms);
-    var contact = contactFrom(blocks), who = cust ? personFrom(cust.src) : '';
+    var contact = contactFrom(blocks), who = cust ? personFrom(cust.seg || '') || personFrom(cust.src) : '';
     var cur = /([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+([А-ЯЁ])\.\s?([А-ЯЁ])\.|([А-ЯЁ])\.\s?([А-ЯЁ])\.\s?[А-ЯЁ][а-яё]+/.exec(contact);
     if (who && !cur) contact = [who, contact].filter(Boolean).join(', ');
     else if (who && cur && cur[1] && doc.ocr && who.slice(-4) === cur[2] + '.' + cur[3] + '.') contact = contact.replace(cur[0], who);   // на скане фамилия в преамбуле чище, чем под печатью
