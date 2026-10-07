@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"></noscript>
 <style>
   :root {
     color-scheme: light;
@@ -61,7 +61,13 @@
     --backdrop: rgba(0, 0, 0, .4);
     --toast-bg: #111111;
     --toast-ink: #FFFFFF;
-    --font: "Nunito", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font: "IBM Plex Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    --r-lg: 8px;     /* листы, карточки, окна */
+    --r-md: 6px;     /* кнопки, поля */
+    --r-sm: 4px;     /* метки, вкладки */
+    --r-pill: 4px;   /* «таблетки» — тоже прямоугольные: строгий технический вид */
+    --zebra: #FAFAFA;
   }
   /* тёмная тема — включается кнопкой внизу страницы */
   :root[data-theme="dark"] {
@@ -109,6 +115,7 @@
     --backdrop: rgba(0, 0, 0, .62);
     --toast-bg: #F2F2F2;
     --toast-ink: #111111;
+    --zebra: #1A1A1A;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -134,24 +141,24 @@
   .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
   /* переключатель «Заказы | Закупки» */
-  .switch { display: inline-flex; gap: 3px; padding: 4px; background: var(--surface-3); border-radius: 14px; }
+  .switch { display: inline-flex; gap: 3px; padding: 4px; background: var(--surface-3); border-radius: var(--r-md); }
   .sw {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    height: 36px; padding: 0 18px; border: 0; border-radius: 10px;
+    height: 36px; padding: 0 18px; border: 0; border-radius: var(--r-sm);
     background: transparent; color: var(--ink-2); font-size: 15px; font-weight: 800; cursor: pointer; white-space: nowrap;
     transition: color .2s, background-color .15s, transform .12s;
   }
   @media (hover: hover) { .sw:hover { background: var(--thumb); } }
   .sw[aria-pressed="true"] { background: var(--pill); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
   .sw-n {
-    display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px;
+    display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: var(--r-pill);
     background: var(--accent); color: var(--accent-ink); font-size: 12.5px; font-weight: 800; font-variant-numeric: tabular-nums;
   }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     height: 40px; padding: 0 16px;
-    border: 1px solid var(--line); border-radius: 12px;
+    border: 1px solid var(--line); border-radius: var(--r-md);
     background: var(--surface); color: var(--ink);
     font-size: 15px; font-weight: 700; line-height: 1; white-space: nowrap;
     cursor: pointer; transition: border-color .15s, background-color .15s, box-shadow .15s, transform .12s;
@@ -169,7 +176,7 @@
   .notice {
     display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
     margin-bottom: 18px; padding: 14px 18px;
-    border: 1px solid var(--line); border-radius: 16px;
+    border: 1px solid var(--line); border-radius: var(--r-lg);
     background: var(--surface-2); color: var(--ink-2);
   }
   .notice p { margin: 0; flex: 1 1 320px; }
@@ -178,7 +185,7 @@
   .route {
     display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
     margin-bottom: 20px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden;
     box-shadow: var(--shadow);
   }
   .rc {
@@ -204,13 +211,13 @@
   .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
   .tabs {
     display: flex; gap: 3px; padding: 4px; max-width: 100%;
-    background: var(--surface-3); border-radius: 14px;
+    background: var(--surface-3); border-radius: var(--r-md);
     overflow-x: auto; scrollbar-width: none;
   }
   .tabs::-webkit-scrollbar { display: none; }
   .tab {
     display: inline-flex; align-items: center; gap: 7px;
-    height: 34px; padding: 0 13px; border: 0; border-radius: 10px;
+    height: 34px; padding: 0 13px; border: 0; border-radius: var(--r-sm);
     background: transparent; color: var(--ink-2);
     font-size: 14px; font-weight: 700; white-space: nowrap; cursor: pointer;
     transition: color .2s, background-color .15s, transform .12s;
@@ -225,13 +232,13 @@
   .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
   .search input {
     width: 100%; height: 40px; padding: 0 12px 0 36px;
-    border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 15px;
+    border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); font-size: 15px;
   }
   .search input::placeholder { color: var(--faint); }
-  .select { height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 15px; cursor: pointer; max-width: 100%; }
+  .select { height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); font-size: 15px; cursor: pointer; max-width: 100%; }
   .chip {
     display: inline-flex; align-items: center; gap: 4px;
-    height: 32px; padding: 0 4px 0 12px; border-radius: 999px;
+    height: 32px; padding: 0 4px 0 12px; border-radius: var(--r-pill);
     background: var(--surface-2); background: color-mix(in srgb, var(--st) var(--tint), var(--surface));
     border: 1px solid var(--line); border-color: color-mix(in srgb, var(--st) 40%, transparent);
     font-size: 14px; font-weight: 700;
@@ -240,7 +247,7 @@
   .chip button:hover { color: var(--ink); background: var(--thumb); }
 
   /* ---------- список заказов ---------- */
-  .sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); }
+  .sheet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow); }
   .thead, .row {
     display: grid;
     grid-template-columns: 100px minmax(0, 1fr) minmax(0, 2.1fr) 200px 156px;
@@ -279,7 +286,7 @@
   .contact { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
   .c-item { display: grid; gap: 4px; align-content: start; justify-items: start; }
   .kind {
-    display: inline-block; padding: 1px 9px; border-radius: 999px;
+    display: inline-block; padding: 1px 9px; border-radius: var(--r-pill);
     background: var(--surface-2); color: var(--ink-2);
     font-size: 12.5px; font-weight: 700;
   }
@@ -297,7 +304,7 @@
   .stage-select {
     appearance: none; -webkit-appearance: none;
     max-width: 100%; height: 32px; padding: 0 30px 0 28px;
-    border: 1px solid var(--line); border-color: color-mix(in srgb, var(--st) 40%, transparent); border-radius: 999px;
+    border: 1px solid var(--line); border-color: color-mix(in srgb, var(--st) 40%, transparent); border-radius: var(--r-pill);
     background: var(--surface-2); background: color-mix(in srgb, var(--st) var(--tint), var(--surface));
     color: var(--ink); font-size: 14px; font-weight: 700; text-overflow: ellipsis; cursor: pointer;
   }
@@ -337,7 +344,7 @@
   .pg-num { font-weight: 800; font-size: 16px; white-space: nowrap; }
   .pg-meta { color: var(--muted); }
   .pg-for { font-weight: 700; color: var(--ink-2); overflow-wrap: anywhere; }
-  .urgent { padding: 1px 9px; border-radius: 999px; background: var(--danger-soft); color: var(--danger); font-size: 12.5px; font-weight: 800; }
+  .urgent { padding: 1px 9px; border-radius: var(--r-pill); background: var(--danger-soft); color: var(--danger); font-size: 12.5px; font-weight: 800; }
   .pg-need { margin-left: auto; font-size: 13.5px; font-weight: 700; color: var(--ink-2); }
   .need--danger { color: var(--danger); }
   .need--warn { color: var(--warn); }
@@ -389,7 +396,7 @@
   .gate { display: grid; justify-items: center; width: 100%; }
   .gate-card {
     width: min(400px, 100%); display: grid; gap: 16px; padding: 32px 28px 28px; text-align: center;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow);
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow);
   }
   .gate-card h2 { margin: 0 0 6px; font-weight: 800; font-size: 26px; line-height: 1.2; }
   .gate-card .field input { text-align: center; }
@@ -400,7 +407,7 @@
   /* ---------- карточка заказа ---------- */
   .dlg {
     width: min(760px, calc(100vw - 32px)); max-height: min(92vh, 980px);
-    padding: 0; border: 1px solid var(--line); border-radius: 22px;
+    padding: 0; border: 1px solid var(--line); border-radius: var(--r-lg);
     background: var(--surface); color: var(--ink); box-shadow: var(--shadow-dlg);
   }
   .dlg[open] { display: flex; flex-direction: column; }
@@ -408,9 +415,9 @@
   .dlg form { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0; }
   .dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 22px 14px; border-bottom: 1px solid var(--line-2); }
   .dlg-head h2 { margin: 0; font-weight: 800; font-size: 22px; line-height: 1.2; }
-  .icon-btn { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); cursor: pointer; }
+  .icon-btn { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--muted); cursor: pointer; }
   .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
-  .dlg-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; display: grid; gap: 14px; align-content: start; padding: 18px 22px; }
+  .dlg-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-auto-rows: max-content; gap: 14px; align-content: start; padding: 18px 22px; }
   .dlg-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 22px; border-top: 1px solid var(--line-2); background: var(--surface-2); }
   .dlg-foot .spacer { flex: 1; }
   .form-msg { flex: 1 1 100%; margin: 0; font-size: 14px; color: var(--muted); }
@@ -424,7 +431,7 @@
   .field > span { font-size: 13.5px; font-weight: 700; color: var(--ink-2); }
   .field input, .field select, .field textarea {
     width: 100%; min-height: 42px; padding: 9px 12px;
-    border: 1px solid var(--line); border-radius: 12px;
+    border: 1px solid var(--line); border-radius: var(--r-md);
     background: var(--surface); color: var(--ink); font-size: 15px; line-height: 1.4;
   }
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--focus); outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 0; }
@@ -443,8 +450,8 @@
   .hist time { font-size: 13px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 
   /* ---------- материалы в карточке заказа ---------- */
-  .btn-sm { height: 34px; padding: 0 12px; font-size: 14px; border-radius: 10px; }
-  .mat-wrap { display: grid; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+  .btn-sm { height: 34px; padding: 0 12px; font-size: 14px; border-radius: var(--r-sm); }
+  .mat-wrap { display: grid; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
   .mat-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
   .mat-head h3 { margin: 0; font-size: 15px; font-weight: 800; }
   .mat-sum { margin: 0; font-size: 14px; color: var(--muted); }
@@ -462,7 +469,7 @@
   .pitems-wrap { display: grid; gap: 10px; }
   .pitems-wrap h3 { margin: 4px 0 0; font-size: 15px; font-weight: 800; }
   .pitems { display: grid; gap: 10px; }
-  .pi { display: grid; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  .pi { display: grid; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
   .pi-main { display: grid; grid-template-columns: 22px minmax(0, 1fr) 100px 96px 36px; gap: 8px; align-items: center; }
   .pi-n { font-weight: 800; color: var(--faint); text-align: center; font-variant-numeric: tabular-nums; }
   .pi-buy { display: grid; grid-template-columns: 150px minmax(0, 1.5fr) 120px 110px 150px; gap: 8px; padding-left: 30px; }
@@ -473,7 +480,7 @@
 
   .toast {
     position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 60;
-    max-width: calc(100vw - 32px); padding: 11px 18px; border-radius: 14px;
+    max-width: calc(100vw - 32px); padding: 11px 18px; border-radius: var(--r-md);
     background: var(--toast-bg); color: var(--toast-ink); font-size: 15px; font-weight: 600; box-shadow: 0 10px 28px rgba(0, 0, 0, .25);
     opacity: 0; transform: translate(-50%, 12px); transition: opacity .2s, transform .2s; pointer-events: none;
   }
@@ -481,7 +488,7 @@
   .toast.error { background: var(--danger); color: #FFFFFF; }
 
   /* ---------- заказ из договора ---------- */
-  .c-file { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); }
+  .c-file { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); }
   .c-file > svg { flex: none; color: var(--ink-2); }
   .c-file-main { display: grid; gap: 2px; min-width: 0; flex: 1; }
   .c-file-name { font-weight: 800; overflow-wrap: anywhere; }
@@ -497,7 +504,7 @@
   .c-err p { margin: 0; max-width: 460px; color: var(--danger); font-weight: 700; }
   .c-res { display: grid; gap: 14px; }
   .c-found { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-  .c-found li { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; padding: 3px 11px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--ok-soft); color: var(--ok); }
+  .c-found li { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; padding: 3px 11px; border-radius: var(--r-pill); font-size: 13px; font-weight: 700; background: var(--ok-soft); color: var(--ok); }
   .c-found li.miss { background: var(--warn-soft); color: var(--warn); }
   .c-found svg { flex: none; }
   .src { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
@@ -506,7 +513,7 @@
   .c-terms > span { font-size: 13.5px; font-weight: 700; color: var(--ink-2); }
   .c-term {
     display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; align-items: baseline;
-    width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 12px;
+    width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--r-md);
     background: var(--surface); color: var(--ink); text-align: left; cursor: pointer;
   }
   .c-term:hover { border-color: var(--faint); }
@@ -517,7 +524,7 @@
   .c-items-wrap { display: grid; gap: 10px; }
   .c-items-wrap h3 { margin: 4px 0 0; font-size: 15px; font-weight: 800; }
   .c-items { display: grid; gap: 10px; }
-  .ci { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  .ci { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
   .ci-main { display: grid; grid-template-columns: 22px minmax(0, 1fr) 88px 86px 36px; gap: 8px; align-items: center; }
   .ci .field input, .ci .field textarea { min-height: 40px; padding: 8px 10px; }
   .ci .field textarea { min-height: 66px; }
@@ -530,19 +537,19 @@
   .c-plan { margin: 0; font-size: 14px; color: var(--ink-2); }
   .c-text summary { cursor: pointer; width: max-content; max-width: 100%; font-weight: 700; color: var(--ink-2); }
   .c-text pre {
-    margin: 10px 0 0; max-height: 340px; overflow: auto; padding: 12px 14px; border-radius: 12px; background: var(--surface-2);
+    margin: 10px 0 0; max-height: 340px; overflow: auto; padding: 12px 14px; border-radius: var(--r-md); background: var(--surface-2);
     color: var(--ink-2); white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   .drop {
     position: fixed; inset: 12px; z-index: 80; display: grid; place-items: center; pointer-events: none;
-    border: 3px dashed var(--ink); border-radius: 24px; background: var(--backdrop);
+    border: 3px dashed var(--ink); border-radius: var(--r-lg); background: var(--backdrop);
   }
-  .drop p { margin: 0; padding: 16px 22px; border-radius: 16px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow-dlg); font-size: 18px; font-weight: 800; text-align: center; }
+  .drop p { margin: 0; padding: 16px 22px; border-radius: var(--r-lg); background: var(--surface); color: var(--ink); box-shadow: var(--shadow-dlg); font-size: 18px; font-weight: 800; text-align: center; }
 
   /* ---------- задачи менеджеров ---------- */
   .sw-n.late { background: var(--danger); color: #FFFFFF; }
   .tk-add { display: grid; grid-template-columns: minmax(0, 1fr) 180px 150px auto; gap: 8px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
-  .tk-add input { width: 100%; min-width: 0; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-size: 15px; }
+  .tk-add input { width: 100%; min-width: 0; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); color: var(--ink); font-size: 15px; }
   .tk-add input::placeholder { color: var(--faint); }
   .tk-add input:focus { border-color: var(--focus); outline: 3px solid color-mix(in srgb, var(--accent) 25%, transparent); outline-offset: 0; }
   .tthead, .tk { display: grid; grid-template-columns: 26px minmax(0, 1fr) 180px 150px; column-gap: 16px; padding-inline: 20px; }
@@ -566,7 +573,7 @@
   .tk-text { font-weight: 700; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; white-space: pre-line; }
   .tk.is-done .tk-text { text-decoration: line-through; text-decoration-color: var(--faint); color: var(--muted); }
   .tk-meta { font-size: 13px; color: var(--muted); }
-  .tk-order { display: inline-block; max-width: 100%; padding: 1px 9px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); font-size: 12.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tk-order { display: inline-block; max-width: 100%; padding: 1px 9px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--ink-2); font-size: 12.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tk-to { font-size: 14px; font-weight: 700; color: var(--ink-2); overflow-wrap: anywhere; }
   .tk-to.none { color: var(--faint); font-weight: 600; }
   .tk-due { display: grid; gap: 1px; align-content: start; font-variant-numeric: tabular-nums; }
@@ -579,7 +586,7 @@
   .tk-due.ok span { color: var(--ok); }
   .tnote { margin: 0; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--warn-soft); color: var(--warn); font-size: 14px; font-weight: 700; }
   /* задачи в карточке заказа */
-  .otk-wrap { display: grid; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+  .otk-wrap { display: grid; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
   .otk-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
   .otk-list li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: baseline; gap: 10px; font-size: 14px; cursor: pointer; }
   .otk-list li:hover .otk-t { text-decoration: underline; text-underline-offset: 3px; }
@@ -607,7 +614,7 @@
     .c-stage .rmini { order: 5; flex: 1 1 100%; gap: 4px; }
     .c-stage .rmini i { flex: 1; width: auto; height: 6px; }
     .c-stage .xtra-narrow { order: 6; flex: 1 1 100%; }
-    .due--danger .due-sub, .due--warn .due-sub { padding: 2px 9px; border-radius: 999px; }
+    .due--danger .due-sub, .due--warn .due-sub { padding: 2px 9px; border-radius: var(--r-pill); }
     .due--danger .due-sub { background: var(--danger-soft); }
     .due--warn .due-sub { background: var(--warn-soft); }
     .filters { flex-basis: 100%; justify-content: flex-start; }
@@ -654,7 +661,7 @@
     .actions { width: 100%; }
     .actions .btn-primary { flex: 1; }
     .switch { width: 100%; }
-    .sw { flex: 1; }
+    .sw { flex: 1 1 auto; min-width: 0; padding: 0 12px; }
   }
   @media (max-width: 520px) {
     .route.route-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -671,6 +678,15 @@
   @media (max-width: 380px) {
     .rc { padding-right: 6px; }
     .rc-label { font-size: 11.5px; letter-spacing: -.1px; }   /* «Проектирование» влезает в узкую ячейку */
+  }
+  /* совсем узко (маленький телефон или крупный шрифт в настройках): этапы в 2 колонки, подписи плиток переносятся, а не обрезаются */
+  @media (max-width: 340px) {
+    .route { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .route .rc:nth-child(n) { border-left: 1px solid var(--line-2); border-top: 1px solid var(--line-2); }
+    .route .rc:nth-child(odd) { border-left: 0; }
+    .route .rc:nth-child(-n + 2) { border-top: 0; }
+    .rc-label { font-size: 12px; letter-spacing: 0; }
+    .hot .ht-s { white-space: normal; }
   }
   @media (max-width: 900px) {
     .tthead { display: none; }
@@ -701,11 +717,19 @@
     .actions .btn .sm-hide { display: none; }
     .actions .btn { padding: 0 13px; }
   }
-  @media (max-width: 400px) {
-    .actions { gap: 6px; }
-    .actions .btn { padding: 0 10px; }
-    #btnContract svg { display: none; }
-  }
+  /* шапка ужимается по шагам, если не влезает (класс ставит скрипт, измеряя реальную ширину) */
+  .lbl-short { display: none; }
+  .top.fit1 .switch { gap: 2px; }
+  .top.fit1 .sw { gap: 6px; padding: 0 8px; }
+  .top.fit1 .actions { gap: 6px; }
+  .top.fit1 .actions .btn { padding: 0 10px; }
+  .top.fit1 #btnContract svg { display: none; }
+  .top.fit2 .lbl-long { display: none; }
+  .top.fit2 .lbl-short { display: inline; }
+  .top.fit3 .sw { gap: 5px; padding: 0 6px; font-size: 14px; }
+  .top.fit3 .sw-n { min-width: 20px; height: 20px; padding: 0 6px; font-size: 12px; }
+  .top.fit3 #btnContract svg { display: block; }
+  .top.fit3 #btnContract .lbl-short { display: none; }
   @media (max-width: 640px) {
     .c-plan { flex-basis: 100%; }
     #cdlg .dlg-foot .spacer { display: none; }
@@ -717,7 +741,7 @@
     position: relative; flex: 1 1 0; min-width: 0;
     display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "n t" "n s";
     align-items: center; column-gap: 12px; row-gap: 1px;
-    padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px;
+    padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-lg);
     background: var(--surface); color: var(--ink); text-align: left; cursor: pointer;
     box-shadow: var(--shadow); -webkit-tap-highlight-color: transparent;
     transition: transform .22s cubic-bezier(.2, .8, .2, 1), box-shadow .22s, border-color .25s, background-color .3s;
@@ -746,7 +770,7 @@
   @media (max-width: 640px) {
     .hot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
     .hot > .ht:last-child:nth-child(odd) { grid-column: 1 / -1; }
-    .ht { grid-template-areas: "n t" "s s"; align-items: baseline; column-gap: 7px; padding: 10px 12px 9px; border-radius: 14px; }
+    .ht { grid-template-areas: "n t" "s s"; align-items: baseline; column-gap: 7px; padding: 10px 12px 9px; border-radius: var(--r-md); }
     .ht-n { font-size: 24px; }
     .ht-t { align-self: baseline; font-size: 13.5px; }
     .ht-s { margin-top: 3px; font-size: 12px; }
@@ -760,7 +784,7 @@
   .switch::before, .tabs::before {
     content: ""; position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 0;
     width: var(--tw, 0px); transform: translateX(var(--tx, 0px));
-    border-radius: 10px; background: var(--pill); box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+    border-radius: var(--r-sm); background: var(--pill); box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
     opacity: 0; pointer-events: none;
     transition: transform .36s cubic-bezier(.3, .9, .25, 1), width .36s cubic-bezier(.3, .9, .25, 1), opacity .2s;
   }
@@ -787,7 +811,7 @@
   @media (pointer: coarse) {
     .contact { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 6px; }
     .tel-sep { display: none; }
-    .tel { display: inline-flex; align-items: center; padding: 4px 11px 4px 9px; border-radius: 999px; background: var(--surface-2); color: var(--ink); font-size: 13.5px; font-weight: 700; transition: transform .12s, background-color .15s; }
+    .tel { display: inline-flex; align-items: center; padding: 4px 11px 4px 9px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--ink); font-size: 13.5px; font-weight: 700; transition: transform .12s, background-color .15s; }
     .tel:active { transform: scale(.95); background: var(--surface-3); }
   }
   .field-wrap { display: grid; gap: 8px; align-content: start; min-width: 0; }
@@ -802,7 +826,7 @@
   }
   .xc {
     display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
-    padding: 2px 9px 2px 7px; border-radius: 999px;
+    padding: 2px 9px 2px 7px; border-radius: var(--r-pill);
     background: var(--surface-2); color: var(--ink-2); font-size: 12.5px; font-weight: 700; line-height: 1.4;
   }
   .xc svg { flex: none; }
@@ -822,7 +846,7 @@
     #osheet, #vPurch .sheet { background: transparent; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
     #osheet .tbody, #pbody { display: grid; gap: 10px; }
     #osheet .row, #pbody .pg, #osheet .empty, #vPurch .empty, #osheet .skel, #pbody .skel {
-      border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); overflow: hidden;
+      border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow); overflow: hidden;
     }
     #osheet .tbody > .row:first-child, #pbody > .pg:first-child, #osheet .skel:first-child, #pbody .skel:first-child { border-top: 1px solid var(--line); }
     .row { padding: 14px 15px 13px; }
@@ -858,6 +882,208 @@
   @keyframes pop { from { opacity: 0; transform: scale(.88); } }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* ---------- технический вид: цифры моноширинные, таблица — сеткой ---------- */
+  body { font-size: 14.5px; letter-spacing: -.005em; }
+  .num, .recv, .due-date, .rc-count, .ht-n, .tab .n, .sw-n, .p-qty, .pg-num, .pg-sum, .tk-due b, .since, .hist time,
+  .s-num .num, .s-q, .xc, .pg-need, .p-eta, .c-term b, .tz-n { font-family: var(--mono); letter-spacing: 0; }
+  .num { font-weight: 600; }
+  .num::before { font-family: var(--font); }
+  .rc-count, .ht-n { font-weight: 600; }
+  .th { letter-spacing: .02em; font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+  .kind { border-radius: var(--r-sm); border: 1px solid var(--line); background: transparent; letter-spacing: .02em; font-size: 12px; padding: 0 7px; }
+  .rc-label, .ht-t { letter-spacing: .01em; }
+  @media (min-width: 901px) {
+    /* сетка таблицы: вертикальные линии между колонками, чередование строк */
+    .thead, .row { column-gap: 0; }
+    .thead > *, .row > * { padding-left: 14px; padding-right: 10px; }
+    .thead > :first-child, .row > :first-child { padding-left: 0; }
+    .row > * + *, .thead > * + * { border-left: 1px solid var(--line-2); }
+    .thead { border-bottom: 2px solid var(--line); }
+    .tbody > .row:nth-child(even) { background: var(--zebra); }
+    @media (hover: hover) { .tbody > .row:hover { background: var(--hover); } }
+    .pthead, .prow { column-gap: 0; }
+    .pthead > *, .prow > * { padding-left: 14px; padding-right: 10px; }
+    .pthead > :first-child, .prow > :first-child { padding-left: 0; }
+    .prow > * + *, .pthead > * + * { border-left: 1px solid var(--line-2); }
+  }
+  .stage-select { border-radius: var(--r-sm); }
+  .rmini i { border-radius: 1px; }
+
+  /* ---------- значки разделов; на телефоне разделы — панелью внизу экрана ---------- */
+  .sw-i { display: none; flex: none; }
+  @media (max-width: 640px) {
+    .app { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+    .top .switch {
+      position: fixed; z-index: 55; left: 0; right: 0; bottom: 0; width: auto;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0;
+      padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px)); border-radius: 0;
+      background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px rgba(0, 0, 0, .06);
+    }
+    .top .switch::before { top: 6px; bottom: calc(6px + env(safe-area-inset-bottom, 0px)); border-radius: var(--r-md); background: var(--surface-3); box-shadow: none; }
+    .top .sw { position: relative; flex-direction: column; gap: 3px; height: 52px; padding: 0 2px; font-size: 11.5px; font-weight: 700; color: var(--muted); }
+    .top .sw[aria-pressed="true"] { color: var(--ink); }
+    .top .sw-i { display: block; }
+    .top .sw-n { position: absolute; top: 3px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; font-size: 11px; }
+    .top.fit1 .sw, .top.fit3 .sw { padding: 0 2px; gap: 3px; font-size: 11.5px; }
+    .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+    .top { margin-bottom: 14px; }
+  }
+
+  /* ---------- раздел «Отгрузка» ---------- */
+  .srow {
+    display: grid; grid-template-columns: 90px minmax(0, 1.4fr) minmax(0, 1fr) 156px; column-gap: 18px;
+    padding: 14px 20px; border-top: 1px solid var(--line-2); align-items: start; cursor: pointer; transition: background-color .12s;
+  }
+  .tbody > .srow:first-child { border-top: 0; }
+  @media (hover: hover) { .srow:hover { background: var(--hover); } }
+  .srow:active { background: var(--surface-2); }
+  .srow > * { min-width: 0; }
+  .srow.is-pending { opacity: .62; }
+  .s-num { display: grid; gap: 2px; align-content: start; }
+  .s-num .num::before { content: "№\00a0"; color: var(--faint); font-weight: 600; }
+  .s-main { display: grid; gap: 3px; align-content: start; }
+  .s-main .title { font-size: 15px; }
+  .s-prog { display: grid; gap: 6px; align-content: start; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .s-bar { position: relative; height: 8px; border-radius: 2px; background: var(--surface-3); overflow: hidden; }
+  .s-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--ink-2); transition: width .45s cubic-bezier(.2, .8, .2, 1), background-color .3s; }
+  .srow.is-full .s-bar i, .s-bar.is-full i { background: var(--ok); }
+  .srow.is-full .s-prog span { color: var(--ok); }
+  .s-bar.big { height: 12px; }
+  @media (max-width: 900px) {
+    .srow { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "num due" "main main" "prog prog"; row-gap: 8px; padding: 14px 16px; }
+    .s-num { grid-area: num; display: flex; align-items: baseline; gap: 10px; }
+    .c-due { grid-area: due; }
+    .srow .c-due { justify-items: end; text-align: right; }
+    .s-main { grid-area: main; }
+    .s-prog { grid-area: prog; }
+  }
+  @media (max-width: 640px) {
+    #ssheet { background: transparent; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+    #sbody { display: grid; gap: 10px; }
+    #sbody .srow, #ssheet .empty, #sbody .skel { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow); }
+  }
+  /* окно чек-листа */
+  .s-head { display: grid; gap: 3px; }
+  .s-head .cust { font-size: 16px; }
+  .s-head .title { font-weight: 600; color: var(--ink-2); }
+  .s-head .s-due { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .s-head .s-due.due--danger { color: var(--danger); }
+  .s-head .s-due.due--warn { color: var(--warn); }
+  .s-progress { display: grid; gap: 7px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); }
+  .s-progress p { margin: 0; font-weight: 700; font-size: 14px; }
+  .s-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+  .s-it {
+    display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; column-gap: 12px;
+    min-height: 52px; padding: 8px 14px; border-top: 1px solid var(--line-2); cursor: pointer; -webkit-user-select: none; user-select: none;
+    transition: background-color .15s;
+  }
+  .s-list > :first-child { border-top: 0; }
+  .s-it.lvl1 { padding-left: 34px; }
+  @media (hover: hover) { .s-it:hover { background: var(--hover); } }
+  .s-it:active { background: var(--surface-2); }
+  .s-t { font-weight: 600; overflow-wrap: anywhere; }
+  .s-it:not(.lvl1) .s-t { font-weight: 800; }
+  .s-q { margin-left: 4px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+  .s-who { font-size: 12px; color: var(--ok); font-weight: 600; white-space: nowrap; }
+  .s-it.is-pending .s-who { color: var(--warn); }
+  .s-it.is-on .s-t { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--faint); }
+  .s-box {
+    display: grid; place-items: center; width: 28px; height: 28px; padding: 0;
+    border: 2px solid var(--faint); border-radius: var(--r-sm); background: var(--surface); color: #FFFFFF; cursor: pointer;
+    transition: background-color .15s, border-color .15s, transform .12s;
+  }
+  .s-box svg { opacity: 0; transform: scale(.6); transition: opacity .15s, transform .2s cubic-bezier(.3, 1.6, .5, 1); }
+  .s-it.is-on .s-box { border-color: var(--ok); background: var(--ok); }
+  .s-it.is-on .s-box svg { opacity: 1; transform: none; }
+  .s-box:disabled { cursor: default; opacity: .75; }
+  .s-hd {
+    padding: 8px 14px 6px 34px; border-top: 1px solid var(--line-2); background: var(--surface-2);
+    font-size: 12.5px; font-weight: 700; letter-spacing: .02em; color: var(--muted);
+  }
+  #sbtnShip.armed { background: var(--warn); border-color: var(--warn); color: #FFFFFF; }
+  @media (max-width: 640px) {
+    /* на телефоне «кто и когда отметил» — под названием, чтобы название не сжималось в столбик */
+    .s-it { grid-template-columns: 30px minmax(0, 1fr); row-gap: 2px; }
+    .s-it .s-box { grid-row: 1 / span 2; align-self: center; }
+    .s-who { grid-column: 2; }
+  }
+
+  /* ---------- ТЗ для цеха: лист, как в паспортах изделий ---------- */
+  html.tz-open, html.tz-open body { overflow: hidden; }
+  .tz-view { position: fixed; inset: 0; z-index: 90; overflow: auto; background: var(--surface-3); -webkit-overflow-scrolling: touch; }
+  .tz-bar {
+    position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--line); box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+  }
+  .tz-bar h2 { margin: 0; font-size: 16px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tz-bar .spacer { flex: 1; }
+  .tz-hint { max-width: 210mm; margin: 12px auto 0; padding: 0 16px; font-size: 13px; color: var(--muted); }
+  .tz-paper { max-width: 210mm; margin: 12px auto 40px; padding: 0 12px; display: grid; gap: 16px; }
+  .tz-doc {
+    background: #FFFFFF; color: #000000; padding: 16mm 14mm 14mm 18mm; box-shadow: 0 2px 14px rgba(0, 0, 0, .18);
+    font: 11pt/1.35 "Times New Roman", "Liberation Serif", "PT Serif", Times, serif; outline: none;
+  }
+  .tz-doc:focus-visible { box-shadow: 0 0 0 2px #2F6FED, 0 2px 14px rgba(0, 0, 0, .18); }
+  .tz-approve { width: 62mm; margin-left: auto; text-align: left; font-size: 10.5pt; line-height: 1.6; }
+  .tz-approve .tz-l { display: block; margin: 8mm 0 1mm; }
+  .tz-small { display: block; font-size: 10pt; }
+  .tz-doc h1 { margin: 8mm 0 1mm; text-align: center; font-size: 15pt; font-weight: 700; letter-spacing: .12em; }
+  .tz-lead { margin: 0 0 5mm; text-align: center; font-size: 11pt; }
+  .tz-doc h2 { margin: 5mm 0 2mm; font-size: 11.5pt; font-weight: 700; }
+  .tz-doc table { width: 100%; border-collapse: collapse; }
+  .tz-doc th, .tz-doc td { border: 1px solid #000000; padding: 1.2mm 1.8mm; vertical-align: top; text-align: left; }
+  .tz-meta th { width: 38mm; font-weight: 700; background: #F2F2F2; }
+  .tz-kind { color: #333333; }
+  .tz-term { display: block; font-size: 10pt; color: #333333; }
+  .tz-items thead th { background: #F2F2F2; text-align: center; font-size: 10pt; }
+  .tz-items .tz-n { width: 11mm; text-align: center; white-space: nowrap; font-family: inherit; }
+  .tz-items .tz-q { width: 15mm; text-align: center; }
+  .tz-items .tz-u { width: 12mm; text-align: center; }
+  .tz-items .tz-ok { width: 12mm; }
+  .tz-it td { font-weight: 700; }
+  .tz-it td:nth-child(5) { font-weight: 400; }
+  .tz-grp td { background: #F7F7F7; font-style: italic; font-weight: 700; }
+  .tz-caption { margin: 0 0 1mm; text-align: right; font-size: 10pt; font-style: italic; }
+  .tz-list { margin: 0; padding-left: 6mm; }
+  .tz-lines { display: grid; gap: 7mm; padding: 4mm 0 2mm; }
+  .tz-lines i { display: block; border-bottom: 1px solid #000000; }
+  .tz-sign { display: grid; gap: 5mm; margin-top: 8mm; }
+  .tz-sign p { display: grid; grid-template-columns: 58mm minmax(0, 1fr) 52mm; align-items: end; gap: 3mm; margin: 0; }
+  .tz-l { display: inline-block; min-width: 30mm; border-bottom: 1px solid #000000; height: 1em; }
+  .tz-who { white-space: nowrap; text-align: right; }
+  .tz-foot { margin: 8mm 0 0; font-size: 9pt; color: #555555; text-align: right; }
+  @media (max-width: 640px) {
+    /* на телефоне лист перестраивается по ширине экрана — чтобы читать и править без прокрутки вбок; на печать идёт A4 */
+    .tz-paper { padding: 0; gap: 10px; }
+    .tz-doc { padding: 6mm 4mm; font-size: 9.5pt; }
+    .tz-doc th, .tz-doc td { padding: 1mm 1.2mm; overflow-wrap: anywhere; hyphens: auto; }
+    .tz-approve { width: auto; max-width: 62mm; }
+    .tz-doc h1 { margin-top: 6mm; font-size: 12.5pt; letter-spacing: .06em; }
+    .tz-items thead th { font-size: 8pt; white-space: nowrap; overflow-wrap: normal; padding-left: .8mm; padding-right: .8mm; }
+    .tz-items .tz-n { width: 8mm; }
+    .tz-items .tz-q { width: 10mm; }
+    .tz-items .tz-u { width: 8mm; }
+    .tz-items .tz-ok { width: 8mm; }
+    .tz-items thead th:nth-child(2) { width: 34%; }
+    .tz-items td.tz-n, .tz-items td.tz-q, .tz-items td.tz-u { overflow-wrap: normal; white-space: nowrap; }
+    .tz-sign p { grid-template-columns: minmax(0, 1fr); gap: 1mm; }
+    .tz-meta th { width: 24mm; }
+    .tz-who { white-space: normal; }
+    .tz-bar .btn span { display: none; }
+  }
+  @media print {
+    @page { size: A4; margin: 12mm 12mm 14mm 16mm; }
+    html.tz-open, html.tz-open body { overflow: visible !important; height: auto !important; background: #FFFFFF !important; }
+    html.tz-open body > *:not(#tzView) { display: none !important; }
+    html.tz-open .tz-view { position: static; overflow: visible; background: #FFFFFF; }
+    html.tz-open .tz-bar, html.tz-open .tz-hint { display: none !important; }
+    html.tz-open .tz-paper { max-width: none; margin: 0; padding: 0; display: block; zoom: 1 !important; }
+    html.tz-open .tz-doc { box-shadow: none; padding: 0; font-size: 11pt; }
+    html.tz-open .tz-doc + .tz-doc { break-before: page; page-break-before: always; }
+    html.tz-open .tz-items tr, html.tz-open .tz-sign { break-inside: avoid; page-break-inside: avoid; }
+    html.tz-open .tz-items thead { display: table-header-group; }
+  }
+
   .theme-swap *, .theme-swap *::before, .theme-swap *::after { transition: none !important; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; animation: none !important; }
@@ -869,22 +1095,23 @@
   <header class="top">
     <h1 class="vh">Журнал заказов и закупок</h1>
     <div class="switch" role="group" aria-label="Раздел">
-      <button type="button" class="sw" id="swOrders" data-view="orders" aria-pressed="true">Заказы</button>
-      <button type="button" class="sw" id="swPurch" data-view="purchases" aria-pressed="false">Закупки<span class="sw-n" id="swN" hidden></span></button>
-      <button type="button" class="sw" id="swTasks" data-view="tasks" aria-pressed="false">Задачи<span class="sw-n" id="swTN" hidden></span></button>
+      <button type="button" class="sw" id="swOrders" data-view="orders" aria-pressed="true"><svg class="sw-i" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 2.75h5a1 1 0 0 1 1 1v1.25h-7V3.75a1 1 0 0 1 1-1zM6.5 4H5a1.75 1.75 0 0 0-1.75 1.75v10.5A1.75 1.75 0 0 0 5 18h10a1.75 1.75 0 0 0 1.75-1.75V5.75A1.75 1.75 0 0 0 15 4h-1.5M7 10h6M7 13.5h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sw-l">Заказы</span></button>
+      <button type="button" class="sw" id="swPurch" data-view="purchases" aria-pressed="false"><svg class="sw-i" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M2.5 3.5h2.2l2.1 9.5h8.4l2.1-7H5.6M8.2 16.6h.01M14.6 16.6h.01" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sw-l">Закупки</span><span class="sw-n" id="swN" hidden></span></button>
+      <button type="button" class="sw" id="swTasks" data-view="tasks" aria-pressed="false"><svg class="sw-i" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5.6 5 7.1l2.6-3M3.5 12.6 5 14.1l2.6-3M10.5 5.6h6M10.5 12.6h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sw-l">Задачи</span><span class="sw-n" id="swTN" hidden></span></button>
+      <button type="button" class="sw" id="swShip" data-view="ship" aria-pressed="false"><svg class="sw-i" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M1.75 5.5h9.75v8.5H1.75zM11.5 8.25h3.4l3.35 3.35V14H11.5M5.4 16.1h.01M14.6 16.1h.01" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sw-l">Отгрузка</span><span class="sw-n" id="swSN" hidden></span></button>
     </div>
     <div class="actions">
       <button type="button" class="btn" id="btnExport" hidden title="Скачать этот раздел файлом Excel" aria-label="Скачать Excel">
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.5m0 0L5 7m3 3 3-3M3 13h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="sm-hide">Excel</span>
       </button>
-      <button type="button" class="btn" id="btnContract" hidden title="Загрузить договор (PDF, Word, скан или фото) — заказ заполнится сам">
+      <button type="button" class="btn" id="btnContract" hidden title="Загрузить договор (PDF, Word, скан или фото) — заказ заполнится сам" aria-label="Заказ из договора">
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 1.6h5.4l3.2 3.2v9.6H3.8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 1.8v3.2h3.2M8.1 12.4V7.9m0 0L6.3 9.7m1.8-1.8 1.8 1.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Из договора</span>
+        <span class="lbl-long">Из договора</span><span class="lbl-short">Договор</span>
       </button>
       <button type="button" class="btn btn-primary" id="btnNew" hidden>
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span id="btnNewText">Новый заказ</span>
+        <span id="btnNewText" class="lbl-long">Новый заказ</span><span id="btnNewShort" class="lbl-short">Заказ</span>
       </button>
     </div>
   </header>
@@ -1030,6 +1257,23 @@
     </section>
   </div>
 
+  <div class="view" id="vShip" hidden>
+    <div class="bar">
+      <div class="tabs" id="stabs" role="group" aria-label="Какие заказы показать"></div>
+      <div class="filters">
+        <label class="search">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m10.5 10.5 3 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input type="search" id="sq" placeholder="Поиск: заказчик, изделие, №" aria-label="Поиск по отгрузке" autocomplete="off">
+        </label>
+      </div>
+    </div>
+    <p class="tnote" id="snote" hidden></p>
+    <section class="sheet" id="ssheet" aria-label="Отгрузка">
+      <div class="tbody" id="sbody"></div>
+      <div class="empty" id="sempty" hidden><p id="semptyText"></p></div>
+    </section>
+  </div>
+
   <div class="foot">
     <span id="foot"></span>
     <span class="spacer"></span>
@@ -1099,6 +1343,14 @@
     <div class="dlg-foot">
       <p class="form-msg" id="formMsg" role="status"></p>
       <button type="button" class="btn btn-danger" id="btnDelete">Удалить</button>
+      <button type="button" class="btn" id="btnTZ" title="Техническое задание для цеха — на печать">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6V2.25h7V6M4.5 11.5h-2V6.75A.75.75 0 0 1 3.25 6h9.5a.75.75 0 0 1 .75.75v4.75h-2M4.5 9.5h7v4.25h-7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <span>ТЗ для цеха</span>
+      </button>
+      <button type="button" class="btn" id="btnShipOpen" hidden>
+        <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M1.75 5.5h9.75v8.5H1.75zM11.5 8.25h3.4l3.35 3.35V14H11.5M5.4 16.1h.01M14.6 16.1h.01" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Отгрузка</span>
+      </button>
       <span class="spacer"></span>
       <button type="button" class="btn" id="btnCancel">Отмена</button>
       <button type="submit" class="btn btn-primary" id="btnSave">Сохранить</button>
@@ -1176,6 +1428,44 @@
   </form>
 </dialog>
 <datalist id="peopleList"></datalist>
+
+<dialog class="dlg" id="sdlg" aria-labelledby="sdlgTitle">
+  <form id="sform" novalidate>
+    <div class="dlg-head">
+      <h2 id="sdlgTitle">Отгрузка</h2>
+      <button type="button" class="icon-btn" id="sdlgClose" aria-label="Закрыть"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="dlg-body">
+      <div class="s-head" id="sHead"></div>
+      <div class="s-progress">
+        <div class="s-bar big" aria-hidden="true"><i id="sBarFill"></i></div>
+        <p id="sProgText" role="status"></p>
+      </div>
+      <p class="tnote" id="sNoteDlg" hidden></p>
+      <ul class="s-list" id="sList" aria-label="Что погрузить"></ul>
+    </div>
+    <div class="dlg-foot">
+      <p class="form-msg" id="sformMsg" role="status"></p>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="sbtnCancel">Закрыть</button>
+      <button type="submit" class="btn btn-primary" id="sbtnShip">Отгрузить</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="tz-view" id="tzView" hidden role="dialog" aria-modal="true" aria-labelledby="tzTitle">
+  <div class="tz-bar">
+    <button type="button" class="icon-btn" id="tzClose" aria-label="Закрыть"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 4 6 9l5 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <h2 id="tzTitle">ТЗ для цеха</h2>
+    <span class="spacer"></span>
+    <button type="button" class="btn btn-primary" id="tzPrint">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6V2.25h7V6M4.5 11.5h-2V6.75A.75.75 0 0 1 3.25 6h9.5a.75.75 0 0 1 .75.75v4.75h-2M4.5 9.5h7v4.25h-7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <span>Печать</span>
+    </button>
+  </div>
+  <p class="tz-hint">Текст на листе можно поправить перед печатью — в журнале он не изменится. Чтобы получить файл, в окне печати выберите «Сохранить как PDF». Если сверху и снизу листа печатается адрес сайта — снимите галочку «Колонтитулы».</p>
+  <div class="tz-paper" id="tzPaper"></div>
+</div>
 
 <dialog class="dlg dlg-wide" id="cdlg" aria-labelledby="cdlgTitle">
   <form id="cform" novalidate>
@@ -2039,7 +2329,7 @@ var Dogovor = (function () {
           });
         }).then(function () { return page(i + 1); });
       }
-      return page(1).then(function () { return ocrPdf(pages, job); }).then(function () {
+      return page(1).then(function () { return vectorGrids(pages, job); }).then(function () { return ocrPdf(pages, job); }).then(function () {
         var doc = layout(pages);
         doc.type = 'pdf';
         doc.pages = total;
@@ -2050,6 +2340,99 @@ var Dogovor = (function () {
       });
     });
   }
+  /* ---------- таблицы в PDF из Word: ячейки — по нарисованным линиям ----------
+     текст в PDF лежит кусками с координатами; где проходят границы ячеек, видно только на картинке страницы.
+     рисуем страницу, находим линии таблицы (как на скане) и раскладываем куски текста по ячейкам —
+     так не путаются строки с переносами, объединённые ячейки и «П.п / 1.1» в две строки */
+  var RE_TABLE_HINT = /наименовани|кол-?\s*во|количеств|ед\.?\s*изм|^п\.?\s*п\.?$|п\s*\/\s*п|итого|характеристик|комплектаци|реквизит|(?:^|\s)(?:бин|иик|бик)(?:[\s:\/]|$)/i;
+  function vectorGrids(pages, job) {
+    var todo = pages.filter(function (p) {
+      return textLen(p.items) >= 30 && p.items.some(function (it) { return RE_TABLE_HINT.test(it.s); });
+    });
+    var k = 0;
+    function next() {
+      if (k >= todo.length) return Promise.resolve();
+      job.check();
+      var p = todo[k++];
+      var scale = Math.min(3, 2000 / Math.max(p.w, p.h)), vp = p.pg.getViewport({ scale: scale });
+      var cv = document.createElement('canvas');
+      cv.width = Math.round(vp.width);
+      cv.height = Math.round(vp.height);
+      var ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+      return p.pg.render({ canvasContext: ctx, viewport: vp, intent: 'print' }).promise.then(function () {
+        job.check();
+        try { pdfGrids(p, cv, scale); } catch (e) { if (e && e.code === 'cancel') throw e; }   // не вышло — читаем страницу как раньше
+        cv.width = cv.height = 0;
+        return next();
+      }, function (e) {
+        cv.width = cv.height = 0;
+        if (job.cancelled) throw fail('cancel');
+        return next();
+      });
+    }
+    return next();
+  }
+  function lumaOf(d, n) {
+    var g = new Uint8Array(n);
+    for (var i = 0, j = 0; i < n; i++, j += 4) g[i] = (d[j] * 77 + d[j + 1] * 150 + d[j + 2] * 29) >> 8;
+    return g;
+  }
+  function pdfGrids(p, cv, scale) {
+    var W = cv.width, H = cv.height, img = cv.getContext('2d').getImageData(0, 0, W, H);
+    var ink = inkOf(lumaOf(img.data, W * H), W, H);
+    img = null;
+    var sc = { h: groupRuns(hRuns(ink, W, H, Math.max(36, Math.round(W / 32)))), v: groupRuns(vRuns(ink, W, H, Math.max(24, Math.round(H / 70)))), W: W, H: H };
+    var grids = gridTables(sc);
+    if (!grids.length) return;
+    var keep = [];
+    p.items.forEach(function (it) {
+      var cell = cellOf(grids, (it.x + it.w / 2) * scale, (it.y - it.h * 0.35) * scale);
+      if (cell) (cell.items = cell.items || []).push(it);
+      else keep.push(it);
+    });
+    var found = grids.map(function (g) {
+      g.k = scale;
+      return { y0: g.ys[0] / scale, y1: g.ys[g.R] / scale, xs: g.xs.map(function (x) { return x / scale; }), rows: pdfGridRows(g) };
+    }).filter(function (g) { return g.rows.length; });
+    if (!found.length) return;
+    p.items = keep;
+    p.grids = (p.grids || []).concat(found);
+  }
+  // строки ячейки → абзацы: перенос по ширине склеиваем, а настоящий перенос строки («Горелка №1 – …» с новой строки)
+  // узнаём по тому, что первое слово следующей строки поместилось бы в конце предыдущей
+  function cellParas(lines, innerW) {
+    var out = [], cur = null;
+    lines.forEach(function (ln, i) {
+      var prev = lines[i - 1], brk = false;
+      if (prev && /^[А-ЯЁA-Z№0-9]/.test(ln.text) && !/[,(«\-–—]$/.test(prev.text)) {
+        brk = innerW - (prev.x1 - prev.x0) > firstWordW(ln) * 1.1 + prev.h * 0.4;
+      }
+      if (!cur || brk) { cur = [ln.text]; out.push(cur); } else cur.push(ln.text);
+    });
+    return out.map(joinCell).join('\n');
+  }
+  function firstWordW(ln) {
+    var it = ln.items[0], t = String(it.s || ''), m = /^\s*(\S+)/.exec(t);
+    return m ? it.w * (m[1].length / Math.max(1, t.length)) : 0;
+  }
+  function pdfGridRows(g) {
+    var rows = [];
+    for (var r = 0; r < g.R; r++) {
+      var row = [], any = false;
+      for (var c = 0; c < g.C; c++) {
+        var cell = g.cells[g.at(r * g.C + c)], t = '';
+        if (cell.r0 === r && cell.c0 === c && cell.items) {
+          t = cellParas(buildLines(cell.items, 99), (g.xs[cell.c1 + 1] - g.xs[cell.c0]) / g.k - 11);
+          if (t) any = true;
+        }
+        row.push(t);
+      }
+      if (any) rows.push(row);
+    }
+    return rows;
+  }
   function textLen(items) {
     var n = 0;
     items.forEach(function (it) { n += it.s.replace(/\s+/g, '').length; });
@@ -2058,8 +2441,27 @@ var Dogovor = (function () {
   function ocrPdf(pages, job) {
     var need = pages.filter(function (p) { return textLen(p.items) < 30; });
     if (!need.length) return Promise.resolve();
-    var todo = need.slice(0, MAX_OCR_PAGES), prog = todo.map(function () { return 0; }), done = 0;
+    var todo = need.slice(0, MAX_OCR_PAGES);
     job.ocrCut = need.length > todo.length;
+    // сначала — распознавание Google (точнее); что не получилось — распознаём в браузере, как раньше
+    return (job.ocr ? googlePages(todo, job) : Promise.resolve(todo)).then(function (left) {
+      return left.length ? tessPages(left, job) : null;
+    });
+  }
+  function renderScan(p) {
+    var scale = Math.min(4.2, SCAN_LONG / Math.max(p.w, p.h));
+    var vp = p.pg.getViewport({ scale: scale });
+    var cv = document.createElement('canvas');
+    cv.width = Math.round(vp.width);
+    cv.height = Math.round(vp.height);
+    var ctx = cv.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    // режим «печать»: без requestAnimationFrame, иначе в фоновой вкладке отрисовка встаёт
+    return p.pg.render({ canvasContext: ctx, viewport: vp, intent: 'print' }).promise.then(function () { return turnUpright(flattenPhoto(cropWhite(cv))); });
+  }
+  function tessPages(todo, job) {
+    var prog = todo.map(function () { return 0; }), done = 0;
     function report() { var sum = 0; prog.forEach(function (x) { sum += x; }); job.say(null, sum / todo.length); }
     return ocrWorker(job).then(function () { return ocrPool(job, todo.length); }).then(function (workers) {
       var next = 0;
@@ -2068,21 +2470,15 @@ var Dogovor = (function () {
         if (next >= todo.length) return Promise.resolve();
         job.check();
         var idx = next++, p = todo[idx];
-        var pp = function (x) { prog[idx] = Math.max(prog[idx], Math.min(1, x)); report(); };
-        var scale = Math.min(4.2, SCAN_LONG / Math.max(p.w, p.h));
-        var vp = p.pg.getViewport({ scale: scale });
-        var cv = document.createElement('canvas');
-        cv.width = Math.round(vp.width);
-        cv.height = Math.round(vp.height);
-        var ctx = cv.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, cv.width, cv.height);
-        // режим «печать»: без requestAnimationFrame, иначе в фоновой вкладке отрисовка встаёт
-        return p.pg.render({ canvasContext: ctx, viewport: vp, intent: 'print' }).promise.then(function () {
+        var pp = function (x) { prog[idx] = Math.max(prog[idx], Math.min(1, x)); report(); }, cv = null;
+        return renderScan(p).then(function (c) {
+          cv = c;
           job.check();
           return scanImage(worker, cv, job, pp);
         }).then(function (res) {
-          scanPage(p, res, 1 / scale);
+          scanPage(p, res, 595 / cv.width);
+          p.w = 595;
+          p.h = cv.height * 595 / cv.width;
           cv.width = cv.height = 0;
           prog[idx] = 1;
           done++;
@@ -2094,6 +2490,607 @@ var Dogovor = (function () {
       return Promise.all(workers.map(run));
     });
   }
+  /* ---------- фото листа на столе: находим лист и «распрямляем» его ---------- */
+  // страница PDF, в которую вставлено фото меньше листа: обрезаем белые поля вокруг фото
+  function cropWhite(cv) {
+    if (off('crop')) return cv;
+    try {
+      var sm = smallGray(cv, 700), W = sm.w, H = sm.h, g = sm.g, x0 = W, x1 = -1, y0 = H, y1 = -1;
+      for (var y = 0; y < H; y++) for (var x = 0; x < W; x++) if (g[y * W + x] < 246) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (x1 < 0) return cv;
+      var k = cv.width / W, cx0 = Math.max(0, Math.floor((x0 - 1) * k)), cy0 = Math.max(0, Math.floor((y0 - 1) * k));
+      var cw = Math.min(cv.width, Math.ceil((x1 + 2) * k)) - cx0, ch = Math.min(cv.height, Math.ceil((y1 + 2) * k)) - cy0;
+      if (cw * ch > cv.width * cv.height * 0.9) return cv;
+      var c2 = document.createElement('canvas');
+      c2.width = cw; c2.height = ch;
+      c2.getContext('2d').drawImage(cv, cx0, cy0, cw, ch, 0, 0, cw, ch);
+      cv.width = cv.height = 0;
+      return c2;
+    } catch (e) { return cv; }
+  }
+  function lumaGray(cv, long) {
+    var k = Math.min(1, long / Math.max(cv.width, cv.height)), w = Math.max(1, Math.round(cv.width * k)), h = Math.max(1, Math.round(cv.height * k));
+    var c2 = document.createElement('canvas');
+    c2.width = w; c2.height = h;
+    var x = c2.getContext('2d');
+    x.drawImage(cv, 0, 0, w, h);
+    var g = lumaOf(x.getImageData(0, 0, w, h).data, w * h);
+    c2.width = c2.height = 0;
+    return { g: g, w: w, h: h, k: cv.width / w };
+  }
+  // лист — самое большое светлое пятно; его углы — крайние точки по диагоналям
+  function paperQuad(sm) {
+    var W = sm.w, H = sm.h, g = sm.g, n = W * H, thr = Math.max(110, otsu(g)), i;
+    var bright = new Uint8Array(n);
+    for (i = 0; i < n; i++) bright[i] = g[i] > thr ? 1 : 0;
+    // размыкаем тонкие светлые перемычки (блики, клавиатура рядом с листом)
+    var er = new Uint8Array(n), x, y;
+    for (y = 2; y < H - 2; y++) for (x = 2; x < W - 2; x++) {
+      i = y * W + x;
+      er[i] = bright[i] && bright[i - 2] && bright[i + 2] && bright[i - 2 * W] && bright[i + 2 * W] ? 1 : 0;
+    }
+    var lab = new Int32Array(n), best = 0, bestN = 0, cur = 0, stack = [];
+    for (i = 0; i < n; i++) {
+      if (!er[i] || lab[i]) continue;
+      cur++;
+      var cnt = 0;
+      stack.length = 0;
+      stack.push(i);
+      lab[i] = cur;
+      while (stack.length) {
+        var q = stack.pop(), qx = q % W;
+        cnt++;
+        if (qx > 0 && er[q - 1] && !lab[q - 1]) { lab[q - 1] = cur; stack.push(q - 1); }
+        if (qx < W - 1 && er[q + 1] && !lab[q + 1]) { lab[q + 1] = cur; stack.push(q + 1); }
+        if (q >= W && er[q - W] && !lab[q - W]) { lab[q - W] = cur; stack.push(q - W); }
+        if (q < n - W && er[q + W] && !lab[q + W]) { lab[q + W] = cur; stack.push(q + W); }
+      }
+      if (cnt > bestN) { bestN = cnt; best = cur; }
+    }
+    if (bestN < n * 0.12) { if (window.__dogovorDebug) (window.__dogovorFlat = window.__dogovorFlat || []).push({ W: W, H: H, thr: thr, n: n, bestN: bestN, small: true }); return null; }
+    var tl = null, tr = null, bl = null, br = null, s1 = Infinity, s2 = -Infinity, d1 = -Infinity, d2 = Infinity;
+    var touch = 0;
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      if (lab[y * W + x] !== best) continue;
+      if (x <= 2 || y <= 2 || x >= W - 3 || y >= H - 3) touch++;
+      var a = x + y, b = x - y;
+      if (a < s1) { s1 = a; tl = [x, y]; }
+      if (a > s2) { s2 = a; br = [x, y]; }
+      if (b > d1) { d1 = b; tr = [x, y]; }
+      if (b < d2) { d2 = b; bl = [x, y]; }
+    }
+    var quad = [tl, tr, br, bl];
+    var area = 0;
+    for (i = 0; i < 4; i++) { var P = quad[i], Q = quad[(i + 1) % 4]; area += P[0] * Q[1] - Q[0] * P[1]; }
+    area = Math.abs(area) / 2;
+    if (window.__dogovorDebug) (window.__dogovorFlat = window.__dogovorFlat || []).push({ W: W, H: H, thr: thr, n: n, bestN: bestN, area: Math.round(area), touch: touch, quad: quad });
+    // лист и так на весь кадр (скан) или пятно не похоже на лист — ничего не делаем
+    if (area > n * 0.82 || area < n * 0.12 || bestN < area * 0.6) return null;
+    if (touch > (W + H) * 0.6) return null;
+    return quad.map(function (P) { return [(P[0] + 0.5) * sm.k, (P[1] + 0.5) * sm.k]; });
+  }
+  // проективное преобразование: прямоугольник выхода → четырёхугольник на фото
+  function homography(src, dst) {
+    var A = [], B = [];
+    for (var i = 0; i < 4; i++) {
+      var x = src[i][0], y = src[i][1], u = dst[i][0], v = dst[i][1];
+      A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); B.push(u);
+      A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); B.push(v);
+    }
+    for (var c = 0; c < 8; c++) {   // метод Гаусса
+      var piv = c;
+      for (var r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[piv][c])) piv = r;
+      var t = A[c]; A[c] = A[piv]; A[piv] = t;
+      t = B[c]; B[c] = B[piv]; B[piv] = t;
+      if (Math.abs(A[c][c]) < 1e-12) return null;
+      for (r = 0; r < 8; r++) {
+        if (r === c) continue;
+        var f = A[r][c] / A[c][c];
+        for (var k = c; k < 8; k++) A[r][k] -= f * A[c][k];
+        B[r] -= f * B[c];
+      }
+    }
+    return B.map(function (b, i) { return b / A[i][i]; });
+  }
+  function flattenPhoto(cv) {
+    if (off('flatten')) return cv;
+    try {
+      var sm = lumaGray(cv, 640), quad = paperQuad(sm);
+      if (!quad) return cv;
+      var dist = function (P, Q) { return Math.hypot(P[0] - Q[0], P[1] - Q[1]); };
+      // чуть внутрь от найденных углов: по краю листа обычно остаётся полоска стола
+      var cx = (quad[0][0] + quad[1][0] + quad[2][0] + quad[3][0]) / 4, cy = (quad[0][1] + quad[1][1] + quad[2][1] + quad[3][1]) / 4;
+      quad = quad.map(function (P) { return [P[0] + (cx - P[0]) * 0.012, P[1] + (cy - P[1]) * 0.012]; });
+      var pw = Math.max(dist(quad[0], quad[1]), dist(quad[3], quad[2])), ph = Math.max(dist(quad[0], quad[3]), dist(quad[1], quad[2]));
+      // мелкое фото увеличиваем: распознаванию нужны буквы покрупнее
+      var long = Math.max(pw, ph), up = Math.min(3, Math.max(1, 2600 / long));
+      var OW = Math.round(pw * up), OH = Math.round(ph * up);
+      var Hm = homography([[0, 0], [OW, 0], [OW, OH], [0, OH]], quad);
+      if (!Hm) return cv;
+      var SW = cv.width, SH = cv.height, src = cv.getContext('2d').getImageData(0, 0, SW, SH).data;
+      var out = document.createElement('canvas');
+      out.width = OW; out.height = OH;
+      var octx = out.getContext('2d'), img = octx.createImageData(OW, OH), d = img.data, S4 = SW * 4;
+      for (var y = 0; y < OH; y++) {
+        for (var x = 0; x < OW; x++) {
+          var den = Hm[6] * x + Hm[7] * y + 1, sx = (Hm[0] * x + Hm[1] * y + Hm[2]) / den - 0.5, sy = (Hm[3] * x + Hm[4] * y + Hm[5]) / den - 0.5;
+          var x0 = Math.floor(sx), y0 = Math.floor(sy), fx = sx - x0, fy = sy - y0, j = (y * OW + x) * 4;
+          if (x0 >= 0 && y0 >= 0 && x0 + 1 < SW && y0 + 1 < SH) {
+            var o = y0 * S4 + x0 * 4, w00 = (1 - fx) * (1 - fy), w01 = fx * (1 - fy), w10 = (1 - fx) * fy, w11 = fx * fy;
+            d[j] = src[o] * w00 + src[o + 4] * w01 + src[o + S4] * w10 + src[o + S4 + 4] * w11;
+            d[j + 1] = src[o + 1] * w00 + src[o + 5] * w01 + src[o + S4 + 1] * w10 + src[o + S4 + 5] * w11;
+            d[j + 2] = src[o + 2] * w00 + src[o + 6] * w01 + src[o + S4 + 2] * w10 + src[o + S4 + 6] * w11;
+          } else d[j] = d[j + 1] = d[j + 2] = 255;
+          d[j + 3] = 255;
+        }
+      }
+      src = null;
+      clearEdges(d, OW, OH);
+      octx.putImageData(img, 0, 0);
+      cv.width = cv.height = 0;
+      return out;
+    } catch (e) { return cv; }
+  }
+  // тёмное, что касается края картинки (стол, тень, палец), — фон, а не текст: закрашиваем белым
+  function clearEdges(d, W, H) {
+    var k = 4, mw = Math.ceil(W / k), mh = Math.ceil(H / k), g = new Uint8Array(mw * mh), x, y;
+    for (y = 0; y < mh; y++) for (x = 0; x < mw; x++) {
+      var j = ((Math.min(H - 1, y * k + 1)) * W + Math.min(W - 1, x * k + 1)) * 4;
+      g[y * mw + x] = (d[j] * 77 + d[j + 1] * 150 + d[j + 2] * 29) >> 8;
+    }
+    var thr = Math.min(150, otsu(g) - 10), bg = new Uint8Array(mw * mh), stack = [];
+    function seed(i) { if (!bg[i] && g[i] < thr) { bg[i] = 1; stack.push(i); } }
+    for (x = 0; x < mw; x++) { seed(x); seed((mh - 1) * mw + x); }
+    for (y = 0; y < mh; y++) { seed(y * mw); seed(y * mw + mw - 1); }
+    while (stack.length) {
+      var i = stack.pop(), ix = i % mw;
+      if (ix > 0) seed(i - 1);
+      if (ix < mw - 1) seed(i + 1);
+      if (i >= mw) seed(i - mw);
+      if (i < mw * (mh - 1)) seed(i + mw);
+    }
+    var n = 0;
+    for (x = 0; x < bg.length; x++) n += bg[x];
+    if (!n || n > bg.length * 0.35) return;   // слишком много — значит, это не кромка, а сам лист тёмный
+    for (y = 0; y < H; y++) {
+      var row = ((y / k) | 0) * mw;
+      for (x = 0; x < W; x++) {
+        var m = row + ((x / k) | 0);
+        // и полоска в клетку вокруг: края пятна размыты
+        if (bg[m] || (x >= k && bg[m - 1]) || (x < W - k && bg[m + 1]) || (y >= k && bg[m - mw]) || (y < H - k && bg[m + mw])) {
+          var j2 = (y * W + x) * 4;
+          d[j2] = d[j2 + 1] = d[j2 + 2] = 255;
+        }
+      }
+    }
+  }
+
+  /* ---------- лист повёрнут на бок (фото телефоном, скан «лёжа»): ставим строки горизонтально ----------
+     смотрим на уменьшенной картинке, какие «мазки» чернил длиннее — по строкам или по столбцам:
+     у текста слова и строки тянутся вдоль строки; линии таблиц дают поровну в обе стороны */
+  function strokeScore(bin, W, H, horiz) {
+    var total = 0, outer = horiz ? H : W, inner = horiz ? W : H;
+    for (var a = 0; a < outer; a++) {
+      var run = 0, gap = 0;
+      for (var b = 0; b < inner; b++) {
+        var v = horiz ? bin[a * W + b] : bin[b * W + a];
+        if (v) { run += gap <= 2 && run ? gap + 1 : 1; gap = 0; }
+        else if (run) { gap++; if (gap > 2) { if (run >= 14 && run <= inner * 0.5) total += run; run = 0; gap = 0; } }
+      }
+      if (run >= 14 && run <= inner * 0.5) total += run;
+    }
+    return total;
+  }
+  function smallGray(cv, long) {
+    var k = Math.min(1, long / Math.max(cv.width, cv.height)), w = Math.max(1, Math.round(cv.width * k)), h = Math.max(1, Math.round(cv.height * k));
+    var c2 = document.createElement('canvas');
+    c2.width = w; c2.height = h;
+    var x = c2.getContext('2d');
+    x.drawImage(cv, 0, 0, w, h);
+    var g = grayMax(x.getImageData(0, 0, w, h).data, w * h);
+    c2.width = c2.height = 0;
+    return { g: g, w: w, h: h };
+  }
+  // поворот на четверть оборота; dir = 1 — по часовой стрелке
+  function rotate90(cv, dir) {
+    var c2 = document.createElement('canvas');
+    c2.width = cv.height;
+    c2.height = cv.width;
+    var x = c2.getContext('2d');
+    x.translate(c2.width / 2, c2.height / 2);
+    x.rotate(dir * Math.PI / 2);
+    x.drawImage(cv, -cv.width / 2, -cv.height / 2);
+    cv.width = cv.height = 0;
+    return c2;
+  }
+  function rotate180(cv) { return rotate90(rotate90(cv, 1), 1); }
+  // текст вверх ногами? у абзацев короткая последняя строка — справа пусто; у перевёрнутого — пусто слева
+  // strict — для листа, который и так стоит прямо: переворачиваем, только если признак очень явный
+  function upsideDown(sm, strict) {
+    var W = sm.w, H = sm.h, g = sm.g, thr = otsu(g), y, x, dark = new Uint8Array(W * H);
+    for (y = 0; y < H * W; y++) dark[y] = g[y] < thr ? 1 : 0;
+    var bands = [], cur = null;
+    for (y = 0; y < H; y++) {
+      var n = 0;
+      for (x = 0; x < W; x++) n += dark[y * W + x];
+      if (n > 2) { if (!cur) { cur = { a: y, b: y }; bands.push(cur); } cur.b = y; }
+      else cur = null;
+    }
+    // у каждой строки — самый длинный кусок (без полей, пометок сбоку, водяных знаков у края)
+    var gapMax = Math.max(6, Math.round(W * 0.04)), lines = [];
+    bands.forEach(function (B) {
+      if (B.b - B.a < 1) return;
+      var occ = new Uint8Array(W), best = null, s = -1, last = -1;
+      for (y = B.a; y <= B.b; y++) for (x = 0; x < W; x++) if (dark[y * W + x]) occ[x] = 1;
+      for (x = 0; x <= W; x++) {
+        if (x < W && occ[x]) { if (s < 0) s = x; last = x; }
+        else if (s >= 0 && (x === W || x - last > gapMax)) { if (!best || last - s > best.r - best.l) best = { l: s, r: last }; s = -1; }
+      }
+      if (best && best.r - best.l > W * 0.15) lines.push(best);
+    });
+    if (lines.length < 8) return null;
+    var L0 = median(lines.map(function (L) { return L.l; })), R0 = median(lines.map(function (L) { return L.r; })), span = R0 - L0;
+    if (span < W * 0.3) return null;
+    var shortR = 0, shortL = 0;
+    lines.forEach(function (L) {
+      var dl = L.l - L0, dr = R0 - L.r;
+      if (dr > span * 0.2 && dl < span * 0.08) shortR++;
+      else if (dl > span * 0.2 && dr < span * 0.08) shortL++;
+    });
+    if (strict) return shortL >= 5 && shortR <= 1 ? true : null;
+    if (shortL >= 3 && shortL > shortR * 2.5) return true;
+    if (shortR >= 3 && shortR > shortL * 2.5) return false;
+    return null;
+  }
+  // оставляем только «буквы»: пятна, линии, края стола и печати в счёт не идут
+  function lettersOnly(bin, W, H) {
+    var lab = new Int32Array(W * H), out = new Uint8Array(W * H), stack = [], cur = 0, maxW = W * 0.05, maxH = H * 0.05;
+    for (var i = 0; i < bin.length; i++) {
+      if (!bin[i] || lab[i]) continue;
+      cur++;
+      var pix = [], x0 = W, x1 = 0, y0 = H, y1 = 0;
+      stack.length = 0;
+      stack.push(i);
+      lab[i] = cur;
+      while (stack.length) {
+        var q = stack.pop(), qx = q % W, qy = (q - qx) / W;
+        pix.push(q);
+        if (qx < x0) x0 = qx;
+        if (qx > x1) x1 = qx;
+        if (qy < y0) y0 = qy;
+        if (qy > y1) y1 = qy;
+        for (var dy = -1; dy <= 1; dy++) {
+          var yy = qy + dy;
+          if (yy < 0 || yy >= H) continue;
+          for (var dx = -1; dx <= 1; dx++) {
+            var xx = qx + dx, t = yy * W + xx;
+            if (xx >= 0 && xx < W && bin[t] && !lab[t]) { lab[t] = cur; stack.push(t); }
+          }
+        }
+      }
+      var bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+      if (pix.length >= 3 && bw <= maxW && bh <= maxH) pix.forEach(function (q) { out[q] = 1; });
+    }
+    return out;
+  }
+  function turnUpright(cv) {
+    if (off('upright')) return cv;
+    try {
+      var sm = smallGray(cv, 1200), thr = otsu(sm.g), bin = new Uint8Array(sm.w * sm.h);
+      for (var i = 0; i < bin.length; i++) bin[i] = sm.g[i] < thr ? 1 : 0;
+      bin = lettersOnly(bin, sm.w, sm.h);
+      var hs = strokeScore(bin, sm.w, sm.h, true), vs = strokeScore(bin, sm.w, sm.h, false);
+      if (vs > hs * 1.6 && vs > 2000) {
+        cv = rotate90(cv, 1);
+        if (upsideDown(smallGray(cv, 1200)) === true) cv = rotate180(cv);
+      } else if (upsideDown(sm, true) === true) cv = rotate180(cv);
+    } catch (e) { /* оставляем как есть */ }
+    return cv;
+  }
+
+  /* ---------- распознавание сканов через Google ----------
+     картинку отправляем Google-скрипту журнала: он кладёт её на Google Диск владельца, Диск распознаёт текст,
+     файл сразу удаляется. Google читает текст точнее, но не знает, где границы ячеек, — поэтому:
+     · страницу без таблиц отправляем целиком (вместо таблицы — метка «ТАБЛИЦА ВСТАВКА 1», чтобы знать её место);
+     · каждую ячейку таблицы вырезаем и складываем столбиком на отдельной картинке, перед ячейкой — метка «ЯЧЕЙКА 7» */
+  var G_CONC = 4, G_MAX_H = 3400, G_PAD = 40;
+  function limiter(n) {
+    var active = 0, queue = [];
+    function start(t) {
+      active++;
+      Promise.resolve().then(t.fn).then(function (v) { active--; t.ok(v); pump(); }, function (e) { active--; t.no(e); pump(); });
+    }
+    function pump() { while (active < n && queue.length) start(queue.shift()); }
+    return function (fn) { return new Promise(function (ok, no) { queue.push({ fn: fn, ok: ok, no: no }); pump(); }); };
+  }
+  var CRC_T = null;
+  function crc32(b, from, to) {
+    if (!CRC_T) {
+      CRC_T = new Int32Array(256);
+      for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; CRC_T[n] = c; }
+    }
+    var crc = -1;
+    for (var i = from; i < to; i++) crc = CRC_T[(crc ^ b[i]) & 255] ^ (crc >>> 8);
+    return (crc ^ -1) >>> 0;
+  }
+  function pngChunk(type, data) {
+    var out = new Uint8Array(12 + data.length), dv = new DataView(out.buffer);
+    dv.setUint32(0, data.length);
+    for (var i = 0; i < 4; i++) out[4 + i] = type.charCodeAt(i);
+    out.set(data, 8);
+    dv.setUint32(8 + data.length, crc32(out, 4, 8 + data.length));
+    return out;
+  }
+  // чёрно-белая картинка (1 = чернила) → PNG в 1 бит: маленький файл, а для распознавания — то, что нужно
+  function bitsPng(fl, bits, W, H) {
+    var stride = (W + 7) >> 3, raw = new Uint8Array((stride + 1) * H), y, x;
+    for (y = 0; y < H; y++) {
+      var o = y * (stride + 1), src = y * W;
+      raw.fill(255, o + 1, o + 1 + stride);
+      for (x = 0; x < W; x++) if (bits[src + x]) raw[o + 1 + (x >> 3)] &= ~(0x80 >> (x & 7));
+    }
+    var ihdr = new Uint8Array(13), dv = new DataView(ihdr.buffer);
+    dv.setUint32(0, W);
+    dv.setUint32(4, H);
+    ihdr[8] = 1;   // 1 бит, оттенки серого
+    var parts = [new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), pngChunk('IHDR', ihdr), pngChunk('IDAT', fl.zlibSync(raw, { level: 6 })), pngChunk('IEND', new Uint8Array(0))];
+    var len = 0;
+    parts.forEach(function (q) { len += q.length; });
+    var out = new Uint8Array(len), at = 0;
+    parts.forEach(function (q) { out.set(q, at); at += q.length; });
+    return out;
+  }
+  var markCv = null;
+  function textBits(str, px) {
+    markCv = markCv || document.createElement('canvas');
+    var font = 'bold ' + px + 'px Arial, "Helvetica Neue", Helvetica, "Liberation Sans", sans-serif';
+    var ctx = markCv.getContext('2d');
+    ctx.font = font;
+    var w = Math.ceil(ctx.measureText(str).width) + 12, h = Math.ceil(px * 1.5);
+    markCv.width = w;
+    markCv.height = h;
+    ctx = markCv.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#000000';
+    ctx.font = font;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(str, 6, h / 2);
+    var d = ctx.getImageData(0, 0, w, h).data, bits = new Uint8Array(w * h);
+    for (var i = 0, j = 0; i < w * h; i++, j += 4) bits[i] = d[j] < 140 ? 1 : 0;
+    return { w: w, h: h, bits: bits };
+  }
+  function blit(dst, DW, dx, dy, src, SW, sx, sy, w, h) {
+    for (var y = 0; y < h; y++) {
+      var so = (sy + y) * SW + sx, d0 = (dy + y) * DW + dx;
+      for (var x = 0; x < w; x++) if (src[so + x]) dst[d0 + x] = 1;
+    }
+  }
+  // непустые ячейки таблиц: область без рамки, обрезанная по чернилам
+  function scanCells(sc) {
+    var list = [], W = sc.W, ink = sc.ink, o;
+    sc.grids.forEach(function (g, gi) {
+      Object.keys(g.cells).forEach(function (id) {
+        var cell = g.cells[id], m = Math.max(5, Math.round(g.T));
+        var x0 = Math.round(g.xs[cell.c0]) + m, x1 = Math.round(g.xs[cell.c1 + 1]) - m, y0 = Math.round(g.ys[cell.r0]) + m, y1 = Math.round(g.ys[cell.r1 + 1]) - m;
+        if (x1 - x0 < 8 || y1 - y0 < 8) return;
+        var n = 0, bx0 = x1, bx1 = x0, by0 = y1, by1 = y0, x, y;
+        for (y = y0 + 1; y < y1 - 1; y++) {
+          for (x = x0 + 1, o = y * W; x < x1 - 1; x++) {
+            if (!ink[o + x]) continue;
+            // одиночные точки (пыль, остатки рамки) границу текста не расширяют
+            if (ink[o + x - 1] + ink[o + x + 1] + ink[o + x - W] + ink[o + x + W] + ink[o + x - W - 1] + ink[o + x - W + 1] + ink[o + x + W - 1] + ink[o + x + W + 1] < 2) continue;
+            n++;
+            if (x < bx0) bx0 = x;
+            if (x > bx1) bx1 = x;
+            if (y < by0) by0 = y;
+            if (y > by1) by1 = y;
+          }
+        }
+        if (n < 40) return;   // пустая ячейка
+        list.push({ cell: cell, g: gi, x: x0, y: y0, w: x1 - x0, h: y1 - y0, bx: bx0, by: by0, bw: bx1 - bx0 + 1, bh: by1 - by0 + 1 });
+      });
+    });
+    return list;
+  }
+  // ячейки — столбиком на картинках не выше G_MAX_H, перед каждой — метка с номером
+  function cellSheets(list, ink, W) {
+    var maxW = 0;
+    list.forEach(function (c) { maxW = Math.max(maxW, c.bw); });
+    var SW = Math.max(900, maxW + G_PAD * 2), sheets = [], cur = null;
+    list.forEach(function (c, i) {
+      var mk = textBits('ЯЧЕЙКА ' + (i + 1), 34), need = mk.h + 14 + c.bh + 46;
+      if (!cur || cur.h + need > G_MAX_H) { cur = { parts: [], h: G_PAD }; sheets.push(cur); }
+      cur.parts.push({ n: i + 1, c: c, mk: mk, y: cur.h });
+      cur.h += need;
+    });
+    sheets.forEach(function (sh) {
+      sh.W = SW;
+      sh.H = sh.h + G_PAD;
+      var bits = new Uint8Array(sh.W * sh.H);
+      sh.parts.forEach(function (p) {
+        blit(bits, sh.W, G_PAD, p.y, p.mk.bits, p.mk.w, 0, 0, p.mk.w, p.mk.h);
+        blit(bits, sh.W, G_PAD, p.y + p.mk.h + 14, ink, W, p.c.bx, p.c.by, p.c.bw, p.c.bh);
+      });
+      sh.bits = bits;
+    });
+    return sheets;
+  }
+  // страница без таблиц: вместо каждой таблицы — метка, чтобы знать, между какими абзацами она стоит
+  function pageSheet(sc) {
+    var W = sc.W, H = sc.H, bits = sc.ink.slice();
+    sc.grids.forEach(function (g, gi) {
+      var x0 = Math.max(0, Math.round(g.xs[0]) - 3), x1 = Math.min(W, Math.round(g.xs[g.C]) + 4);
+      var y0 = Math.max(0, Math.round(g.ys[0]) - 3), y1 = Math.min(H, Math.round(g.ys[g.R]) + 4);
+      for (var y = y0; y < y1; y++) bits.fill(0, y * W + x0, y * W + x1);
+      var mk = textBits('ТАБЛИЦА ВСТАВКА ' + (gi + 1), 40);
+      var mx = Math.min(x0 + 24, W - mk.w), my = Math.min(y0 + 10, H - mk.h);
+      if (mx >= 0 && my >= 0) blit(bits, W, mx, my, mk.bits, mk.w, 0, 0, mk.w, mk.h);
+    });
+    return { W: W, H: H, bits: bits };
+  }
+  var RE_G_CELL = /^\W{0,3}Я\s?Ч\s?Е\s?Й\s?К\s?А\W{0,3}(\d{1,3})(?!\d)[\s.:;,)»-]*(.*)$/i;
+  var RE_G_TABLE = /^\W{0,3}ТАБЛИЦА\W{0,3}ВСТАВКА\W{0,3}(\d{1,2})(?!\d)[\s.:;,)»-]*(.*)$/i;
+  var RE_G_JUNK = /^(?:сканировано\s+с\s+camscanner|scanned\s+with\s+camscanner|camscanner)$/i;
+  function gText(s) { return clean(String(s || '').replace(/\r/g, '')).split('\n'); }
+  // тексты ячеек — по меткам
+  function gCells(texts, sheets) {
+    var byN = {};
+    sheets.forEach(function (sh) { sh.parts.forEach(function (p) { byN[p.n] = { c: p.c, lines: [] }; }); });
+    texts.forEach(function (t) {
+      var cur = null;
+      gText(t).forEach(function (line) {
+        line = line.trim();
+        if (!line) return;
+        var m = RE_G_CELL.exec(line);
+        if (m && byN[+m[1]]) { cur = byN[+m[1]]; if (m[2].trim()) cur.lines.push(m[2].trim()); return; }
+        if (cur) cur.lines.push(line);
+      });
+    });
+    Object.keys(byN).forEach(function (n) {
+      var e = byN[n];
+      e.c.cell.text = joinCell(e.lines.map(function (x) { return fixNumSign(x); }));
+    });
+  }
+  // строки страницы → элементы «как у PDF»: по строке на элемент, таблицы — на месте своих меток
+  function gPage(p, sc, text) {
+    var lines = [], at = {}, gap = false;
+    gText(text).forEach(function (t) {
+      t = t.replace(/\s+/g, ' ').trim();
+      if (!t) { gap = true; return; }
+      var m = RE_G_TABLE.exec(t);
+      if (m) {
+        at[+m[1] - 1] = lines.length;
+        gap = true;
+        if (m[2].trim()) { lines.push({ t: m[2].trim(), gap: true }); gap = false; }
+        return;
+      }
+      if (RE_G_JUNK.test(t)) return;
+      lines.push({ t: t, gap: gap });
+      gap = false;
+    });
+    var tables = sc.grids.map(function (g, gi) {
+      var slot = at[gi] != null ? at[gi] : Math.round(lines.length * g.ys[0] / sc.H);
+      return { g: g, slot: slot, k: 595 / sc.W };
+    }).sort(function (a, b) { return a.slot - b.slot; });
+    var y = 40, items = [], grids = [], ti = 0;
+    function putTables(upto) {
+      while (ti < tables.length && tables[ti].slot <= upto) {
+        var T = tables[ti++], rows = gridRows(T.g);
+        if (rows.length) grids.push({ y0: y, y1: y + 1, xs: T.g.xs.map(function (x) { return x * T.k; }), rows: rows });
+        y += 28;
+      }
+    }
+    lines.forEach(function (ln, i) {
+      putTables(i);
+      if (ln.gap && i) y += 14;
+      items.push({ x: 50, y: y, w: Math.min(500, 6 + ln.t.length * 5.3), h: 10, s: ln.t });
+      y += 14;
+    });
+    putTables(Infinity);
+    p.items = items;
+    p.grids = grids;
+    p.w = 595;
+    p.h = Math.max(842, y + 40);
+    p.ocr = true;
+    p.google = true;
+  }
+  function googleSend(job, bits, W, H) {
+    return loadFflate().then(function (fl) {
+      job.check();
+      var png = bitsPng(fl, bits, W, H);
+      job.gq = job.gq || limiter(G_CONC);
+      return job.gq(function () { job.check(); return job.ocr(png, { w: W, h: H }); });
+    }).then(function (text) {
+      job.check();
+      return String(text == null ? '' : text);
+    });
+  }
+  // одна страница: подготовка (быстро, в браузере) и запросы к Google (параллельно с подготовкой следующей)
+  function googleScan(cv, job) {
+    var sc = scanPrep(cv), list = scanCells(sc), sheets = cellSheets(list, sc.ink, sc.W), page = pageSheet(sc);
+    if (window.__dogovorDebug) (window.__dogovorScans = window.__dogovorScans || []).push({ url: cv.toDataURL('image/png'), grids: sc.grids.map(function (g) { return { xs: g.xs, ys: g.ys }; }), lines: { h: sc.h.length, v: sc.v.length }, dashed: window.__dogovorDashed });
+    cv.width = cv.height = 0;
+    var inkN = 0;
+    for (var i = 0; i < sc.ink.length; i += 7) inkN += sc.ink[i];
+    var inkK = inkN * 7 / sc.ink.length;
+    sc.ink = null;
+    var reqs = [googleSend(job, page.bits, page.W, page.H)].concat(sheets.map(function (sh) { return googleSend(job, sh.bits, sh.W, sh.H); }));
+    page.bits = null;
+    sheets.forEach(function (sh) { sh.bits = null; });
+    return Promise.all(reqs).then(function (texts) {
+      gCells(texts.slice(1), sheets);
+      return { sc: sc, text: texts[0], ink: inkK };
+    });
+  }
+  // Google читает только лист, стоящий «как надо»; если вышла бессмыслица — пробуем повернуть
+  var COMMON_RU = ('и в во на по с со к ко от до за из не для или что как при без об о а же его ее их это этом том также ' +
+    'договор договора договору товар товара покупатель покупателя продавец продавца поставщик заказчик исполнитель ' +
+    'срок сроки стороны сторон сторона оплата оплаты цена сумма рабочих дней дня год года г тенге ндс шт количество ' +
+    'наименование настоящего настоящий течение случае момента после согласно условиях порядке обязуется обязан право ' +
+    'вправе адрес тел директор лице именуемое именуемый дальнейшем республика казахстан область ул').split(' ');
+  var COMMON_SET = {};
+  COMMON_RU.forEach(function (w) { COMMON_SET[w] = 1; });
+  function looksGarbage(r) {
+    // однобуквенные «слова» не считаем: в мусоре их полно («и», «в», «о»)
+    var words = (low(r.text).match(/[а-яё]+/g) || []).filter(function (w) { return w.length > 1; }), hit = 0;
+    words.forEach(function (w) { if (COMMON_SET[w]) hit++; });
+    if (words.length < 8) return r.ink > 0.004;   // на листе много чернил, а слов почти нет
+    return hit / words.length < 0.06;
+  }
+  function turnQuarter(cv, q) {
+    if (q === 2) return rotate180(cv);
+    if (q === 1 || q === 3) return rotate90(cv, q === 1 ? 1 : -1);
+    return cv;
+  }
+  // страница через Google с проверкой ориентации; source() каждый раз даёт свежий холст (scanPrep его меняет)
+  function googleOriented(source, job) {
+    return source().then(function (cv) { return googleScan(cv, job); }).then(function (r) {
+      if (!looksGarbage(r)) return r;
+      var turns = [2, 1, 3], best = r;
+      function next() {
+        if (!turns.length) return best;
+        var q = turns.shift();
+        return source().then(function (cv) { job.check(); return googleScan(turnQuarter(cv, q), job); }).then(function (r2) {
+          if (!looksGarbage(r2)) return r2;
+          if (r2.text.length > best.text.length * 1.5) best = r2;
+          return next();
+        });
+      }
+      return next();
+    });
+  }
+  function googlePages(todo, job) {
+    job.gq = job.gq || limiter(G_CONC);
+    var done = 0, failed = [], chain = Promise.resolve(), waits = [];
+    job.say(todo.length > 1 ? 'Распознаю скан через Google: ' + todo.length + ' ' + plural(todo.length, 'страница', 'страницы', 'страниц') + '…' : 'Распознаю скан через Google…', 0);
+    todo.forEach(function (p) {
+      chain = chain.then(function () {
+        if (job.gOff) { failed.push(p); return; }
+        job.check();
+        var first = renderScan(p);
+        return first.then(function () {
+          job.check();
+          var w = googleOriented(function () { var f = first; first = null; return f || renderScan(p); }, job).then(function (r) {
+            gPage(p, r.sc, r.text);
+            done++;
+            job.say(todo.length > 1 ? 'Распознаю скан через Google: готово ' + done + ' из ' + todo.length + '…' : null, done / todo.length);
+          }, function (e) {
+            if (job.cancelled || (e && e.code === 'cancel')) throw fail('cancel');
+            job.gOff = true;   // Google недоступен — остальное распознаем в браузере
+            job.gErr = e;
+            failed.push(p);
+          });
+          waits.push(w);
+        });
+      });
+    });
+    return chain.then(function () { return Promise.all(waits); }).then(function () {
+      if (failed.length) job.say('Google не ответил — распознаю в браузере…', 0);
+      return failed;
+    });
+  }
+
   function plural(n, one, few, many) {
     var a = n % 100, b = n % 10;
     return a > 10 && a < 20 ? many : b === 1 ? one : b > 1 && b < 5 ? few : many;
@@ -2164,7 +3161,7 @@ var Dogovor = (function () {
   }
   // «чернила»: пиксель темнее своей окрестности (окно ≈1/44 ширины) и не светлее общего порога —
   // так пропадают просвечивающий текст с обратной стороны, тени и серый фон
-  function inkOf(g, W, H) {
+  function inkOf(g, W, H, faint) {
     var bw = (W + 7) >> 3, bh = (H + 7) >> 3, bs = new Float64Array(bw * bh), bc = new Float64Array(bw * bh), x, y, p;
     for (y = 0; y < H; y++) {
       var row = y * W, brow = (y >> 3) * bw;
@@ -2184,7 +3181,7 @@ var Dogovor = (function () {
         var y0 = Math.max(0, y - R), y1 = Math.min(bh, y + R + 1), x0 = Math.max(0, x - R), x1 = Math.min(bw, x + R + 1);
         var s = S[y1 * iw + x1] - S[y0 * iw + x1] - S[y1 * iw + x0] + S[y0 * iw + x0];
         var c = Cn[y1 * iw + x1] - Cn[y0 * iw + x1] - Cn[y1 * iw + x0] + Cn[y0 * iw + x0];
-        thr[y * bw + x] = Math.min(s / c - 18, cap);
+        thr[y * bw + x] = faint ? s / c - 22 : Math.min(s / c - 18, cap);
       }
     }
     var ink = new Uint8Array(W * H);
@@ -2207,17 +3204,71 @@ var Dogovor = (function () {
     }
     return out;
   }
-  function vRuns(ink, W, H, L) {
-    var out = [];
+  function vRuns(ink, W, H, L, gapTol) {
+    var out = [], gt = gapTol || 2;
     for (var x = 0; x < W; x++) {
       var s = -1, last = -1;
       for (var y = 0, off = x; y < H; y++, off += W) {
         if (ink[off]) { if (s < 0) s = y; last = y; }
-        else if (s >= 0 && y - last > 2) { if (last - s + 1 >= L) out.push(x, s, last); s = -1; }
+        else if (s >= 0 && y - last > gt) { if (last - s + 1 >= L) out.push(x, s, last); s = -1; }
       }
       if (s >= 0 && last - s + 1 >= L) out.push(x, s, last);
     }
     return out;
+  }
+  // пунктир: штрихи с разрывами до ~2 мм; линия должна быть длинной, тонкой и почти сплошной (текст так не выглядит)
+  function dashedRuns(ink, W, H, horiz, L, gap) {
+    var out = [], outer = horiz ? H : W, inner = horiz ? W : H;
+    for (var a = 0; a < outer; a++) {
+      var s = -1, last = -1, n = 0;
+      for (var b = 0; b < inner; b++) {
+        if (horiz ? ink[a * W + b] : ink[b * W + a]) { if (s < 0) { s = b; n = 0; } last = b; n++; }
+        else if (s >= 0 && b - last > gap) { if (last - s + 1 >= L && n >= (last - s + 1) * 0.55) out.push(a, s, last); s = -1; }
+      }
+      if (s >= 0 && last - s + 1 >= L && n >= (last - s + 1) * 0.55) out.push(a, s, last);
+    }
+    return out;
+  }
+  function off(k) { return !!(window.__dogovorOff && window.__dogovorOff[k]); }   // для отладки: отключить шаг
+  function dashedLines(faint, W, H, hl, vl) {
+    if (off('dashed')) return;
+    var dbg = window.__dogovorDashed = [];
+    var T = Math.max(6, Math.round(W / 250)), gap = Math.max(8, Math.round(W / 110));
+    // по обе стороны от линии таблицы — пусто (поля ячеек); у строки текста сверху или снизу — буквы
+    function lonely(L, horiz) {
+      var half = (L.p1 - L.p0) / 2, c = Math.round(L.pos), ok = true;
+      [Math.round(half + 3), Math.round(half + T * 0.7)].forEach(function (d) {
+        var n = 0, busyA = 0, busyB = 0;
+        for (var t = L.a; t <= L.b; t += 2) {
+          n++;
+          if (horiz) {
+            if (c - d >= 0 && faint[(c - d) * W + t]) busyA++;
+            if (c + d < H && faint[(c + d) * W + t]) busyB++;
+          } else {
+            if (c - d >= 0 && faint[t * W + c - d]) busyA++;
+            if (c + d < W && faint[t * W + c + d]) busyB++;
+          }
+        }
+        if (!n || busyA / n >= 0.25 || busyB / n >= 0.25) ok = false;
+      });
+      return ok;
+    }
+    function add(found, have, horiz) {
+      found.forEach(function (L) {
+        if (L.p1 - L.p0 > T || !lonely(L, horiz)) return;   // толстая полоса или буквы рядом — это строка текста, а не линия
+        // где сплошная линия есть — пунктир только продлевает её за концы (бледный край таблицы);
+        // в середину не лезем: иначе пунктир «протянется» через объединённые ячейки по буквам
+        var near = have.filter(function (M) { return Math.abs(M.pos - L.pos) <= T * 1.5 && M.a <= L.b + gap && M.b >= L.a - gap; });
+        if (!near.length) { have.push(L); if (window.__dogovorDebug) dbg.push(['new', horiz ? 'h' : 'v', Math.round(L.pos), L.a, L.b]); return; }
+        var lo = near[0], hi = near[0];
+        near.forEach(function (M) { if (M.a < lo.a) lo = M; if (M.b > hi.b) hi = M; });
+        var ext = Math.max(T * 4, Math.round(W / 40));   // короткий «хвост» — это буквы рядом с линией, а не её продолжение
+        if (L.a < lo.a - ext) { if (window.__dogovorDebug) dbg.push(['ext-a', horiz ? 'h' : 'v', Math.round(L.pos), L.a, lo.a]); lo.a = L.a; lo.runs = lo.runs.concat(L.runs); }
+        if (L.b > hi.b + ext) { if (window.__dogovorDebug) dbg.push(['ext-b', horiz ? 'h' : 'v', Math.round(L.pos), hi.b, L.b]); hi.b = L.b; if (hi !== lo || L.a >= lo.a) hi.runs = hi.runs.concat(L.runs); }
+      });
+    }
+    add(groupRuns(dashedRuns(faint, W, H, true, Math.round(W / 8), gap)), hl, true);
+    add(groupRuns(dashedRuns(faint, W, H, false, Math.round(H / 12), gap)), vl, false);
   }
   // соседние отрезки (толщина линии, небольшой наклон «лесенкой») — одна линия
   function groupRuns(runs) {
@@ -2271,16 +3322,20 @@ var Dogovor = (function () {
     c2.width = c2.height = 0;
   }
   function scanPrep(cv) {
-    var W = cv.width, H = cv.height, ctx = cv.getContext('2d'), img, ink, hl, tries = 0;
+    var W = cv.width, H = cv.height, ctx = cv.getContext('2d'), img, ink, hl, gm, tries = 0;
     for (;;) {
       img = ctx.getImageData(0, 0, W, H);
-      ink = inkOf(grayMax(img.data, W * H), W, H);
+      gm = grayMax(img.data, W * H);
+      ink = inkOf(gm, W, H);
       hl = groupRuns(hRuns(ink, W, H, Math.max(40, Math.round(W / 30))));
       var sk = skewOf(hl, W);
       if (tries++ || Math.abs(sk) < 0.0035 || Math.abs(sk) > 0.12) break;
       rotateCanvas(cv, -Math.atan(sk));   // выравниваем и считаем заново
     }
     var vl = groupRuns(vRuns(ink, W, H, Math.max(40, Math.round(H / 50))));
+    // тонкие линии таблиц на сканах (CamScanner и т. п.) бывают пунктирными и бледными — ищем их отдельно
+    dashedLines(inkOf(gm, W, H, true), W, H, hl, vl);
+    gm = null;
     // стираем линии вместе с краями толщиной в пиксель
     function erase(lines, vert) {
       lines.forEach(function (L) {
@@ -2522,7 +3577,7 @@ var Dogovor = (function () {
       var row = [], any = false;
       for (var c = 0; c < g.C; c++) {
         var cell = g.cells[g.at(r * g.C + c)], t = '';
-        if (cell.r0 === r && cell.c0 === c) { t = cellText(cell.words); if (t) any = true; }
+        if (cell.r0 === r && cell.c0 === c) { t = cell.text != null ? cell.text : cellText(cell.words); if (t) any = true; }
         row.push(t);
       }
       if (any) rows.push(row);
@@ -2646,12 +3701,31 @@ var Dogovor = (function () {
       ctx.fillRect(0, 0, cv.width, cv.height);
       ctx.drawImage(img, 0, 0, cv.width, cv.height);
       if (img.close) img.close();
-      return ocrWorker(job).then(function (worker) {
-        job.say('Распознаю текст на фото…', 0);
-        return scanImage(worker, cv, job, function (x) { job.say(null, x); });
-      }).then(function (res) {
-        var k = 595 / cv.width, p = { n: 1, w: 595, h: cv.height * k };
-        scanPage(p, res, k);
+      cv = turnUpright(flattenPhoto(cv));
+      var p = { n: 1, w: 595, h: cv.height * 595 / cv.width };
+      var base = cv;
+      function copy() {
+        var c2 = document.createElement('canvas');
+        c2.width = base.width;
+        c2.height = base.height;
+        c2.getContext('2d').drawImage(base, 0, 0);
+        return Promise.resolve(c2);
+      }
+      var google = job.ocr ? (job.say('Распознаю фото через Google…', 0), googleOriented(copy, job).then(function (r) { gPage(p, r.sc, r.text); return true; }, function (e) {
+        if (job.cancelled || (e && e.code === 'cancel')) throw fail('cancel');
+        job.gOff = true;
+        job.gErr = e;
+        return false;
+      })) : Promise.resolve(false);
+      return google.then(function (ok) {
+        if (ok) return null;
+        return ocrWorker(job).then(function (worker) {
+          job.say('Распознаю текст на фото…', 0);
+          return scanImage(worker, cv, job, function (x) { job.say(null, x); });
+        }).then(function (res) {
+          scanPage(p, res, 595 / cv.width);
+        });
+      }).then(function () {
         var doc = layout([p]);
         cv.width = cv.height = 0;
         doc.type = 'image';
@@ -2872,14 +3946,18 @@ var Dogovor = (function () {
   // реквизиты сторон в две колонки: «ЗАКАЗЧИК: … | ПОДРЯДЧИК: …»
   var RE_SIDE_C = /^(заказчик|покупатель|генподрядчик|генеральный\s+подрядчик)\s*:?$/;
   var RE_SIDE_O = /^(подрядчик|поставщик|исполнитель|продавец|изготовитель|субподрядчик)\s*:?$/;
+  // «ТОО «Наша фирма»   ТОО «Заказчик»» — реквизиты в две колонки без слов «Продавец/Покупатель»
+  var RE_FIRM_HEAD = new RegExp('^' + ORG_ABBR_SRC() + '\\s*[«"“][^»"”]{2,70}[»"”]\\.?$');
   function sideBySide(all, i, used) {
     var ln = all[i], L = null, R = null, segs = segments(ln.items, 2.2);
-    if (segs.length !== 2 || segs[0].text.length > 30 || segs[1].text.length > 30) return null;
+    if (segs.length !== 2 || segs[0].text.length > 80 || segs[1].text.length > 80) return null;
     segs.forEach(function (sg) {
       var t = low(sg.text).trim();
+      if (sg.text.length > 30) return;
       if (!L && RE_SIDE_C.test(t)) L = sg;
       else if (!R && RE_SIDE_O.test(t)) R = sg;
     });
+    if ((!L || !R) && RE_FIRM_HEAD.test(segs[0].text.trim()) && RE_FIRM_HEAD.test(segs[1].text.trim()) && segs[1].x0 - segs[0].x1 > 20) { L = segs[0]; R = segs[1]; }
     if (!L || !R) return null;
     var first = L.x0 < R.x0 ? L : R, second = first === L ? R : L;
     var mid = second.x0 - 4, left = [], right = [], moved = 0;
@@ -3033,8 +4111,8 @@ var Dogovor = (function () {
     delete doc.blocks;
     return doc;
   }
-  function read(file, onProgress) {
-    var job = { cancelled: false, stops: [], workers: [] };
+  function read(file, onProgress, opts) {
+    var job = { cancelled: false, stops: [], workers: [], ocr: opts && typeof opts.ocr === 'function' ? opts.ocr : null };
     job.say = function (text, part) { if (!job.cancelled && onProgress) { try { onProgress(text, part); } catch (e) { /* интерфейс */ } } };
     job.check = function () { if (job.cancelled) throw fail('cancel'); };
     function stopWorker() {
@@ -3070,6 +4148,8 @@ var Dogovor = (function () {
       finish(doc);
       doc.name = file.name || '';
       doc.ocrCut = !!job.ocrCut;
+      doc.google = !!job.ocr && !job.gOff && !!doc.ocr;
+      doc.googleErr = job.gErr ? String(job.gErr.message || job.gErr.error || job.gErr) : '';
       if (!doc.text.replace(/\s+/g, '')) throw fail('notext');
       return doc;
     }).then(function (doc) {
@@ -3124,10 +4204,11 @@ var Dogovor = (function () {
   function findHead(chunks) {
     var ti = -1;
     for (var i = 0; i < Math.min(chunks.length, 40); i++) {
-      if (/(договор|контракт|соглашени)/i.test(chunks[i].s) && chunks[i].s.length < 400) { ti = i; break; }
+      if ((/(договор|контракт|соглашени)/i.test(chunks[i].s) || /^\s*акт(?![а-яё])/i.test(chunks[i].s)) && chunks[i].s.length < 400) { ti = i; break; }
     }
     var start = Math.max(0, ti), head = chunks.slice(start, start + 6).map(function (c) { return c.s; }).join('\n');
     var m = /(?:договор|контракт|соглашени)[а-яё]*[^№\n]{0,90}?(?:№|N[oо]?\.?(?=\s*[0-9A-ZА-ЯЁ]))\s*([0-9A-Za-zА-Яа-яЁё][0-9A-Za-zА-Яа-яЁё\-\/\\._]*)/i.exec(head) ||
+      /^\s*(?:договор|контракт|акт)[а-яё]*\s*(?:№\s*)?(\d[0-9A-Za-zА-Яа-яЁё\-\/\\._]*)/im.exec(head) ||
       /№\s*([0-9][0-9A-Za-zА-Яа-яЁё\-\/\\._]*)/.exec(head);
     var dates = findDates(head).filter(function (d) {
       return !/(до|срок[а-яё]*|не\s+позднее|не\s+позже|по)\s*[:—–-]?\s*$/i.test(head.slice(Math.max(0, d.i - 25), d.i));
@@ -3139,7 +4220,12 @@ var Dogovor = (function () {
   var ROLE_WORDS = '(заказчик|покупател[ьяюе]м?|подрядчик|поставщик|исполнител[ьяюе]м?|продав[е]?ц|изготовител[ьяюе]м?|генподрядчик|генеральн[а-яё]*\\s+подрядчик|субподрядчик|арендатор|получател[ьяюе]м?)';
   var RE_ROLE = new RegExp('(?:именуем[а-яё]*\\s+(?:в\\s+дальнейшем|далее)|\\(\\s*(?:далее|в\\s+дальнейшем)(?:\\s+по\\s+тексту)?|(?:^|[\\s,])далее(?:\\s+по\\s+тексту)?)\\s*[-–—:]?\\s*[«"“„\'`]?\\s*' + ROLE_WORDS + '(?![а-яё])', 'gi');
   var RE_ROLE_FIRST = new RegExp('[«"“]\\s*' + ROLE_WORDS + '\\s*[»"”]\\s*,?\\s*(' + ORG_ABBR_SRC() + '\\s*[«"“][^»"”]{2,80}[»"”]|ИП\\s+[А-ЯЁ][а-яё]+(?:\\s+[А-ЯЁ][а-яё]*\\.?){1,2})', 'gi');
-  function ORG_ABBR_SRC() { return '(?:ТОО|ООО|АО|ПАО|ОАО|ЗАО|НАО|ГУ|КГУ|КГП|КГКП|РГП|РГКП|ГККП|ПК|КХ|ЧУ)'; }
+  function ORG_ABBR_SRC() { return '(?:ТОО|ООО|АО|ПАО|ОАО|ЗАО|НАО|ИП|ГУ|КГУ|КГП|КГКП|РГП|РГКП|ГККП|ПК|КХ|ЧУ)'; }
+  // своя фирма (в договорах она — продавец, исполнитель, поставщик): заказчиком её не считаем
+  var RE_OUR_FIRM = /темир\s*энерго\s*строй/i;
+  function isOurFirm(name) { return RE_OUR_FIRM.test(String(name || '').replace(/[«»"“”]/g, '')); }
+  // «… именуемое в дальнейшем» в конце абзаца, а «Покупатель» — уже в следующем
+  var RE_ROLE_TAIL = /(?:именуем[а-яё]*\s+(?:в\s+дальнейшем|далее)|далее(?:\s+по\s+тексту)?)\s*[-–—:]?\s*$/i;
   var RE_CUST = /^(заказчик|покупател|генподрядчик|генеральн|арендатор|получател)/;
   var RE_OURS = /^(подрядчик|поставщик|исполнител|продав|изготовител|субподрядчик)/;
   var ORG_FORMS = [
@@ -3201,12 +4287,15 @@ var Dogovor = (function () {
   function findParties(chunks) {
     var out = [];
     for (var i = 0; i < chunks.length && out.length < 8; i++) {
-      var s = chunks[i].s.replace(/\n/g, ' '), m;
+      var s = chunks[i].s.replace(/\n/g, ' '), m, from = 0;
+      if (RE_ROLE_TAIL.test(s) && chunks[i + 1]) s += ' ' + chunks[i + 1].s.replace(/\n/g, ' ').slice(0, 60);
       RE_ROLE.lastIndex = 0;
       while ((m = RE_ROLE.exec(s))) {
         var role = low(m[1]), side = RE_CUST.test(role) ? 'c' : RE_OURS.test(role) ? 'o' : '';
+        var start = from;
+        from = RE_ROLE.lastIndex + /^[\s»"”')]*/.exec(s.slice(RE_ROLE.lastIndex))[0].length;   // следующая сторона описана после этой роли
         if (!side) continue;
-        var name = partyName(s.slice(0, m.index));
+        var name = partyName(s.slice(start, m.index));
         if (name) out.push({ side: side, role: m[1], name: name, src: around(s, m.index - 200, RE_ROLE.lastIndex + 2) });
       }
       if (i > 25) continue;
@@ -3276,7 +4365,7 @@ var Dogovor = (function () {
       var lines = blocks[b].split('\n');
       var first = lines[0].replace(/^\s*(?:[^\n\/]{0,40}\/\s*)?(?:заказчик|покупатель|генподрядчик)\s*[:.]?\s*/i, '');
       var cands = (first ? [first] : []).concat(lines.slice(1, 4));
-      for (var k = 0; k < cands.length; k++) { var n = cleanParty(cands[k]); if (n) return n; }
+      for (var k = 0; k < cands.length; k++) { var n = cleanParty(cands[k]); if (n && !isOurFirm(n)) return n; }
     }
     return '';
   }
@@ -3668,7 +4757,7 @@ var Dogovor = (function () {
         }
         var lines = nm.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
         var name = lines.shift();
-        while (lines.length && /^[а-яё(]/.test(lines[0]) && name.length < 60 && !isParam(lines[0])) name += ' ' + lines.shift();
+        while (lines.length && /^[а-яё(«"]/.test(lines[0]) && name.length < 60 && !isParam(lines[0])) name += ' ' + lines.shift();
         var sp = splitName(name);
         if (sp) { name = sp.name; lines.unshift(cap(sp.rest)); }
         items.push({
@@ -3977,7 +5066,9 @@ var Dogovor = (function () {
     var chunks = doc.chunks || [], all = chunks.map(function (c) { return c.s; }).join('\n');
     var head = findHead(chunks);
     var parties = findParties(chunks), cust = null;
-    parties.forEach(function (p) { if (!cust && p.side === 'c') cust = p; });
+    parties.forEach(function (p) { if (!cust && p.side === 'c' && !isOurFirm(p.name)) cust = p; });
+    // роли перепутаны или не распознаны, но вторая сторона — не мы: она и есть заказчик
+    if (!cust) parties.forEach(function (p) { if (!cust && !isOurFirm(p.name) && parties.some(function (q) { return q !== p && isOurFirm(q.name); })) cust = p; });
     var blocks = customerBlocks(chunks);
     if (cust) blocks = columnBlocks(doc.tables || [], cust.name).concat(blocks);
     var items = [], params = [];
@@ -4089,18 +5180,22 @@ var Dogovor = (function () {
   /* задачи менеджеров */
   var TTABS = [['mine', 'Мои'], ['all', 'Все'], ['overdue', 'Просрочено'], ['done', 'Выполнено']];
   var CHECK_SVG = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.4 5.8 10 11 4.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function viewOfHash(h) { return h === '#zakupki' ? 'purchases' : h === '#zadachi' ? 'tasks' : 'orders'; }
+  function viewOfHash(h) { return h === '#zakupki' ? 'purchases' : h === '#zadachi' ? 'tasks' : h === '#otgruzka' ? 'ship' : 'orders'; }
+  var VIEW_HASH = { purchases: '#zakupki', tasks: '#zadachi', ship: '#otgruzka' };
+  var STABS = [['ready', 'К отгрузке'], ['shipped', 'Отгружено']];
 
   /* ============ состояние ============ */
   var state = {
     mode: 'login',            // login | loading | live | error
     view: viewOfHash(location.hash),
     orders: [], purchases: [], tasks: [], tasksOk: true, ver: '',
+    ship: {}, shipOk: true,   // отметки погрузки: { id заказа: { ключ пункта: { t, by, at } } }
     tab: 'active', stage: '', kind: '', q: '', sort: null, due: '',   // due: 'week' — «сдать за 7 дней»
     flashId: null, sheetUrl: '', errorMsg: '',
     lastSync: 0, syncing: false, syncError: false,
     p: { tab: 'active', stage: '', q: '', order: '', flashReq: 0 },  // фильтры раздела «Закупки»
-    t: { tab: '', q: '', to: '', flashId: null }                      // фильтры раздела «Задачи»
+    t: { tab: '', q: '', to: '', flashId: null },                     // фильтры раздела «Задачи»
+    s: { tab: 'ready', q: '' }                                        // раздел «Отгрузка»
   };
 
   /* ============ утилиты ============ */
@@ -4207,7 +5302,7 @@ var Dogovor = (function () {
   function saveData() {
     try {
       var clean = function (list) { return list.filter(function (x) { return !x.pending; }); };
-      localStorage.setItem(LS_DATA, JSON.stringify({ api: apiUrl(), ver: state.ver, sheetUrl: state.sheetUrl, orders: clean(state.orders), purchases: clean(state.purchases), tasks: state.tasksOk ? clean(state.tasks) : null }));
+      localStorage.setItem(LS_DATA, JSON.stringify({ api: apiUrl(), ver: state.ver, sheetUrl: state.sheetUrl, orders: clean(state.orders), purchases: clean(state.purchases), tasks: state.tasksOk ? clean(state.tasks) : null, ship: state.shipOk ? shipRows() : null }));
     } catch (e) {}
   }
   function clearData() {
@@ -4418,6 +5513,11 @@ var Dogovor = (function () {
     pformMsg: $('pformMsg'), pbtnDelete: $('pbtnDelete'), pbtnCopy: $('pbtnCopy'), pbtnCancel: $('pbtnCancel'), pbtnSave: $('pbtnSave'),
     unitList: $('unitList'), supplierList: $('supplierList'), materialList: $('materialList'),
     btnTheme: $('btnTheme'), btnContract: $('btnContract'), emptyContract: $('emptyContract'),
+    swShip: $('swShip'), swSN: $('swSN'), vShip: $('vShip'), stabs: $('stabs'), sq: $('sq'), snote: $('snote'), sbody: $('sbody'),
+    sempty: $('sempty'), semptyText: $('semptyText'), sdlg: $('sdlg'), sform: $('sform'), sdlgTitle: $('sdlgTitle'), sdlgClose: $('sdlgClose'),
+    sHead: $('sHead'), sBarFill: $('sBarFill'), sProgText: $('sProgText'), sNoteDlg: $('sNoteDlg'), sList: $('sList'), sformMsg: $('sformMsg'),
+    sbtnCancel: $('sbtnCancel'), sbtnShip: $('sbtnShip'), tzView: $('tzView'), tzClose: $('tzClose'), tzPrint: $('tzPrint'), tzPaper: $('tzPaper'),
+    tzTitle: $('tzTitle'), btnTZ: $('btnTZ'), btnShipOpen: $('btnShipOpen'),
     swTasks: $('swTasks'), swTN: $('swTN'), vTasks: $('vTasks'), ttabs: $('ttabs'), tq: $('tq'), tto: $('tto'), tnote: $('tnote'),
     tkAdd: $('tkAdd'), tkText: $('tkText'), tkTo: $('tkTo'), tkDue: $('tkDue'), tbodyT: $('tbodyT'),
     tempty: $('tempty'), temptyText: $('temptyText'), temptyReset: $('temptyReset'), peopleList: $('peopleList'),
@@ -4431,7 +5531,7 @@ var Dogovor = (function () {
     cItems: $('cItems'), cAddItem: $('cAddItem'), cSplit: $('cSplit'), fldCParams: $('fld-cparams'), cText: $('cText'),
     cformMsg: $('cformMsg'), cPlan: $('cPlan'), cbtnCancel: $('cbtnCancel'), cbtnSave: $('cbtnSave'), cFile: $('cFile'), drop: $('drop'),
     hot: $('hot'), dueChip: $('dueChip'), dueChipClear: $('dueChipClear'), osheet: $('osheet'), sw: document.querySelector('.switch'),
-    fContactTel: $('fContactTel')
+    fContactTel: $('fContactTel'), btnNewShort: $('btnNewShort'), top: document.querySelector('.top')
   };
   var tf = { text: $('tf-text'), to: $('tf-to'), due: $('tf-due'), order: $('tf-order'), done: $('tf-done') };
   var cf = { customer: $('c-customer'), contact: $('c-contact'), kind: $('c-kind'), received: $('c-received'), due: $('c-due'),
@@ -4852,7 +5952,7 @@ var Dogovor = (function () {
     var a = document.activeElement;
     return a && a.dataset ? a.dataset.fk || '' : '';
   }
-  function anyDialogOpen() { return els.dlg.open || els.pdlg.open || els.tdlg.open || els.cdlg.open; }
+  function anyDialogOpen() { return els.dlg.open || els.pdlg.open || els.tdlg.open || els.cdlg.open || els.sdlg.open || !els.tzView.hidden; }
   function restoreFocus(fk) {
     if (!fk || anyDialogOpen()) return;
     var a = document.activeElement;
@@ -4872,28 +5972,55 @@ var Dogovor = (function () {
     els.vOrders.hidden = view !== 'orders';
     els.vPurch.hidden = !purch;
     els.vTasks.hidden = view !== 'tasks';
+    els.vShip.hidden = view !== 'ship';
     if (lastView !== view) {
       // смена раздела: содержимое мягко проявляется
-      if (lastView) { animOnce(purch ? els.vPurch : view === 'tasks' ? els.vTasks : els.vOrders, 'view-in', 900); if (!listAnim) listAnim = 'new'; }
+      if (lastView) { animOnce(viewEl(view), 'view-in', 900); if (!listAnim) listAnim = 'new'; }
       lastView = view;
     }
+    els.btnNew.hidden = state.mode !== 'live' || view === 'ship';
+    els.btnNewText.textContent = purch ? 'Новая заявка' : view === 'tasks' ? 'Новая задача' : 'Новый заказ';
+    els.btnNewShort.textContent = purch ? 'Заявка' : view === 'tasks' ? 'Задача' : 'Заказ';
+    els.btnExport.hidden = !(state.mode === 'live' && view !== 'tasks' && view !== 'ship' && (purch ? state.purchases.length : state.orders.length));
+    els.btnContract.hidden = !(state.mode === 'live' && view === 'orders');
+    fitHeader();
     renderSwitch();
     renderNotice();
-    els.btnNew.hidden = state.mode !== 'live';
-    els.btnNewText.textContent = purch ? 'Новая заявка' : view === 'tasks' ? 'Новая задача' : 'Новый заказ';
-    els.btnExport.hidden = !(state.mode === 'live' && view !== 'tasks' && (purch ? state.purchases.length : state.orders.length));
-    els.btnContract.hidden = !(state.mode === 'live' && view === 'orders');
-    if (purch) renderPurch(); else if (view === 'tasks') renderTasks(); else renderOrders();
+    if (purch) renderPurch(); else if (view === 'tasks') renderTasks(); else if (view === 'ship') renderShip(); else renderOrders();
+    // открытый чек-лист тоже обновляем: «сохраняю…» → кто и когда отметил, и отметки других людей
+    if (els.sdlg.open) renderShipDlg();
     restoreFocus(fk);
   }
 
+  // шапка на узком экране (или когда в телефоне крупный шрифт и масштаб): если переключатель или кнопки
+  // не влезают в один ряд — по шагам ужимаем: плотнее отступы → короткие подписи → «договор» только значком
+  function headerOverflows() {
+    var btns = [els.btnExport, els.btnContract, els.btnNew].filter(function (b) { return !b.hidden && b.offsetWidth; });
+    for (var i = 1; i < btns.length; i++) if (Math.abs(btns[i].offsetTop - btns[0].offsetTop) > 2) return true;
+    if (els.sw.scrollWidth > els.sw.clientWidth + 1) return true;
+    return [].some.call(els.sw.children, function (b) { return b.scrollWidth > b.clientWidth + 1; });
+  }
+  function fitHeader() {
+    var top = els.top, was = top.className;
+    top.classList.remove('fit1', 'fit2', 'fit3');
+    if (state.mode !== 'login') {
+      for (var k = 1; k <= 3 && headerOverflows(); k++) top.classList.add('fit' + k);
+    }
+    return top.className !== was;
+  }
   var lastView = '';
   function renderSwitch() {
     var purch = state.view === 'purchases';
     els.swOrders.setAttribute('aria-pressed', String(state.view === 'orders'));
     els.swPurch.setAttribute('aria-pressed', String(purch));
     els.swTasks.setAttribute('aria-pressed', String(state.view === 'tasks'));
+    els.swShip.setAttribute('aria-pressed', String(state.view === 'ship'));
     moveThumb(els.sw);
+    // на «Отгрузке» — сколько заказов готовы и ждут погрузки
+    var readyN = state.mode === 'live' ? state.orders.filter(function (o) { return o.stage === 'ready'; }).length : 0;
+    els.swSN.hidden = !readyN;
+    els.swSN.textContent = readyN ? String(readyN) : '';
+    els.swShip.setAttribute('aria-label', readyN ? 'Отгрузка, готовы к отгрузке: ' + readyN : 'Отгрузка');
     // на «Задачах» — мои открытые задачи (без имени — все просроченные); красным, если есть просроченные или на сегодня
     var today = todayYMD(), mineN = 0, hot = 0;
     state.tasks.forEach(function (t) {
@@ -4911,7 +6038,7 @@ var Dogovor = (function () {
     els.swN.hidden = !n;
     els.swN.textContent = n ? String(n) : '';
     els.swPurch.setAttribute('aria-label', n ? 'Закупки, новых заявок: ' + n : 'Закупки');
-    document.title = purch ? 'Закупки — журнал производства' : state.view === 'tasks' ? 'Задачи — журнал производства' : 'Журнал заказов производства';
+    document.title = purch ? 'Закупки — журнал производства' : state.view === 'tasks' ? 'Задачи — журнал производства' : state.view === 'ship' ? 'Отгрузка — журнал производства' : 'Журнал заказов производства';
   }
 
   function renderOrders() {
@@ -4991,12 +6118,12 @@ var Dogovor = (function () {
   }
 
   /* ============ связь с Google Таблицей ============ */
-  function api(action, payload) {
+  function api(action, payload, ms) {
     var url = apiUrl();
     if (!url) return Promise.reject({ error: 'network', message: 'не указан адрес скрипта' });
     var body = JSON.stringify(Object.assign({ action: action, code: creds.code || '', who: creds.name || '' }, payload || {}));
     var ctrl = window.AbortController ? new AbortController() : null;
-    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 25000);
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, ms || 25000);
     // простой запрос text/plain: Google Apps Script принимает его без предварительной проверки CORS
     return fetch(url, { method: 'POST', body: body, redirect: 'follow', signal: ctrl ? ctrl.signal : undefined })
       .then(function (r) {
@@ -5036,6 +6163,8 @@ var Dogovor = (function () {
       state.orders = res.orders.map(normalize).sort(byNumDesc);
       state.purchases = Array.isArray(res.purchases) ? res.purchases.map(pnormalize) : [];
       state.tasksOk = Array.isArray(res.tasks);
+      state.shipOk = Array.isArray(res.ship);
+      state.ship = shipMap(res.ship);
       state.tasks = state.tasksOk ? res.tasks.map(tnormalize) : [];
       state.ver = res.ver || '';
       saveData();
@@ -5066,9 +6195,11 @@ var Dogovor = (function () {
     if (!cached) { load(); return; }
     // мгновенно показываем последний сохранённый список и тихо сверяем его с таблицей
     state.orders = cached.orders.map(normalize).sort(byNumDesc);
-    var hasP = Array.isArray(cached.purchases) && Array.isArray(cached.tasks);
+    var hasP = Array.isArray(cached.purchases) && Array.isArray(cached.tasks) && 'ship' in cached;
     state.purchases = Array.isArray(cached.purchases) ? cached.purchases.map(pnormalize) : [];
     state.tasks = Array.isArray(cached.tasks) ? cached.tasks.map(tnormalize) : [];
+    state.ship = shipMap(cached.ship);
+    state.shipOk = cached.ship !== null;
     state.ver = cached.ver || '';
     state.sheetUrl = cached.sheetUrl || '';
     state.mode = 'live';
@@ -5189,9 +6320,16 @@ var Dogovor = (function () {
   });
 
   /* ============ смена этапа прямо в списке ============ */
-  function changeStage(id, stage) {
+  function changeStage(id, stage, force) {
     var o = findOrder(id);
     if (!o || o.pending || !STAGE[stage] || o.stage === stage || state.mode !== 'live') return;
+    if (stage === 'shipped' && !force) {
+      // «Отгружен» — только через чек-лист: сначала проверяем, всё ли погрузили
+      var sel = document.getElementById('st-' + id);
+      if (sel) sel.value = o.stage;
+      openShip(o, 'Отметьте, что погружено, и нажмите «Отгрузить».');
+      return;
+    }
     var prev = { stage: o.stage, shipped: o.shipped, history: o.history };
     o.stage = stage;
     if (stage === 'shipped') { if (!o.shipped) o.shipped = todayYMD(); }
@@ -5263,6 +6401,8 @@ var Dogovor = (function () {
     renderOrderTasks(o);
     disarmDelete();
     els.btnDelete.hidden = !o;
+    els.btnTZ.hidden = !o;
+    els.btnShipOpen.hidden = !(o && (o.stage === 'ready' || o.stage === 'shipped'));
     showFormMsg('');
     formSnapshot = serializeForm();
 
@@ -6077,16 +7217,18 @@ var Dogovor = (function () {
   }
 
   /* ============ закупки: события ============ */
+  function viewEl(v) { return v === 'purchases' ? els.vPurch : v === 'tasks' ? els.vTasks : v === 'ship' ? els.vShip : els.vOrders; }
   function setView(v) {
-    v = v === 'purchases' || v === 'tasks' ? v : 'orders';
+    v = v === 'purchases' || v === 'tasks' || v === 'ship' ? v : 'orders';
     if (state.view === v) return;
     state.view = v;
-    try { history.replaceState(null, '', v === 'purchases' ? '#zakupki' : v === 'tasks' ? '#zadachi' : location.pathname + location.search); } catch (e) {}
+    try { history.replaceState(null, '', VIEW_HASH[v] || location.pathname + location.search); } catch (e) {}
     render();
   }
   els.swOrders.addEventListener('click', function () { setView('orders'); });
   els.swPurch.addEventListener('click', function () { setView('purchases'); });
   els.swTasks.addEventListener('click', function () { setView('tasks'); });
+  els.swShip.addEventListener('click', function () { setView('ship'); });
   window.addEventListener('hashchange', function () {
     var v = viewOfHash(location.hash);
     if (v !== state.view) { state.view = v; render(); }
@@ -6615,6 +7757,439 @@ var Dogovor = (function () {
     openTDialog(t);
   });
 
+
+  /* ============ состав заказа: изделия, комплектация, опции ============ */
+  // описание заказа из договора выглядит так:
+  //   1. Инсинератор «ВЕСТА ПЛЮС» ПИр-1,0К — 1 шт
+  //      Производительность до 120 кг/час.
+  //      Комплектация инсинератора:
+  //      – Горелка — 3 шт: Технические параметры…
+  //   Услуги: Шефмонтаж — …
+  //   Срок по договору: …
+  //   Договор № … от …
+  // а у заказа, набранного вручную, — просто текст; его тоже разбираем, насколько получится
+  var RE_SPLIT_QTY = /^(.*?)\s+[—–-]\s+(\d+(?:[.,]\d+)?)\s*([a-zа-яё²³]{1,8}\.?(?:\s?[a-zа-яё]{1,2}\.?)?)?\s*(?::\s*([\s\S]*))?$/i;
+  function splitQty(s) {
+    s = str(s).trim();
+    var m = RE_SPLIT_QTY.exec(s);
+    if (!m || !m[1].trim()) return { name: s, qty: '', unit: '', note: '' };
+    return { name: m[1].trim(), qty: numOrEmpty(m[2]), unit: (m[3] || '').replace(/\.$/, '').trim(), note: (m[4] || '').trim() };
+  }
+  function parseComp(o) {
+    var res = { items: [], general: [], services: [], term: '', contract: '', note: '' };
+    var lines = str(o.description).replace(/\r/g, '').split('\n');
+    var indented = lines.some(function (l) { return /^\s{2,}\S/.test(l); });
+    var cur = null, grp = null, qtyLine = null;
+    function newItem(n, text) {
+      var q = splitQty(text);
+      cur = { n: n, name: q.name, qty: q.qty, unit: q.unit, notes: q.note ? [q.note] : [], groups: [] };
+      grp = null;
+      res.items.push(cur);
+    }
+    function addTo(it, t) {
+      if (/^[–—\-•·*]\s*/.test(t)) {
+        var q = splitQty(t.replace(/^[–—\-•·*]\s*/, ''));
+        if (q.qty === '') {
+          var ci = q.name.indexOf(': ');
+          if (ci > 0) { q.note = q.name.slice(ci + 2).trim(); q.name = q.name.slice(0, ci).trim(); }
+        }
+        if (!grp) { grp = { title: '', rows: [] }; it.groups.push(grp); }
+        grp.rows.push({ name: q.name, qty: q.qty, unit: q.unit, note: q.note });
+        return;
+      }
+      if (/:$/.test(t) && t.length <= 90) { grp = { title: t.slice(0, -1).trim(), rows: [] }; it.groups.push(grp); return; }
+      if (grp && grp.rows.length) { var last = grp.rows[grp.rows.length - 1]; last.note = last.note ? last.note + '; ' + t : t; return; }
+      it.notes.push(t);
+    }
+    lines.forEach(function (raw) {
+      var t = raw.trim(), m;
+      if (!t) return;
+      var ind = /^\s/.test(raw);
+      if (!ind) {
+        if ((m = /^(\d{1,3})[.)]\s+(\S.*)$/.exec(t))) { newItem(m[1], m[2]); return; }
+        if ((m = /^Срок по договору:\s*(.*)$/i.exec(t))) { res.term = m[1]; return; }
+        if ((m = /^Договор\s+(.+)$/i.exec(t))) { res.contract = m[1]; return; }
+        if ((m = /^Услуги:\s*(.*)$/i.exec(t))) { res.services.push(m[1]); return; }
+        if ((m = /^Количество:\s*(.+)$/i.exec(t))) { qtyLine = splitQty('x — ' + m[1]); return; }
+        if (/^Позиция \d+ из \d+ по договору/i.test(t)) { res.note = t; return; }
+      }
+      if (cur && (ind || !indented)) { addTo(cur, t); return; }
+      res.general.push(t);
+    });
+    if (!res.items.length) {
+      // заказ из одного изделия: наименование — из заголовка, всё описание — его параметры и комплектация
+      var q = splitQty(o.title || '');
+      var qq = q.qty !== '' ? q : qtyLine || { qty: '', unit: '' };
+      cur = { n: '1', name: q.name || str(o.title).trim() || 'Изделие', qty: qq.qty, unit: qq.unit, notes: [], groups: [] };
+      grp = null;
+      res.items.push(cur);
+      var gen = res.general;
+      res.general = [];
+      gen.forEach(function (t) { addTo(cur, t); });
+    }
+    return res;
+  }
+  function qtyStr(x) { return x.qty !== '' && x.qty != null ? fmtNum(x.qty) + '\u00a0' + (x.unit || 'шт') : ''; }
+
+  /* ============ отгрузка: чек-лист «всё ли погрузили» ============ */
+  function ckey(s) { return norm(s).replace(/[^a-zа-я0-9]+/g, ' ').trim().slice(0, 140); }
+  // пункты чек-листа: каждое изделие и каждая позиция его комплектации и опций; услуги (шефмонтаж, доставка) — не грузим
+  function shipList(o) {
+    var c = parseComp(o), out = [], seen = {};
+    function key(base) {
+      var k = ckey(base) || 'пункт';
+      if (seen[k]) { seen[k]++; k += ' #' + seen[k]; } else seen[k] = 1;
+      return k;
+    }
+    c.items.forEach(function (it) {
+      out.push({ key: key(it.name + ' ' + qtyStr(it)), text: it.name, qty: qtyStr(it), lvl: 0 });
+      it.groups.forEach(function (g) {
+        if (!g.rows.length) return;
+        if (g.title) out.push({ head: g.title });
+        g.rows.forEach(function (r) { out.push({ key: key(it.name + ' / ' + r.name + ' ' + qtyStr(r)), text: r.name, qty: qtyStr(r), lvl: 1 }); });
+      });
+    });
+    return out;
+  }
+  function shipLabel(x) { return x.text + (x.qty ? ' — ' + x.qty.replace(/\u00a0/g, ' ') : ''); }
+  function shipMap(rows) {
+    var map = {};
+    (Array.isArray(rows) ? rows : []).forEach(function (r) {
+      if (!r || !r.id || !r.k) return;
+      (map[r.id] = map[r.id] || {})[r.k] = { t: str(r.t), by: str(r.by), at: str(r.at) };
+    });
+    return map;
+  }
+  function shipRows() {
+    var out = [];
+    Object.keys(state.ship).forEach(function (id) {
+      var m = state.ship[id];
+      Object.keys(m).forEach(function (k) { if (!m[k].pending) out.push({ id: id, k: k, t: m[k].t, by: m[k].by, at: m[k].at }); });
+    });
+    return out;
+  }
+  function shipStat(o) {
+    var list = shipList(o), m = state.ship[o.id] || {}, total = 0, done = 0;
+    list.forEach(function (x) { if (!x.key) return; total++; if (m[x.key]) done++; });
+    return { list: list, total: total, done: done };
+  }
+  function whoWhen(e) {
+    var d = e && e.at ? new Date(e.at) : null;
+    var when = d && !isNaN(d) ? (localYMD(d) === todayYMD() ? hhmm(d) : fmtDate(localYMD(d)) + ' ' + hhmm(d)) : '';
+    return [e && e.by, when].filter(Boolean).join(' · ');
+  }
+
+  // раздел «Отгрузка»
+  var sCache = new Map();
+  function clearSRows() { sCache.forEach(function (rec) { rec.el.remove(); }); sCache.clear(); }
+  function shipCandidates() {
+    var tab = state.s.tab, q = norm(state.s.q).replace(/^№\s*/, '');
+    var list = state.orders.filter(function (o) {
+      if (tab === 'shipped' ? o.stage !== 'shipped' : o.stage !== 'ready') return false;
+      if (q && norm([o.num, o.customer, o.contact, o.title, o.description].join(' ')).indexOf(q) === -1) return false;
+      return true;
+    });
+    if (tab === 'shipped') return list.sort(function (a, b) { return (b.shipped || '') < (a.shipped || '') ? -1 : (b.shipped || '') > (a.shipped || '') ? 1 : b.num - a.num; });
+    return list.sort(function (a, b) {
+      var x = a.due || '9999', y = b.due || '9999';
+      return x !== y ? (x < y ? -1 : 1) : a.num - b.num;
+    });
+  }
+  function shipProgText(o, st) {
+    if (!st.total) return 'состав не указан';
+    if (st.done === st.total) return 'всё погружено';
+    if (st.done) return 'погружено ' + st.done + ' из ' + st.total;
+    return o.stage === 'shipped' ? 'чек-лист не заполняли' : st.total + ' ' + plural(st.total, 'пункт', 'пункта', 'пунктов') + ' к погрузке';
+  }
+  function srowHTML(o, st, today) {
+    var due = dueInfo(o, today), id = esc(o.id), pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+    var parts = splitDesc(o.description), title = o.title || parts[0] || 'Без названия';
+    var since = o.stage === 'ready' ? stageSinceYMD(o) : '';
+    var wait = since ? daysBetween(since, today) : -1;
+    return '<article class="srow' + (st.total && st.done === st.total ? ' is-full' : st.done ? ' is-part' : '') + (o.pending ? ' is-pending' : '') +
+      '" data-sid="' + id + '" data-fk="srow-' + id + '" tabindex="0" aria-label="Отгрузка заказа № ' + esc(o.num) + '">' +
+      '<div class="s-num"><span class="num">' + esc(o.num) + '</span>' +
+        (wait > 0 ? '<span class="recv">готов ' + esc(nDays(wait)) + '</span>' : wait === 0 ? '<span class="recv">готов сегодня</span>' : '') + '</div>' +
+      '<div class="s-main"><span class="cust">' + esc(o.customer || '—') + '</span><span class="title">' + esc(title) + '</span>' +
+        (o.contact ? '<span class="contact">' + contactHTML(o.contact) + '</span>' : '') + '</div>' +
+      '<div class="s-prog"><div class="s-bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div><span>' + esc(shipProgText(o, st)) + '</span></div>' +
+      '<div class="c-due due--' + (due.cls || 'plain') + '"><span class="due-date">' + esc(due.text) + '</span><span class="due-sub">' + esc(due.sub) + '</span></div>' +
+    '</article>';
+  }
+  function renderShip() {
+    var today = todayYMD(), loading = state.mode === 'loading';
+    var ready = 0, shipped = 0;
+    if (!loading) state.orders.forEach(function (o) { if (o.stage === 'ready') ready++; else if (o.stage === 'shipped') shipped++; });
+    tabButtons(els.stabs, STABS, 'data-stab', 'stab-', state.s.tab, loading ? null : { ready: ready, shipped: shipped }, 0);
+    els.snote.hidden = state.shipOk || state.mode !== 'live';
+    els.snote.textContent = 'Отметки погрузки заработают после обновления Google-скрипта (новая версия Code.gs).';
+    if (loading) {
+      clearSRows();
+      if (!els.sbody.querySelector('.skel')) els.sbody.innerHTML = new Array(3).join('<div class="skel"><i></i><i></i><i></i></div>');
+      els.sempty.hidden = true;
+      renderFoot('');
+      return;
+    }
+    var list = shipCandidates();
+    keyedRender(els.sbody, sCache, list.map(function (o) {
+      var st = shipStat(o);
+      return { key: o.id, sig: JSON.stringify([today, o.num, o.customer, o.contact, o.title, o.description, o.stage, o.due, o.shipped, stageSinceYMD(o), !!o.pending, st.done, st.total]),
+        html: function () { return srowHTML(o, st, today); } };
+    }));
+    els.sempty.hidden = !!list.length;
+    els.semptyText.textContent = state.mode !== 'live' ? 'Заказы не загрузились.'
+      : state.s.q ? 'По этому поиску заказов нет.'
+      : state.s.tab === 'shipped' ? 'Отгруженных заказов пока нет.'
+      : 'Готовых к отгрузке заказов нет. Когда заказ перейдёт на этап «Готов», он появится здесь.';
+    renderFoot(list.length ? 'Показано ' + list.length + ' ' + plural(list.length, 'заказ', 'заказа', 'заказов') : '');
+  }
+
+  // окно чек-листа
+  var shipping = null, sArmTimer = null;
+  function sdisarm() {
+    clearTimeout(sArmTimer);
+    els.sbtnShip.classList.remove('armed');
+  }
+  function showSFormMsg(msg, isErr) {
+    els.sformMsg.textContent = msg || '';
+    els.sformMsg.className = 'form-msg' + (isErr ? ' err' : '');
+  }
+  function openShip(o, hint) {
+    if (state.mode !== 'live' || !o) return;
+    if (o.pending) { toast('Заказ ещё сохраняется — секунду…'); return; }
+    if (els.dlg.open) closeDialog();
+    shipping = o.id;
+    sdisarm();
+    showSFormMsg(hint || '', false);
+    renderShipDlg();
+    showModal(els.sdlg);
+    els.sdlg.querySelector('.dlg-body').scrollTop = 0;
+  }
+  function closeShip() {
+    sdisarm();
+    closeModal(els.sdlg);
+    shipping = null;
+  }
+  function renderShipDlg() {
+    if (!els.sdlg.open && !shipping) return;
+    var o = findOrder(shipping);
+    if (!o) { closeShip(); return; }
+    var st = shipStat(o), m = state.ship[o.id] || {}, shipped = o.stage === 'shipped', today = todayYMD();
+    var due = dueInfo(o, today), parts = splitDesc(o.description);
+    els.sdlgTitle.textContent = 'Отгрузка · заказ № ' + o.num;
+    els.sHead.innerHTML = '<span class="cust">' + esc(o.customer || 'Заказчик не указан') + '</span>' +
+      '<span class="title">' + esc(o.title || parts[0] || '') + '</span>' +
+      (o.contact ? '<span class="contact">' + contactHTML(o.contact) + '</span>' : '') +
+      '<span class="s-due due--' + (due.cls || 'plain') + '">' + esc(shipped ? due.sub + (o.shipped ? ' ' + fmtDate(o.shipped, true) : '') : 'срок сдачи ' + due.text + ' · ' + due.sub) + '</span>';
+    var pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+    els.sBarFill.style.width = pct + '%';
+    els.sBarFill.parentNode.classList.toggle('is-full', !!st.total && st.done === st.total);
+    els.sProgText.textContent = !st.total ? 'В заказе нет состава — впишите изделия в описание заказа.'
+      : st.done === st.total ? 'Всё погружено: ' + st.total + ' из ' + st.total
+      : 'Погружено ' + st.done + ' из ' + st.total + (st.total - st.done ? ' · осталось ' + (st.total - st.done) : '');
+    els.sNoteDlg.hidden = state.shipOk;
+    els.sNoteDlg.textContent = 'Отметки погрузки заработают после обновления Google-скрипта (новая версия Code.gs).';
+    var ae = document.activeElement, fkk = ae && els.sList.contains(ae) ? ae.getAttribute('data-k') : null;
+    els.sList.innerHTML = st.list.map(function (x) {
+      if (x.head) return '<li class="s-hd">' + esc(x.head) + '</li>';
+      var e = m[x.key], on = !!e;
+      return '<li class="s-it' + (x.lvl ? ' lvl1' : '') + (on ? ' is-on' : '') + (e && e.pending ? ' is-pending' : '') + '" data-k="' + esc(x.key) + '">' +
+        '<button type="button" class="s-box" role="checkbox" aria-checked="' + on + '" data-k="' + esc(x.key) + '" aria-label="' + esc(shipLabel(x)) + '"' + (shipped || !state.shipOk ? ' disabled' : '') + '>' + CHECK_SVG + '</button>' +
+        '<span class="s-t">' + esc(x.text) + (x.qty ? ' <b class="s-q">' + esc(x.qty) + '</b>' : '') + '</span>' +
+        (on ? '<span class="s-who">' + esc(e.pending ? 'сохраняю…' : whoWhen(e)) + '</span>' : '') +
+      '</li>';
+    }).join('');
+    if (fkk) {
+      var fb = els.sList.querySelector('.s-box[data-k="' + cssEsc(fkk) + '"]');
+      if (fb) fb.focus({ preventScroll: true });
+    }
+    els.sbtnShip.hidden = shipped;
+    els.sbtnCancel.textContent = shipped ? 'Закрыть' : 'Позже';
+    if (!els.sbtnShip.classList.contains('armed')) {
+      els.sbtnShip.textContent = st.total && st.done === st.total ? 'Отгрузить — всё погружено' : 'Отгрузить';
+    }
+  }
+  function toggleShip(k) {
+    var o = findOrder(shipping);
+    if (!o || state.mode !== 'live' || o.stage === 'shipped') return;
+    if (!state.shipOk) { toast('Отметки заработают после обновления Google-скрипта.', 'error'); return; }
+    var item = shipList(o).filter(function (x) { return x.key === k; })[0];
+    if (!item) return;
+    var m = state.ship[o.id] = state.ship[o.id] || {};
+    var prev = m[k], on = !prev;
+    if (on) m[k] = { t: shipLabel(item), by: creds.name || '', at: new Date().toISOString(), pending: true };
+    else delete m[k];
+    sdisarm();
+    render();
+    write('shipcheck', { id: o.id, key: k, text: shipLabel(item), on: on }).then(null, function (e) {
+      var mm = state.ship[o.id] || (state.ship[o.id] = {});
+      if (prev) mm[k] = prev; else delete mm[k];
+      render();
+      if (!(e && e.error === 'bad_code')) toast('Отметка не сохранилась. ' + errorText(e), 'error');
+    });
+  }
+  function shipNow(e) {
+    e.preventDefault();
+    var o = findOrder(shipping);
+    if (!o || o.stage === 'shipped') { closeShip(); return; }
+    var st = shipStat(o), left = st.total - st.done;
+    if (left > 0 && !els.sbtnShip.classList.contains('armed')) {
+      els.sbtnShip.classList.add('armed');
+      els.sbtnShip.textContent = 'Не отмечено ' + left + ' — всё равно отгрузить?';
+      showSFormMsg('Не все пункты отмечены. Нажмите ещё раз, если всё же отгружаете.', true);
+      clearTimeout(sArmTimer);
+      sArmTimer = setTimeout(function () { sdisarm(); if (els.sdlg.open) renderShipDlg(); showSFormMsg(''); }, 5000);
+      return;
+    }
+    closeShip();
+    changeStage(o.id, 'shipped', true);
+  }
+  els.sList.addEventListener('click', function (e) {
+    var li = e.target.closest('[data-k]');
+    if (li && !li.querySelector('.s-box[disabled]')) toggleShip(li.getAttribute('data-k'));
+  });
+  els.sform.addEventListener('submit', shipNow);
+  els.sbtnCancel.addEventListener('click', closeShip);
+  els.sdlgClose.addEventListener('click', closeShip);
+  els.sdlg.addEventListener('close', function () { shipping = null; sdisarm(); });
+  els.sbody.addEventListener('click', function (e) {
+    if (e.target.closest('a, button, input, select')) return;
+    var row = e.target.closest('[data-sid]');
+    if (row) openShip(findOrder(row.getAttribute('data-sid')));
+  });
+  els.sbody.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if ((e.key === 'Enter' || e.key === ' ') && t.classList && t.classList.contains('srow')) {
+      e.preventDefault();
+      openShip(findOrder(t.getAttribute('data-sid')));
+    }
+  });
+  els.stabs.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-stab]');
+    if (!b) return;
+    state.s.tab = b.getAttribute('data-stab');
+    listAnim = 'all';
+    render();
+  });
+  var sqTimer = null;
+  els.sq.addEventListener('input', function () {
+    clearTimeout(sqTimer);
+    sqTimer = setTimeout(function () { state.s.q = els.sq.value.trim(); listAnim = 'new'; render(); }, 120);
+  });
+  els.stabs.addEventListener('scroll', function () { edgeFade(els.stabs); }, { passive: true });
+
+  /* ============ ТЗ для цеха: лист на печать ============ */
+  function linesHTML(arr) { return arr.map(esc).join('<br>'); }
+  function tzDocHTML(o) {
+    var c = parseComp(o), kind = KIND[o.kind], today = todayYMD(), sec = 0;
+    function h2(t) { sec++; return '<h2>' + sec + '. ' + esc(t) + '</h2>'; }
+    var rows = c.items.map(function (it) {
+      var h = '<tr class="tz-it"><td class="tz-n">' + esc(it.n) + '</td><td class="tz-name">' + esc(it.name) + '</td>' +
+        '<td class="tz-q">' + esc(it.qty !== '' ? fmtNum(it.qty) : '') + '</td><td class="tz-u">' + esc(it.qty !== '' ? it.unit || 'шт' : '') + '</td>' +
+        '<td>' + linesHTML(it.notes) + '</td><td class="tz-ok"></td></tr>';
+      var k = 0;
+      it.groups.forEach(function (g) {
+        if (!g.rows.length) return;
+        if (g.title) h += '<tr class="tz-grp"><td></td><td colspan="5">' + esc(g.title) + '</td></tr>';
+        g.rows.forEach(function (r) {
+          k++;
+          h += '<tr><td class="tz-n">' + esc(it.n + '.' + k) + '</td><td>' + esc(r.name) + '</td>' +
+            '<td class="tz-q">' + esc(r.qty !== '' ? fmtNum(r.qty) : '') + '</td><td class="tz-u">' + esc(r.qty !== '' ? r.unit || 'шт' : '') + '</td>' +
+            '<td>' + esc(r.note) + '</td><td class="tz-ok"></td></tr>';
+        });
+      });
+      return h;
+    }).join('');
+    var dueTxt = o.due ? fmtDate(o.due, true) : 'не указан';
+    var html = '<article class="tz-doc" contenteditable="true" spellcheck="false" data-num="' + esc(o.num) + '">' +
+      '<div class="tz-approve">УТВЕРЖДАЮ<span class="tz-l"></span><span class="tz-small">«___» ______________ 20___ г.</span></div>' +
+      '<h1>ТЕХНИЧЕСКОЕ ЗАДАНИЕ № ' + esc(o.num) + '</h1>' +
+      '<p class="tz-lead">на изготовление продукции по заказу № ' + esc(o.num) + (o.received ? ' от ' + esc(fmtDate(o.received, true)) : '') + '</p>' +
+      '<table class="tz-meta"><tbody>' +
+        '<tr><th>Изделие</th><td><b>' + esc(o.title || (c.items[0] && c.items[0].name) || '') + '</b>' + (kind ? ' <span class="tz-kind">(' + esc(kind.single) + ')</span>' : '') + '</td></tr>' +
+        '<tr><th>Заказчик</th><td>' + esc(o.customer || '—') + '</td></tr>' +
+        (c.contract ? '<tr><th>Договор</th><td>' + esc(c.contract) + '</td></tr>' : '') +
+        '<tr><th>Срок сдачи</th><td><b>' + esc(dueTxt) + '</b>' + (c.term ? '<span class="tz-term">по договору: ' + esc(c.term) + '</span>' : '') + '</td></tr>' +
+        '<tr><th>Выдано в работу</th><td>' + esc(fmtDate(today, true)) + '</td></tr>' +
+      '</tbody></table>' +
+      h2('Состав и комплектация') +
+      '<p class="tz-caption">Таблица 1</p>' +
+      '<table class="tz-items"><thead><tr><th class="tz-n">№</th><th>Наименование</th><th class="tz-q">Кол-во</th><th class="tz-u">Ед.</th><th>Характеристики, требования</th><th class="tz-ok">Отм.</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      (c.general.length ? h2('Общие требования') + '<ul class="tz-list">' + c.general.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul>' : '') +
+      (c.services.length || c.note ? h2('Для сведения') + '<ul class="tz-list">' + c.services.map(function (x) { return '<li>Услуги по договору: ' + esc(x) + '</li>'; }).join('') + (c.note ? '<li>' + esc(c.note) + '</li>' : '') + '</ul>' : '') +
+      h2('Особые отметки') + '<div class="tz-lines"><i></i><i></i><i></i></div>' +
+      '<div class="tz-sign">' +
+        '<p><span>Составил</span><span class="tz-l"></span><span class="tz-who">' + esc(creds.name ? '/ ' + creds.name + ' /' : '/ __________________ /') + '</span></p>' +
+        '<p><span>Принял в производство</span><span class="tz-l"></span><span class="tz-who">/ __________________ /</span></p>' +
+        '<p><span>Изготовлено, проверено ОТК</span><span class="tz-l"></span><span class="tz-who">«___» __________ 20___ г.</span></p>' +
+      '</div>' +
+      '<p class="tz-foot">Сформировано в журнале заказов ' + esc(fmtDate(today, true)) + ' · заказ № ' + esc(o.num) + '</p>' +
+    '</article>';
+    return html;
+  }
+  function openTZ(list) {
+    list = (list || []).filter(Boolean);
+    if (!list.length) return;
+    if (els.dlg.open) closeDialog();
+    els.tzTitle.textContent = 'ТЗ для цеха · ' + (list.length > 1 ? 'заказы № ' + list.map(function (o) { return o.num; }).join(', ') : 'заказ № ' + list[0].num);
+    els.tzPaper.innerHTML = list.map(tzDocHTML).join('');
+    var custs = list.map(function (o) { return str(o.customer).trim(); }).filter(function (c, i, a) { return c && a.indexOf(c) === i; });
+    els.tzPaper.setAttribute('data-cust', custs.length === 1 ? custs[0].replace(/[\\/:*?"<>|«»]+/g, '').replace(/\s+/g, ' ').trim() : '');
+    els.tzView.hidden = false;
+    document.documentElement.classList.add('tz-open');
+    els.tzView.scrollTop = 0;
+    fitTZ();
+    animOnce(els.tzView, 'view-in', 900);
+    try { els.tzPrint.focus({ preventScroll: true }); } catch (e) { els.tzPrint.focus(); }
+  }
+  // очень узкий экран (или крупный шрифт в телефоне): если лист всё равно шире экрана — уменьшаем его целиком,
+  // чтобы читать без прокрутки вбок; на печать это не влияет
+  function fitTZ() {
+    if (els.tzView.hidden) return;
+    var p = els.tzPaper;
+    p.style.zoom = '';
+    var cw = els.tzView.clientWidth, sw = els.tzView.scrollWidth;
+    if (sw > cw + 1 && 'zoom' in p.style) p.style.zoom = String(Math.max(0.55, Math.floor(cw / sw * 100) / 100));
+  }
+  var fitTZTimer = null;
+  window.addEventListener('resize', function () {
+    if (els.tzView.hidden) return;
+    clearTimeout(fitTZTimer);
+    fitTZTimer = setTimeout(fitTZ, 120);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitTZ(); });
+  function closeTZ() {
+    els.tzView.hidden = true;
+    document.documentElement.classList.remove('tz-open');
+    els.tzPaper.innerHTML = '';
+  }
+  els.tzClose.addEventListener('click', closeTZ);
+  els.tzPrint.addEventListener('click', function () { window.print(); });
+  // имя PDF-файла при «Сохранить как PDF» берётся из заголовка страницы — на время печати ставим понятное
+  var titleBeforePrint = null;
+  window.addEventListener('beforeprint', function () {
+    if (els.tzView.hidden) return;
+    var docs = [].map.call(els.tzPaper.querySelectorAll('.tz-doc'), function (d) { return d.getAttribute('data-num'); });
+    titleBeforePrint = document.title;
+    document.title = 'ТЗ ' + (docs.length > 1 ? 'заказы № ' + docs.join(', ') : 'заказ № ' + docs[0]) + (els.tzPaper.getAttribute('data-cust') ? ' — ' + els.tzPaper.getAttribute('data-cust') : '');
+  });
+  window.addEventListener('afterprint', function () {
+    if (titleBeforePrint !== null) { document.title = titleBeforePrint; titleBeforePrint = null; }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !els.tzView.hidden && !document.querySelector('dialog[open]') && !(e.target && e.target.isContentEditable)) closeTZ();
+  });
+  els.btnTZ.addEventListener('click', function () {
+    if (!editing) return;
+    if (isDirty()) { showFormMsg('Сначала сохраните изменения в заказе — ТЗ строится по сохранённому заказу.', true); return; }
+    openTZ([editing]);
+  });
+  els.btnShipOpen.addEventListener('click', function () {
+    if (!editing) return;
+    if (isDirty()) { showFormMsg('Сначала сохраните изменения в заказе.', true); return; }
+    openShip(editing);
+  });
+
   /* ============ заказ из договора ============ */
   var cjob = null, cprop = null, cSnapshot = '';
   var TYPE_LABEL = { pdf: 'PDF', docx: 'Word', doc: 'Word 97–2003', rtf: 'RTF', odt: 'OpenDocument', html: 'Word (веб-страница)', text: 'текст', image: 'фото' };
@@ -6638,7 +8213,8 @@ var Dogovor = (function () {
   function setBusy(text, part) {
     if (text) {
       els.cBusyText.textContent = text;
-      els.cBusyHint.textContent = /скан|фото|распозна/i.test(text) ? 'Текст распознаётся прямо в браузере — обычно это занимает до минуты.' : '';
+      els.cBusyHint.textContent = /google/i.test(text) ? 'Страницы распознаёт Google — обычно это 10–40 секунд.'
+        : /скан|фото|распозна/i.test(text) ? 'Текст распознаётся прямо в браузере — обычно это занимает до минуты.' : '';
     }
     var bar = els.cBar.firstElementChild;
     if (typeof part === 'number' && isFinite(part)) {
@@ -6665,7 +8241,7 @@ var Dogovor = (function () {
     cState('busy');
     setBusy('Открываю файл…');
     if (!els.cdlg.open) showModal(els.cdlg);
-    var job = Dogovor.read(file, function (text, part) { if (cjob === job) setBusy(text, part); });
+    var job = Dogovor.read(file, function (text, part) { if (cjob === job) setBusy(text, part); }, { ocr: googleOcr });
     cjob = job;
     job.promise.then(function (doc) {
       if (cjob !== job) return;
@@ -6678,6 +8254,15 @@ var Dogovor = (function () {
       els.cErrText.textContent = Dogovor.message(err);
       cState('err');
     });
+  }
+  // сканы и фото распознаёт Google: картинку принимает Google-скрипт журнала, Диск владельца читает текст, файл сразу удаляется
+  function bytesB64(bytes) {
+    var s = '', CH = 0x8000;
+    for (var i = 0; i < bytes.length; i += CH) s += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+    return btoa(s);
+  }
+  function googleOcr(png) {
+    return api('ocr', { image: bytesB64(png), mime: 'image/png', lang: 'ru' }, 120000).then(function (res) { return res.text || ''; });
   }
   function closeCDialog() {
     if (cjob) { cjob.cancel(); cjob = null; }
@@ -6762,7 +8347,7 @@ var Dogovor = (function () {
     cprop = p;
     var info = [TYPE_LABEL[doc.type] || 'файл'];
     if (doc.pages) info.push(doc.pages + '\u00a0' + plural(doc.pages, 'страница', 'страницы', 'страниц'));
-    if (doc.ocr) info.push('текст распознан со скана');
+    if (doc.ocr) info.push(doc.google ? 'текст распознан Google' : 'текст распознан со скана');
     if (doc.cut) info.push('прочитаны первые 40 страниц');
     if (doc.ocrCut) info.push('распознаны первые 12 страниц скана');
     info.push(fmtSize(file.size || 0));
@@ -6796,7 +8381,9 @@ var Dogovor = (function () {
     $('fld-cdue').classList.toggle('miss', !p.due);
     els.cText.textContent = doc.text.length > 60000 ? doc.text.slice(0, 60000) + '\n…' : doc.text;
     els.cRes.querySelector('details').open = false;
-    showCFormMsg(doc.ocr ? 'Договор распознан со скана — проверьте цифры особенно внимательно.' : '', false);
+    showCFormMsg(!doc.ocr ? '' : doc.google ? 'Договор распознан со скана — проверьте цифры.'
+      : doc.googleErr && /неизвестное действие/i.test(doc.googleErr) ? 'Скан распознан в браузере: распознавание через Google заработает после обновления Google-скрипта. Проверьте цифры особенно внимательно.'
+      : 'Договор распознан со скана — проверьте цифры особенно внимательно.', false);
     cState('res');
     syncCItems();
     growAll();
@@ -6893,6 +8480,8 @@ var Dogovor = (function () {
         if (--left === 0 && !failed) toast(nums.length > 1 ? 'Добавлены заказы № ' + nums[0] + '–' + nums[nums.length - 1] : 'Заказ № ' + nums[0] + ' добавлен в журнал');
       }, function () { left--; });
     });
+    // и сразу — техническое задание для цеха на этот заказ (можно распечатать или закрыть)
+    openTZ(nums.map(function (n) { return findOrderByNum(n); }));
   }
 
   els.btnContract.addEventListener('click', pickContract);
@@ -7063,7 +8652,7 @@ var Dogovor = (function () {
   onMQ(mqNarrow, function () { if (state.mode === 'live' && state.view === 'orders') render(); });
   // шрифт догрузился или поменялась ширина окна — «бегунки» встают точно под кнопки
   var thumbFrame = 0;
-  function thumbsLater() { cancelAnimationFrame(thumbFrame); thumbFrame = requestAnimationFrame(function () { syncThumbs(true); }); }
+  function thumbsLater() { cancelAnimationFrame(thumbFrame); thumbFrame = requestAnimationFrame(function () { fitHeader(); syncThumbs(true); }); }
   window.addEventListener('resize', thumbsLater);
   if (document.fonts) {
     if (document.fonts.ready) document.fonts.ready.then(thumbsLater, function () {});
