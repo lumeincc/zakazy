@@ -1098,7 +1098,6 @@
     --glass: rgba(255, 255, 255, .72);
     --glass-2: rgba(255, 255, 255, .9);
     --glass-line: rgba(23, 24, 27, .08);
-    --glow: rgba(242, 106, 31, .12);
     --dot: "Doto", var(--mono);
     --ui: "Jost", var(--font);
     --ease: cubic-bezier(.2, .8, .2, 1);
@@ -1109,30 +1108,21 @@
     --glass: rgba(255, 255, 255, .035);
     --glass-2: rgba(255, 255, 255, .06);
     --glass-line: rgba(255, 255, 255, .08);
-    --glow: rgba(242, 106, 31, .2);
   }
 
-  /* --- ground: graphite with a low heat glow --- */
-  body {
-    font-size: 15px; letter-spacing: -.004em;
-    background:
-      radial-gradient(1100px 620px at 6% -12%, var(--glow), transparent 68%),
-      radial-gradient(800px 520px at 104% -6%, rgba(255, 176, 32, .05), transparent 70%),
-      var(--ground);
-    background-attachment: fixed;
-  }
+  /* --- ground: plain graphite, no glows --- */
+  body { font-size: 15px; letter-spacing: -.004em; background: var(--ground); }
   .app { position: relative; z-index: 1; max-width: 1320px; padding-top: 22px; }
 
   /* --- brand bar: company on the left, the furnace-display clock on the right --- */
   .brandbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 2px 26px; }
   .bb-id { display: flex; align-items: center; gap: 14px; min-width: 0; }
-  .bb-mark { flex: none; width: 54px; height: 48px; background: var(--logo) center / contain no-repeat; filter: drop-shadow(0 6px 18px rgba(242, 106, 31, .28)); }
+  .bb-mark { flex: none; width: 54px; height: 48px; background: var(--logo) center / contain no-repeat; }
   .bb-text { display: grid; gap: 1px; min-width: 0; }
   .bb-text b { font-weight: 700; font-size: 17px; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
   .bb-text span { font-family: var(--ui); font-size: 14px; color: var(--muted); }
-  .bb-clock { display: grid; justify-items: end; gap: 4px; }
-  .bb-time { font-family: var(--dot); font-weight: 900; font-size: 44px; line-height: .82; letter-spacing: .04em; color: var(--ink); }
-  :root[data-theme="dark"] .bb-time { text-shadow: 0 0 22px rgba(255, 176, 32, .22); }
+  .bb-clock { flex: none; display: grid; justify-items: end; gap: 4px; }
+  .bb-time { font-family: var(--dot); font-weight: 900; font-size: 44px; line-height: .82; letter-spacing: .04em; color: var(--ink); white-space: nowrap; }
   .bb-date { font-family: var(--ui); font-size: 13.5px; color: var(--muted); }
   /* the clock's colon: two square dots that blink every second */
   .cc { position: relative; display: inline-block; width: .3em; height: .78em; vertical-align: top; }
@@ -1160,7 +1150,7 @@
   @media (hover: hover) { .sw:hover, .tab:hover { color: var(--ink); background: var(--thumb); } .sw[aria-pressed="true"]:hover, .tab[aria-pressed="true"]:hover { color: var(--pill-ink); } }
   .sw-n { min-width: 21px; height: 21px; padding: 0 6px; background: var(--thumb); color: var(--ink); font-family: var(--mono); font-weight: 600; font-size: 12px; }
   .sw[aria-pressed="true"] .sw-n { background: color-mix(in srgb, var(--pill-ink) 14%, transparent); color: var(--pill-ink); }
-  .sw-n.late, .sw[aria-pressed="true"] .sw-n.late { background: var(--danger); color: #FFFFFF; box-shadow: 0 0 12px color-mix(in srgb, var(--danger) 55%, transparent); }
+  .sw-n.late, .sw[aria-pressed="true"] .sw-n.late { background: var(--danger); color: #FFFFFF; }
   .tab .n { font-family: var(--mono); font-weight: 500; color: inherit; opacity: .6; }
   .tab.late .n { color: var(--danger); opacity: 1; }
 
@@ -1173,23 +1163,17 @@
   .btn-sm { border-radius: var(--r-pill); }
   .top { margin-bottom: 22px; }
 
-  /* --- what needs attention: big dot-matrix numbers; a hot card glows in its tone --- */
+  /* --- what needs attention: big light numbers; a hot card is tinted by its tone --- */
   .hot { gap: 12px; margin-bottom: 14px; }
   .ht {
     grid-template-columns: minmax(0, 1fr); grid-template-areas: "t" "n" "s"; align-items: start; row-gap: 8px;
     padding: 16px 18px 15px; border-radius: 22px; overflow: hidden; box-shadow: none;
   }
-  .ht::after {
-    content: ""; position: absolute; z-index: 0; right: -110px; top: -120px; width: 240px; height: 240px; border-radius: 50%; pointer-events: none;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--tone, transparent) 30%, transparent), transparent); opacity: 0; transition: opacity .4s;
-  }
-  .ht > * { position: relative; z-index: 1; }
-  .ht.is-hot { background: var(--glass); border-color: color-mix(in srgb, var(--tone) 28%, var(--glass-line)); box-shadow: none; }
-  .ht.is-hot::after { opacity: 1; }
+  .ht.is-hot { background: color-mix(in srgb, var(--tone) 7%, var(--glass)); border-color: color-mix(in srgb, var(--tone) 30%, var(--glass-line)); box-shadow: none; }
   .ht-t { order: 0; align-self: start; font-family: var(--ui); font-size: 14px; font-weight: 400; color: var(--muted); }
-  .ht-n { font-family: var(--dot); font-weight: 900; font-size: 50px; line-height: .8; letter-spacing: .03em; margin: 2px 0 2px; }
+  .ht-n { font-family: var(--font); font-weight: 300; font-size: 48px; line-height: .9; letter-spacing: -.04em; font-feature-settings: "tnum"; margin: 0; }
   .ht-n.zero { color: var(--faint); }
-  .ht.is-hot .ht-n { color: var(--tone); text-shadow: 0 0 26px color-mix(in srgb, var(--tone) 50%, transparent); }
+  .ht.is-hot .ht-n { color: var(--tone); }
   .ht-s { font-size: 13px; font-weight: 500; }
   .ht.is-hot .ht-s { color: var(--tone); }
   .ht[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
@@ -1198,21 +1182,21 @@
     .ht[aria-pressed="true"]:hover { box-shadow: inset 0 0 0 1px var(--ink), 0 18px 40px rgba(0, 0, 0, .18); }
   }
 
-  /* --- stages as a production line: a rail with a glowing node per station; the order «heats up» along it --- */
+  /* --- stages as a production line: a rail with a node per station; the order «heats up» along it --- */
   .route { position: relative; margin-bottom: 22px; padding: 4px 6px; border-radius: 24px; box-shadow: none; overflow: hidden; }
   .rc { padding: 18px 16px 15px; border-left: 0 !important; border-top: 0 !important; border-radius: 18px; }
   .rc::before {
     top: 72px; left: 16px; right: auto; bottom: auto; width: 12px; height: 12px; border-radius: 50%;
-    background: var(--st); box-shadow: 0 0 0 4px var(--ground), 0 0 14px color-mix(in srgb, var(--st) 70%, transparent); z-index: 1;
+    background: var(--st); box-shadow: 0 0 0 4px var(--ground); z-index: 1;
     transition: transform .25s var(--ease), box-shadow .25s;
   }
   .rc::after { content: ""; position: absolute; top: 77px; left: 0; right: 0; height: 2px; background: var(--line); }
   .rc:first-child::after { left: 16px; }
   .rc:last-child::after { right: 50%; -webkit-mask-image: linear-gradient(to right, #000, transparent); mask-image: linear-gradient(to right, #000, transparent); }
-  .rc[aria-pressed="true"]::before { height: 12px; transform: scale(1.35); box-shadow: 0 0 0 4px var(--ground), 0 0 0 7px color-mix(in srgb, var(--st) 35%, transparent), 0 0 22px var(--st); }
+  .rc[aria-pressed="true"]::before { height: 12px; transform: scale(1.35); box-shadow: 0 0 0 4px var(--ground), 0 0 0 6px color-mix(in srgb, var(--st) 45%, transparent); }
   .rc[aria-pressed="true"] { background: var(--thumb); }
   @media (hover: hover) { .rc:hover { background: var(--thumb); } }
-  .rc-count { font-family: var(--dot); font-weight: 900; font-size: 40px; line-height: .8; letter-spacing: .03em; margin-bottom: 34px; }
+  .rc-count { font-family: var(--font); font-weight: 300; font-size: 36px; line-height: .9; letter-spacing: -.04em; font-feature-settings: "tnum"; margin-bottom: 34px; }
   .rc-count.zero { color: var(--faint); }
   .rc-label { font-family: var(--ui); font-size: 14.5px; font-weight: 400; color: var(--ink-2); }
   .rc[aria-pressed="true"] .rc-label { color: var(--ink); }
@@ -1240,7 +1224,7 @@
     .tbody > .row:nth-child(even) { background: transparent; }
     @media (hover: hover) { .tbody > .row:hover { background: var(--hover); } }
   }
-  .row.is-late::before { left: 0; width: 3px; top: 16px; bottom: 16px; box-shadow: 0 0 14px var(--danger); }
+  .row.is-late::before { left: 0; width: 3px; top: 16px; bottom: 16px; }
   .num { font-family: var(--mono); font-weight: 600; font-size: 17px; }
   .num::before { color: var(--faint); font-weight: 400; }
   .recv, .since, .due-sub, .contact { font-size: 13px; }
@@ -1253,10 +1237,9 @@
     height: 34px; border-radius: var(--r-pill); font-weight: 500;
     background: color-mix(in srgb, var(--st) var(--tint), transparent); border-color: color-mix(in srgb, var(--st) 38%, transparent);
   }
-  .stage-pick .dot { box-shadow: 0 0 10px var(--st); }
   .rmini { gap: 4px; }
   .rmini i { width: 18px; height: 4px; border-radius: 4px; background: var(--line); overflow: visible; }
-  .rmini i.on::after { border-radius: 4px; box-shadow: 0 0 8px color-mix(in srgb, var(--c) 60%, transparent); }
+  .rmini i.on::after { border-radius: 4px; }
   .due-date { font-family: var(--mono); font-weight: 600; font-size: 16px; }
   .due-sub { font-weight: 500; }
   .xc { border-radius: var(--r-pill); font-family: var(--ui); font-weight: 400; font-size: 12.5px; }
@@ -1272,8 +1255,8 @@
   .tk-box { border-radius: 8px; background: transparent; }
   .tk-order { border-radius: var(--r-pill); font-family: var(--ui); font-weight: 400; }
   .s-bar { height: 6px; border-radius: 6px; }
-  .s-bar i { border-radius: 6px; background: linear-gradient(90deg, #A1190B, #EC5317, #FBA62A); box-shadow: 0 0 10px rgba(242, 106, 31, .45); }
-  .srow.is-full .s-bar i, .s-bar.is-full i { background: var(--ok); box-shadow: 0 0 10px color-mix(in srgb, var(--ok) 50%, transparent); }
+  .s-bar i { border-radius: 6px; background: linear-gradient(90deg, #A1190B, #EC5317, #FBA62A); }
+  .srow.is-full .s-bar i, .s-bar.is-full i { background: var(--ok); }
   .s-bar.big { height: 10px; }
   .s-box { border-radius: 9px; background: transparent; }
   .s-list, .s-progress { border-radius: var(--r-md); }
@@ -1282,25 +1265,18 @@
   .link { font-family: var(--ui); font-weight: 400; }
 
   /* --- sign-in: a control-panel screen — the mark, a dot-matrix clock, the production line; the form in glass --- */
-  /* the glow covers the whole window (fixed), so its edges never show on wide screens */
   .app.locked { min-height: 100dvh; }
-  .app.locked::before {
-    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background:
-      radial-gradient(760px 560px at calc(50% - 300px) 48%, var(--glow), transparent 72%),
-      radial-gradient(560px 460px at calc(50% + 300px) 58%, rgba(255, 176, 32, .05), transparent 72%);
-  }
   .app.locked .gate {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); align-items: center; gap: 72px;
     width: min(1060px, 100%); justify-items: stretch;
   }
   .gate-hero { display: grid; justify-items: start; align-content: center; min-width: 0; }
   .gate-lockup { --lh: 76px; display: flex; align-items: center; gap: calc(var(--lh) * .22); color: var(--ink); }
-  .gate-mark { flex: none; width: calc(var(--lh) * 432 / 380); height: var(--lh); background: var(--logo) center / contain no-repeat; filter: drop-shadow(0 14px 44px rgba(242, 106, 31, .5)); }
+  .gate-mark { flex: none; width: calc(var(--lh) * 432 / 380); height: var(--lh); background: var(--logo) center / contain no-repeat; }
   .gate-word { display: block; height: var(--lh); width: auto; }
   .gate-time {
     margin: 34px 0 0; font-family: var(--dot); font-weight: 900; font-size: clamp(88px, 11vw, 150px); line-height: .78; letter-spacing: .03em;
-    color: var(--ink); text-shadow: 0 0 40px rgba(255, 176, 32, .22);
+    color: var(--ink); white-space: nowrap;
   }
   .gate-date { margin: 18px 0 0; font-family: var(--ui); font-size: 17px; color: var(--muted); }
   .gate-card {
@@ -1318,15 +1294,14 @@
     transition: border-color .2s, box-shadow .2s, background-color .2s;
   }
   .gate-card .field input#g-code { font-family: var(--mono); letter-spacing: .3em; }
-  .gate-card .field input:focus { background: color-mix(in srgb, var(--ground) 30%, transparent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus) 22%, transparent), 0 0 30px color-mix(in srgb, var(--focus) 18%, transparent); outline: 0; }
+  .gate-card .field input:focus { background: color-mix(in srgb, var(--ground) 30%, transparent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus) 22%, transparent); outline: 0; }
   .gate-card .btn { position: relative; height: 56px; margin-top: 6px; font-size: 16.5px; overflow: hidden; }
   .gate-card .btn:not(:disabled)::after { content: "→"; margin-left: 10px; font-family: var(--font); font-weight: 400; transition: transform .25s var(--ease); }
   @media (hover: hover) { .gate-card .btn:not(:disabled):hover::after { transform: translateX(4px); } }
-  /* while it connects to the sheet the button glows like metal heating up */
+  /* while it connects to the sheet the button fills like metal heating up */
   .gate-card .btn:disabled {
     opacity: 1; color: #141517; border-color: transparent;
     background: linear-gradient(90deg, #6B1208, #CF2F10, #F67E1F, #FFCF4A, #F67E1F, #CF2F10, #6B1208) 0 0 / 300% 100%;
-    box-shadow: 0 0 30px rgba(242, 106, 31, .4);
   }
   @media (prefers-reduced-motion: no-preference) { .gate-card .btn:disabled { animation: heat 1.6s linear infinite; } }
   @keyframes heat { to { background-position: 150% 0; } }
@@ -1334,7 +1309,6 @@
 
   @media (max-width: 860px) {
     .app.locked { place-items: start center; padding-top: 32px; }
-    .app.locked::before { background: radial-gradient(520px 400px at 50% 20%, var(--glow), transparent 72%); }
     .app.locked .gate { grid-template-columns: minmax(0, 1fr); gap: 26px; width: min(440px, 100%); }
     .gate-hero { justify-items: center; text-align: center; }
     .gate-lockup { --lh: 56px; justify-content: center; }
@@ -1384,7 +1358,7 @@
     .top .sw[aria-pressed="true"], .top .switch.thumbed .sw[aria-pressed="true"] { background: var(--pill); color: var(--pill-ink); border-color: transparent; }
     .top .sw[aria-pressed="true"]::after {
       content: ""; position: absolute; left: 50%; bottom: -9px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%;
-      background: var(--ink); box-shadow: 0 0 6px color-mix(in srgb, var(--ink) 60%, transparent);
+      background: var(--ink);
     }
     .top .sw:active { transform: translateY(-10px) scale(1.2); }
     .top .sw-n, .top.fit3 .sw-n {
@@ -1396,16 +1370,14 @@
     .app { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
     .toast { bottom: calc(108px + env(safe-area-inset-bottom, 0px)); }
     .ht { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "n t" "n s"; align-items: center; column-gap: 12px; padding: 13px 14px; border-radius: 18px; }
-    .ht-n { font-size: 36px; margin: 0; }
+    .ht-n { font-size: 36px; }
     .ht-t { align-self: end; font-size: 13.5px; }
     .ht-s { align-self: start; margin-top: 0; white-space: normal; line-height: 1.3; }
-    .ht::after { right: -70px; top: -70px; width: 150px; height: 150px; }
-    .ht.is-hot::after { opacity: .7; }
     .rc { padding: 14px 12px 12px; }
     .rc::before { top: 56px; left: 12px; width: 10px; height: 10px; }
     .rc::after { top: 60px; }
     .rc:first-child::after { left: 12px; }
-    .rc-count { font-size: 30px; margin-bottom: 28px; }
+    .rc-count { font-size: 27px; margin-bottom: 28px; }
     .rc-label { font-size: 13px; }
     .route { padding: 2px 4px; border-radius: 20px; }
     #osheet .row, #pbody .pg, #sbody .srow, #osheet .empty, #vPurch .empty, #ssheet .empty, #osheet .skel, #pbody .skel, #sbody .skel {
@@ -1425,7 +1397,16 @@
     .route.route-4 .rc:nth-child(2n)::after { right: 50%; -webkit-mask-image: linear-gradient(to right, #000, transparent); mask-image: linear-gradient(to right, #000, transparent); }
     .route.route-4 .rc:nth-child(2n + 1)::after { left: 16px; }
   }
-  @media (max-width: 380px) { .bb-text span { display: none; } }
+  /* narrow phones: the name and the clock stay on one line */
+  @media (max-width: 400px) {
+    .brandbar { gap: 12px; }
+    .bb-id { gap: 10px; }
+    .bb-mark { width: 34px; height: 30px; }
+    .bb-text b { font-size: 13px; letter-spacing: .03em; }
+    .bb-text span { display: none; }
+    .bb-time { font-size: 24px; }
+  }
+  @media (max-width: 340px) { .bb-clock { display: none; } }
 </style>
 </head>
 <body>
