@@ -1317,8 +1317,29 @@
     .gate-card { justify-self: stretch; padding: 30px 22px 24px; border-radius: 26px; }
     .gate-card h2 { font-size: 23px; }
   }
-  /* --- dialogs and fields --- */
-  .dlg { border-radius: 26px; border-color: var(--glass-line); }
+  /* --- dialogs and fields: glass over the blurred, slightly dimmed page --- */
+  .dlg {
+    border-radius: 26px; border-color: var(--glass-line);
+    background: color-mix(in srgb, var(--surface) 64%, transparent);
+    -webkit-backdrop-filter: blur(34px) saturate(1.5); backdrop-filter: blur(34px) saturate(1.5);
+    box-shadow: 0 40px 120px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .07);
+  }
+  :root:not([data-theme="dark"]) .dlg { background: color-mix(in srgb, var(--surface) 70%, transparent); box-shadow: 0 40px 100px rgba(23, 24, 27, .22), inset 0 1px 0 rgba(255, 255, 255, .9); }
+  .dlg::backdrop { background: rgba(6, 7, 8, .38); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+  :root:not([data-theme="dark"]) .dlg::backdrop { background: rgba(20, 21, 23, .18); }
+  .dlg-head { border-bottom-color: var(--glass-line); }
+  .dlg-foot { border-top-color: var(--glass-line); }
+  /* blocks inside a dialog become glass too */
+  .dlg .mat-wrap, .dlg .otk-wrap, .dlg .pi, .dlg .ci, .dlg .c-file, .dlg .c-term, .dlg .s-progress, .dlg .s-list, .dlg .c-text pre {
+    background: var(--glass); border-color: var(--glass-line);
+  }
+  .dlg .s-hd { background: var(--glass); }
+  .dlg .field input, .dlg .field select, .dlg .field textarea, .dlg .s-box {
+    background: color-mix(in srgb, var(--ground) 42%, transparent); border-color: var(--glass-line);
+  }
+  .dlg .field input:focus, .dlg .field select:focus, .dlg .field textarea:focus { background: color-mix(in srgb, var(--ground) 26%, transparent); }
+  /* the native option list keeps a solid background so it stays readable */
+  .dlg option, .select option { background: var(--surface); color: var(--ink); }
   .dlg-head { padding: 22px 26px 16px; }
   .dlg-head h2 { font-weight: 500; font-size: 24px; letter-spacing: -.02em; }
   .dlg-foot { background: transparent; }
