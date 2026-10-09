@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Jost:wght@400;500&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Jost:wght@400;500&display=swap"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Jost:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Jost:wght@400;500&display=swap"></noscript>
 <style>
   :root {
     color-scheme: light;
@@ -1098,7 +1098,6 @@
     --glass: rgba(255, 255, 255, .72);
     --glass-2: rgba(255, 255, 255, .9);
     --glass-line: rgba(23, 24, 27, .08);
-    --dot: "Doto", var(--mono);
     --ui: "Jost", var(--font);
     --ease: cubic-bezier(.2, .8, .2, 1);
   }
@@ -1114,7 +1113,7 @@
   body { font-size: 15px; letter-spacing: -.004em; background: var(--ground); }
   .app { position: relative; z-index: 1; max-width: 1320px; padding-top: 22px; }
 
-  /* --- brand bar: company on the left, the furnace-display clock on the right --- */
+  /* --- brand bar: company on the left, the clock on the right --- */
   .brandbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 2px 26px; }
   .bb-id { display: flex; align-items: center; gap: 14px; min-width: 0; }
   .bb-mark { flex: none; width: 54px; height: 48px; background: var(--logo) center / contain no-repeat; }
@@ -1122,15 +1121,12 @@
   .bb-text b { font-weight: 700; font-size: 17px; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
   .bb-text span { font-family: var(--ui); font-size: 14px; color: var(--muted); }
   .bb-clock { flex: none; display: grid; justify-items: end; gap: 4px; }
-  .bb-time { font-family: var(--dot); font-weight: 900; font-size: 44px; line-height: .82; letter-spacing: .04em; color: var(--ink); white-space: nowrap; }
+  .bb-time { font-family: var(--font); font-weight: 300; font-size: 44px; line-height: .9; letter-spacing: -.04em; font-feature-settings: "tnum"; color: var(--ink); white-space: nowrap; }
   .bb-date { font-family: var(--ui); font-size: 13.5px; color: var(--muted); }
-  /* the clock's colon: two square dots that blink every second */
-  .cc { position: relative; display: inline-block; width: .3em; height: .78em; vertical-align: top; }
-  .cc::before, .cc::after { content: ""; position: absolute; left: .1em; width: .1em; height: .1em; background: currentColor; }
-  .cc::before { top: .22em; }
-  .cc::after { top: .5em; }
+  /* the clock's colon blinks softly every second */
+  .cc { font-style: normal; display: inline-block; padding: 0 .02em; transform: translateY(-.06em); }
   @media (prefers-reduced-motion: no-preference) { .cc { animation: blink 2s steps(1) infinite; } }
-  @keyframes blink { 50% { opacity: .15; } }
+  @keyframes blink { 50% { opacity: .25; } }
   .app.locked .brandbar { display: none !important; }
 
   /* --- glass surfaces --- */
@@ -1264,7 +1260,7 @@
   .foot { margin-top: 16px; font-family: var(--ui); }
   .link { font-family: var(--ui); font-weight: 400; }
 
-  /* --- sign-in: a control-panel screen — the mark, a dot-matrix clock, the production line; the form in glass --- */
+  /* --- sign-in: the company logo and a big clock on the left, the form in glass on the right --- */
   .app.locked { min-height: 100dvh; }
   .app.locked .gate {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); align-items: center; gap: 72px;
@@ -1275,7 +1271,7 @@
   .gate-mark { flex: none; width: calc(var(--lh) * 432 / 380); height: var(--lh); background: var(--logo) center / contain no-repeat; }
   .gate-word { display: block; height: var(--lh); width: auto; }
   .gate-time {
-    margin: 34px 0 0; font-family: var(--dot); font-weight: 900; font-size: clamp(88px, 11vw, 150px); line-height: .78; letter-spacing: .03em;
+    margin: 30px 0 0; font-family: var(--font); font-weight: 300; font-size: clamp(88px, 11vw, 150px); line-height: .9; letter-spacing: -.05em; font-feature-settings: "tnum";
     color: var(--ink); white-space: nowrap;
   }
   .gate-date { margin: 18px 0 0; font-family: var(--ui); font-size: 17px; color: var(--muted); }
@@ -1883,7 +1879,7 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
-/* часы в шапке — как табло на шкафу управления печи */
+/* часы в шапке и на входе */
 (function () {
   var t = document.getElementById('bbTime'), d = document.getElementById('bbDate');
   if (!t) return;
@@ -1893,7 +1889,7 @@
   function p(n) { return (n < 10 ? '0' : '') + n; }
   function tick() {
     var n = new Date(), day = W[n.getDay()] + ', ' + n.getDate() + ' ' + M[n.getMonth()];
-    var hm = '<span>' + p(n.getHours()) + '</span><i class="cc"></i><span>' + p(n.getMinutes()) + '</span>';
+    var hm = '<span>' + p(n.getHours()) + '</span><i class="cc">:</i><span>' + p(n.getMinutes()) + '</span>';
     t.innerHTML = hm; d.textContent = day;
     if (gt) { gt.innerHTML = hm; gd.textContent = day; }
   }
