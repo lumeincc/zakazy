@@ -5488,7 +5488,7 @@ var Dogovor = (function () {
   'use strict';
 
   /* Адрес веб-приложения Google Apps Script (заканчивается на /exec) */
-  var API_URL = 'https://script.google.com/macros/s/AKfycbzEh-UU8MMuUJ6PDiryl1GeI7XzcdwM7TUCjI50tWUo6vYok665IU9PaSWh0MF1QGwR/exec';
+  var API_URL = 'https://script.google.com/macros/s/AKfycbx_U4QIrfYCw7IKYnvZkgN0Dse84D_-LMD5x8IuRCSlISUxNXbJWIK7JwhA-TlUYcWFng/exec';
 
   /* ============ справочники ============ */
   var STAGES = [
@@ -5540,6 +5540,7 @@ var Dogovor = (function () {
   var LS_KEY = 'zakazy-journal:v1';     // код и имя (только в этом браузере)
   var LS_DATA = 'zakazy-journal:data';  // последний загруженный список — для мгновенного запуска
   var LS_THEME = 'zakazy-journal:theme'; // светлая или тёмная тема
+  var LS_OLD = 'zakazy-journal:old';    // копия из прежней таблицы (её адрес сменился) — ждёт переноса в новую
 
   /* задачи менеджеров */
   var TTABS = [['mine', 'Мои'], ['all', 'Все'], ['overdue', 'Просрочено'], ['done', 'Выполнено']];
@@ -5671,6 +5672,49 @@ var Dogovor = (function () {
   }
   function clearData() {
     try { localStorage.removeItem(LS_DATA); } catch (e) {}
+  }
+
+  /* ============ перенос копии из прежней таблицы ============ */
+  // Таблицу удалили и сделали новую — у журнала новый адрес. Последний список, сохранённый в этом браузере
+  // для прежнего адреса, не затираем, а один раз отправляем в новую таблицу (действие restore):
+  // сервер сливает записи по ID, более свежая версия остаётся, повтор ничего не дублирует.
+  function keepOldCopy() {
+    try {
+      var raw = localStorage.getItem(LS_DATA);
+      if (!raw || localStorage.getItem(LS_OLD)) return;
+      var d = JSON.parse(raw);
+      if (!d || !d.api || d.api === apiUrl()) return;
+      var n = (Array.isArray(d.orders) ? d.orders.length : 0) + (Array.isArray(d.purchases) ? d.purchases.length : 0) +
+        (Array.isArray(d.tasks) ? d.tasks.length : 0);
+      if (n) localStorage.setItem(LS_OLD, raw);
+    } catch (e) {}
+  }
+  function dropOld() {
+    try { localStorage.removeItem(LS_OLD); } catch (e) {}
+  }
+  var migrateTried = false;
+  function migrateOld() {
+    if (migrateTried || state.mode !== 'live') return;
+    var d = null;
+    try { d = JSON.parse(localStorage.getItem(LS_OLD) || 'null'); } catch (e) { dropOld(); }
+    if (!d || typeof d !== 'object') return;
+    migrateTried = true;   // одна попытка за открытие страницы; не вышло — копия останется до следующего раза
+    if (d.api === apiUrl()) { dropOld(); return; }
+    var arr = function (v) { return Array.isArray(v) ? v : []; };
+    write('restore', { orders: arr(d.orders), purchases: arr(d.purchases), tasks: arr(d.tasks), ship: arr(d.ship) }).then(function (res) {
+      dropOld();
+      var r = (res && res.restored) || {};
+      var parts = [];
+      if (r.orders) parts.push(r.orders + '\u00a0' + plural(r.orders, 'заказ', 'заказа', 'заказов'));
+      if (r.purchases) parts.push(r.purchases + '\u00a0' + plural(r.purchases, 'позиция заявок', 'позиции заявок', 'позиций заявок'));
+      if (r.tasks) parts.push(r.tasks + '\u00a0' + plural(r.tasks, 'задача', 'задачи', 'задач'));
+      if (r.updated) parts.push('обновлено записей: ' + r.updated);
+      if (!parts.length) return;
+      var msg = 'Из памяти этого устройства в таблицу перенесено: ' + parts.join(', ') + '.';
+      var moved = arr(r.renumbered).map(function (x) { return '№\u00a0' + x.from + ' → №\u00a0' + x.to; });
+      if (moved.length) msg += ' Номер был занят, заказ получил новый: ' + moved.join(', ') + '.';
+      toast(msg, '', 9000);
+    }, function () { /* копия остаётся в браузере — перенесём при следующем открытии журнала */ });
   }
 
   /* ============ данные заказа ============ */
@@ -6452,11 +6496,11 @@ var Dogovor = (function () {
 
   /* ============ сообщения ============ */
   var toastTimer = null;
-  function toast(msg, kind) {
+  function toast(msg, kind, ms) {
     els.toast.textContent = msg;
     els.toast.className = 'toast show' + (kind === 'error' ? ' error' : '');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { els.toast.className = 'toast' + (kind === 'error' ? ' error' : ''); }, kind === 'error' ? 5200 : 2400);
+    toastTimer = setTimeout(function () { els.toast.className = 'toast' + (kind === 'error' ? ' error' : ''); }, ms || (kind === 'error' ? 5200 : 2400));
   }
   function showFormMsg(msg, isErr) {
     els.formMsg.textContent = msg || '';
@@ -6534,6 +6578,7 @@ var Dogovor = (function () {
       saveData();
     }
     render();
+    if (!migrateTried && !pendingWrites) setTimeout(migrateOld, 0);
   }
 
   var writeChain = Promise.resolve(), pendingWrites = 0;
@@ -9085,6 +9130,7 @@ var Dogovor = (function () {
   setInterval(function () { if (state.mode === 'live' && !anyDialogOpen()) render(); }, 10 * 60 * 1000);
 
   /* ============ запуск ============ */
+  keepOldCopy();
   if (apiUrl() && creds.code) start();
   else showGate('');
 })();
